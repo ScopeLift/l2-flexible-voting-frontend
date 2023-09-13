@@ -1,0 +1,33 @@
+{
+  "name": "x",
+  "private": true,
+  "version": "0.1.0",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@rainbow-me/rainbowkit": "^1.0.11",
+    "next": "^13.4.19",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "viem": "~1.10.7",
+    "wagmi": "~1.4.1"
+  },
+  "devDependencies": {
+    "@types/node": "^18.16.12",
+    "@types/react": "^18.2.21",
+    "@walletconnect/jsonrpc-types": "^1.0.3",
+    "@walletconnect/jsonrpc-utils": "^1.0.8",
+    "eslint": "^8.15.0",
+    "eslint-config-next": "^13.4.19",
+    "lit-html": "^2.8.0",
+    "typescript": "^5.0.4"
+  },
+  "volta": {
+    "node": "18.17.1",
+    "yarn": "3.6.3"
+  }
+}
