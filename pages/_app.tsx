@@ -1,10 +1,16 @@
-import "../styles/globals.css";
+import "@/styles/globals.css";
 import "@rainbow-me/rainbowkit/styles.css";
-import { getDefaultWallets, RainbowKitProvider } from "@rainbow-me/rainbowkit";
+import {
+  getDefaultWallets,
+  RainbowKitProvider,
+  lightTheme,
+} from "@rainbow-me/rainbowkit";
 import type { AppProps } from "next/app";
 import { configureChains, createConfig, WagmiConfig } from "wagmi";
 import { arbitrum, mainnet, optimism, sepolia } from "wagmi/chains";
 import { publicProvider } from "wagmi/providers/public";
+import colors from "tailwindcss/colors";
+import Layout from "@/components/Layout";
 
 const { chains, publicClient, webSocketPublicClient } = configureChains(
   [
@@ -32,8 +38,18 @@ const wagmiConfig = createConfig({
 function MyApp({ Component, pageProps }: AppProps) {
   return (
     <WagmiConfig config={wagmiConfig}>
-      <RainbowKitProvider chains={chains}>
-        <Component {...pageProps} />
+      <RainbowKitProvider
+        chains={chains}
+        theme={lightTheme({
+          accentColor: colors.indigo[200],
+          accentColorForeground: colors.gray[600],
+          borderRadius: "medium",
+          overlayBlur: "small",
+        })}
+      >
+        <Layout>
+          <Component {...pageProps} />
+        </Layout>
       </RainbowKitProvider>
     </WagmiConfig>
   );
