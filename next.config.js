@@ -5,6 +5,15 @@ const nextConfig = {
     config.resolve.fallback = { fs: false, net: false, tls: false, ws: false };
     return config;
   },
+  async redirects() {
+    return [
+      {
+        source: "/",
+        destination: "/bridge",
+        permanent: false,
+      },
+    ];
+  },
 };
 
 module.exports = nextConfig;

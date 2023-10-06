@@ -1,8 +1,8 @@
-import { ConnectButton } from "@rainbow-me/rainbowkit";
-import type { NextPage } from "next";
 import Head from "next/head";
+import { Header } from "@/components/Header";
+import { ReactNode } from "react";
 
-const Home: NextPage = () => {
+const Layout = ({ children }: { children?: ReactNode }) => {
   return (
     <div>
       <Head>
@@ -14,11 +14,12 @@ const Home: NextPage = () => {
         <link href="/favicon.ico" rel="icon" />
       </Head>
 
-      <main className="h-screen w-screen flex justify-center align-center">
-        <ConnectButton />
+      <main className="h-screen w-screen flex flex-col p-5">
+        <Header />
+        {children}
       </main>
     </div>
   );
 };
 
-export default Home;
+export default Layout;
