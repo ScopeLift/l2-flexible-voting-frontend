@@ -10,26 +10,32 @@ import { ArrowLongRightIcon } from "@heroicons/react/20/solid";
 import { useBalances } from "@/hooks/useBalances";
 import { useFees } from "@/hooks/useFees";
 
-type BridgeDirection = "l1l2" | "l2l1";
+enum BridgeTarget {
+  L1,
+  L2,
+}
 
 const Bridge = () => {
   const mounted = useHasMounted();
   const { fees, error: feeError } = useFees();
   const { l1, l2, isLoading, error } = useBalances();
-  const { l1: l1Config, l2: l2Config, err } = useConfig();
-  const [bridgeDirection, setBridgeDirection] =
-    useState<BridgeDirection>("l1l2");
+  const { l1: l1Config, l2: l2Config } = useConfig();
+  const [bridgeTarget, setBridgeTarget] = useState<BridgeTarget>(
+    BridgeTarget.L2
+  );
 
   const handleSwitchDirection = () => {
-    setBridgeDirection(bridgeDirection === "l1l2" ? "l2l1" : "l1l2");
+    setBridgeTarget(
+      bridgeTarget === BridgeTarget.L2 ? BridgeTarget.L1 : BridgeTarget.L2
+    );
   };
 
   const source =
-    bridgeDirection === "l1l2"
+    bridgeTarget === BridgeTarget.L2
       ? { ...l1Config, ...l1, fee: fees?.l1 || BigInt(0) }
       : { ...l2Config, ...l2, fee: fees?.l2 || BigInt(0) };
   const target =
-    bridgeDirection === "l1l2"
+    bridgeTarget === BridgeTarget.L2
       ? { ...l2Config, ...l2, fee: fees?.l2 || BigInt(0) }
       : { ...l1Config, ...l1, fee: fees?.l1 || BigInt(0) };
 
