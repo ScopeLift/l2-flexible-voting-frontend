@@ -12,17 +12,18 @@ type ConfigEntries = Record<
   }
 >;
 
+// Values were pulled from https://github.com/ScopeLift/l2-flexible-voting/blob/a0dd222ddf059e322ca4441e0cefc6c21efe89e1/broadcast/multi/WormholeL2FlexibleVotingDeploy.s.sol-1695928650/run.json
 const config: ConfigEntries = {
   l1: {
-    chain: polygonMumbai,
+    chain:  avalancheFuji,
     wormholeChainId: 5,
-    tokenAddress: "0x40BC416D955696ea3e8ed1BD7ba83981a0e9c8D0",
-    erc20Bridge: "0x3a8Af12BB731925A9a0b31C266787FAaa8076bA5",
+    tokenAddress: "0xeA7448e198B00E0162Cd1238B5a4A561d9e69A3e",
+    erc20Bridge: "0x89A40dd9fe5a04735DDDafe555340327889ae0f0",
   },
   l2: {
-    chain: avalancheFuji,
+    chain:  polygonMumbai,
     wormholeChainId: 6,
-    tokenAddress: "0x3876489eEc6e5ACDC7c1F9718648F61FD342B64f",
+    tokenAddress: "0x32E99074C339d5659C6787EE1E627E4036827725",
   },
 };
 

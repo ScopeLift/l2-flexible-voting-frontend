@@ -8,12 +8,17 @@ import {
 import type { AppProps } from "next/app";
 import { configureChains, createConfig, WagmiConfig } from "wagmi";
 import { publicProvider } from "wagmi/providers/public";
+import { alchemyProvider } from "wagmi/providers/alchemy";
 import colors from "tailwindcss/colors";
 import Layout from "@/components/Layout";
 import { chains as chainsConfig } from "@/config";
+
 const { chains, publicClient, webSocketPublicClient } = configureChains(
   chainsConfig,
-  [publicProvider()]
+  [
+    alchemyProvider({ apiKey: process.env.NEXT_PUBLIC_ALCHEMY_API_KEY! }),
+    publicProvider(),
+  ]
 );
 
 const { connectors } = getDefaultWallets({
