@@ -56,6 +56,7 @@ export default function Notifications() {
                             : 'Transaction pending'}
                         </p>
                         <p className="mt-1 text-sm text-gray-500">{description}</p>
+                        <p className="mt-1 text-sm text-gray-500">{description}</p>
                         <p className="mt-1 text-sm text-gray-500">
                           <a href={`https://etherscan.io/tx/${hash}`}>View on Etherscan</a>
                         </p>
