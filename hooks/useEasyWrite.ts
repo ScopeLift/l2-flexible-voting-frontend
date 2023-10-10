@@ -1,5 +1,6 @@
 import { usePrepareContractWrite, useContractWrite } from "wagmi";
 import { useNotifications } from "@/contexts/NotificationsContext";
+import { useEffect } from "react";
 
 export const useEasyWrite = (
   params: Parameters<typeof usePrepareContractWrite>[0]
@@ -11,7 +12,7 @@ export const useEasyWrite = (
     isLoading: prepareIsLoading,
   } = usePrepareContractWrite(params);
   const {
-    data,
+    data: writeData,
     error: writeError,
     isLoading: writeIsLoading,
     write: contractWrite,
@@ -20,9 +21,12 @@ export const useEasyWrite = (
   const error = prepareError || writeError;
   const isLoading = prepareIsLoading || writeIsLoading;
 
+  useEffect(() => {
+    if (writeData?.hash) notify({ hash: writeData?.hash, status });
+  }, [notify, writeData?.hash, status]);
+
   const write = () => {
     contractWrite!();
-    data?.hash && notify({ hash: data.hash });
   };
-  return { data, isLoading, error, write };
+  return { data: writeData, isLoading, error, write };
 };

@@ -19,7 +19,7 @@ export default function Notifications() {
         className="pointer-events-none fixed inset-0 flex items-end px-4 py-6 sm:items-start sm:p-6"
       >
         <div className="flex w-full mt-10 flex-col items-center space-y-4 sm:items-end">
-          {notifications.map(({ id, type, hash, description }) => {
+          {notifications.map(({ id, type, hash, description, txStatus }) => {
             return (
               <Transition
                 key={id}
@@ -36,12 +36,12 @@ export default function Notifications() {
                   <div className="p-4">
                     <div className="flex items-start">
                       <div className="flex-shrink-0">
-                        {type === "success" ? (
+                        {txStatus === "success" ? (
                           <CheckCircleIcon
                             className="h-6 w-6 text-green-400"
                             aria-hidden="true"
                           />
-                        ) : type === "error" ? (
+                        ) : txStatus === "error" ? (
                           <ExclamationCircleIcon
                             className="h-6 w-6 text-red-400"
                             aria-hidden="true"
@@ -52,9 +52,9 @@ export default function Notifications() {
                       </div>
                       <div className="ml-3 w-0 flex-1 pt-0.5">
                         <p className="text-sm font-medium text-gray-900">
-                          {type === "error"
+                          {txStatus === "error"
                             ? "Transaction error"
-                            : type === "success"
+                            : txStatus === "success"
                             ? "Transaction succeeded"
                             : "Transaction pending"}
                         </p>
@@ -62,7 +62,9 @@ export default function Notifications() {
                           {description}
                         </p>
                         <p className="mt-1 text-sm text-gray-500">
-                          <a href="https://etherscan.io">View on Etherscan</a>
+                          <a href={`https://etherscan.io/tx/${hash}`}>
+                            View on Etherscan
+                          </a>
                         </p>
                       </div>
                       <div className="ml-4 flex flex-shrink-0">
