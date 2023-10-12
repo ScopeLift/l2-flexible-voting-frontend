@@ -7,23 +7,22 @@ import {
 } from "@rainbow-me/rainbowkit";
 import type { AppProps } from "next/app";
 import { configureChains, createConfig, WagmiConfig } from "wagmi";
-import { arbitrum, mainnet, optimism, sepolia } from "wagmi/chains";
 import { publicProvider } from "wagmi/providers/public";
+import { alchemyProvider } from "wagmi/providers/alchemy";
 import colors from "tailwindcss/colors";
 import Layout from "@/components/Layout";
+import { chains as chainsConfig } from "@/config";
 
 const { chains, publicClient, webSocketPublicClient } = configureChains(
+  chainsConfig,
   [
-    mainnet,
-    optimism,
-    arbitrum,
-    ...(process.env.NEXT_PUBLIC_ENABLE_TESTNETS === "true" ? [sepolia] : []),
-  ],
-  [publicProvider()]
+    alchemyProvider({ apiKey: process.env.NEXT_PUBLIC_ALCHEMY_API_KEY! }),
+    publicProvider(),
+  ]
 );
 
 const { connectors } = getDefaultWallets({
-  appName: "L2 Flexible Voiting",
+  appName: "L2 Flexible Voting",
   projectId: String(process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID),
   chains,
 });
