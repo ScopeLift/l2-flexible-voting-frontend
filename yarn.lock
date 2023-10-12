@@ -4513,7 +4513,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"next@npm:^13.4.19":
+"next@npm:13.4.19":
   version: 13.4.19
   resolution: "next@npm:13.4.19"
   dependencies:
@@ -6619,7 +6619,7 @@ __metadata:
     eslint: ^8.15.0
     eslint-config-next: ^13.4.19
     lit-html: ^2.8.0
-    next: ^13.4.19
+    next: 13.4.19
     postcss: ^8.4.29
     react: ^18.2.0
     react-dom: ^18.2.0

@@ -16,7 +16,7 @@
     "@walletconnect/jsonrpc-types": "^1.0.3",
     "@walletconnect/jsonrpc-utils": "^1.0.8",
     "lit-html": "^2.8.0",
-    "next": "^13.4.19",
+    "next": "13.4.19",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "viem": "~1.10.7",
