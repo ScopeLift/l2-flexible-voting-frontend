@@ -12,11 +12,11 @@ const tabs = [
 
 export const Header = () => {
   return (
-    <div className="flex flex-row w-full justify-between">
-      <div></div>
+    <header className="flex flex-row w-full items-center justify-between mx-auto">
+      <div className="font-bold flex-1">L2 Flex Voting</div>
       <NavButtons />
       <WalletButtons />
-    </div>
+    </header>
   );
 };
 
@@ -53,5 +53,9 @@ const NavButtons = () => {
 };
 
 const WalletButtons = () => {
-  return <ConnectButton />;
+  return (
+    <div className="flex flex-1 justify-end">
+      <ConnectButton />
+    </div>
+  );
 };
