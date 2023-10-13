@@ -14,6 +14,7 @@ const config = {
     wormholeChainId: 24,
     tokenAddress: "0x74975D71A63D0d955160E38bf427dA7f3b030888" as `0x${string}`,
   },
+  showDebug: true,
 };
 
 export default config;
