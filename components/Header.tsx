@@ -2,6 +2,8 @@ import { ConnectButton } from "@rainbow-me/rainbowkit";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { classNames } from "@/util";
+import { useConfig } from "@/hooks/useConfig";
+import { useDebugPanel } from "@/contexts/DebugPanel";
 
 const tabs = [
   { name: "Bridge", href: "/bridge" },
@@ -11,9 +13,22 @@ const tabs = [
 ];
 
 export const Header = () => {
+  const { showDebug } = useConfig();
+  const { setIsOpen } = useDebugPanel();
   return (
     <header className="flex flex-row w-full items-center justify-between mx-auto">
-      <div className="font-bold flex-1">L2 Flex Voting</div>
+      <div className="font-bold flex-1 flex">
+        <h1>L2 Flex Voting</h1>{" "}
+        <div className={classNames("ml-3", showDebug ? "visible" : "hidden")}>
+          <button
+            type="button"
+            className="rounded bg-white px-2 py-1 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+            onClick={() => setIsOpen(true)}
+          >
+            Debug
+          </button>
+        </div>
+      </div>
       <NavButtons />
       <WalletButtons />
     </header>

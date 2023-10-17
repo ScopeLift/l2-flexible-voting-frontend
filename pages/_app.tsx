@@ -12,6 +12,7 @@ import { alchemyProvider } from "wagmi/providers/alchemy";
 import colors from "tailwindcss/colors";
 import Layout from "@/components/Layout";
 import { chains as chainsConfig } from "@/config";
+import { DebugPanelProvider } from "@/contexts/DebugPanel";
 
 const { chains, publicClient, webSocketPublicClient } = configureChains(
   chainsConfig,
@@ -46,9 +47,11 @@ function MyApp({ Component, pageProps }: AppProps) {
           overlayBlur: "small",
         })}
       >
-        <Layout>
-          <Component {...pageProps} />
-        </Layout>
+        <DebugPanelProvider>
+          <Layout>
+            <Component {...pageProps} />
+          </Layout>
+        </DebugPanelProvider>
       </RainbowKitProvider>
     </WagmiConfig>
   );

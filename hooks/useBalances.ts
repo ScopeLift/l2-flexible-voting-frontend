@@ -7,20 +7,24 @@ export const useBalances = () => {
   const l1Eth = useBalance({
     address,
     chainId: l1.chain.id,
+    watch: true,
   });
   const l2Eth = useBalance({
     address,
     chainId: l2.chain.id,
+    watch: true,
   });
   const l1Token = useBalance({
     address,
     chainId: l1.chain.id,
     token: l1.tokenAddress,
+    watch: true,
   });
   const l2Token = useBalance({
     address,
     chainId: l2.chain.id,
     token: l2.tokenAddress,
+    watch: true,
   });
 
   return {
