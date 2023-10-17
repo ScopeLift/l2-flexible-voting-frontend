@@ -1,6 +1,10 @@
-import { Fragment, useState } from "react";
+import { Fragment } from "react";
 import { Transition } from "@headlessui/react";
-import { CheckCircleIcon } from "@heroicons/react/24/outline";
+import {
+  CheckCircleIcon,
+  ExclamationCircleIcon,
+  InformationCircleIcon,
+} from "@heroicons/react/24/outline";
 import { XMarkIcon } from "@heroicons/react/20/solid";
 import { useNotifications } from "@/contexts/NotificationsContext";
 
@@ -14,8 +18,8 @@ export default function Notifications() {
         aria-live="assertive"
         className="pointer-events-none fixed inset-0 flex items-end px-4 py-6 sm:items-start sm:p-6"
       >
-        <div className="flex w-full flex-col items-center space-y-4 sm:items-end">
-          {notifications.map(({ id }) => {
+        <div className="flex w-full mt-10 flex-col items-center space-y-4 sm:items-end">
+          {notifications.map(({ id, type, hash, description }) => {
             return (
               <Transition
                 key={id}
@@ -32,17 +36,33 @@ export default function Notifications() {
                   <div className="p-4">
                     <div className="flex items-start">
                       <div className="flex-shrink-0">
-                        <CheckCircleIcon
-                          className="h-6 w-6 text-green-400"
-                          aria-hidden="true"
-                        />
+                        {type === "success" ? (
+                          <CheckCircleIcon
+                            className="h-6 w-6 text-green-400"
+                            aria-hidden="true"
+                          />
+                        ) : type === "error" ? (
+                          <ExclamationCircleIcon
+                            className="h-6 w-6 text-red-400"
+                            aria-hidden="true"
+                          />
+                        ) : (
+                          <InformationCircleIcon className="h-6 w-6 text-gray-400" />
+                        )}
                       </div>
                       <div className="ml-3 w-0 flex-1 pt-0.5">
                         <p className="text-sm font-medium text-gray-900">
-                          Successfully saved!
+                          {type === "error"
+                            ? "Transaction error"
+                            : type === "success"
+                            ? "Transaction succeeded"
+                            : "Transaction pending"}
                         </p>
                         <p className="mt-1 text-sm text-gray-500">
-                          Anyone with a link can now view this file.
+                          {description}
+                        </p>
+                        <p className="mt-1 text-sm text-gray-500">
+                          <a href="https://etherscan.io">View on Etherscan</a>
                         </p>
                       </div>
                       <div className="ml-4 flex flex-shrink-0">

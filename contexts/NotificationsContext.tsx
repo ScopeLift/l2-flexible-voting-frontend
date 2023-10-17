@@ -4,7 +4,9 @@ import Notifications from "@/components/Notifications";
 export type Notification = {
   description: string;
   id: string;
-  type: "success" | "error" | "warning" | "info";
+  hash?: string;
+  network?: string;
+  type: "success" | "error" | "info";
 };
 
 type NotificationsContextType = {
@@ -33,8 +35,8 @@ export const NotificationsProvider = ({
   };
   return (
     <NotificationsContext.Provider value={{ notifications, notify, dismiss }}>
-      <Notifications />
       {children}
+      <Notifications />
     </NotificationsContext.Provider>
   );
 };
