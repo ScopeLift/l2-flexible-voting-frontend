@@ -1,12 +1,12 @@
-import { Fragment } from "react";
-import { Transition } from "@headlessui/react";
+import { Fragment } from 'react';
+import { Transition } from '@headlessui/react';
 import {
   CheckCircleIcon,
   ExclamationCircleIcon,
   InformationCircleIcon,
-} from "@heroicons/react/24/outline";
-import { XMarkIcon } from "@heroicons/react/20/solid";
-import { useNotifications } from "@/contexts/NotificationsContext";
+} from '@heroicons/react/24/outline';
+import { XMarkIcon } from '@heroicons/react/20/solid';
+import { useNotifications } from '@/contexts/NotificationsContext';
 
 export default function Notifications() {
   const { notifications, dismiss } = useNotifications();
@@ -36,12 +36,9 @@ export default function Notifications() {
                   <div className="p-4">
                     <div className="flex items-start">
                       <div className="flex-shrink-0">
-                        {txStatus === "success" ? (
-                          <CheckCircleIcon
-                            className="h-6 w-6 text-green-400"
-                            aria-hidden="true"
-                          />
-                        ) : txStatus === "error" ? (
+                        {txStatus === 'success' ? (
+                          <CheckCircleIcon className="h-6 w-6 text-green-400" aria-hidden="true" />
+                        ) : txStatus === 'error' ? (
                           <ExclamationCircleIcon
                             className="h-6 w-6 text-red-400"
                             aria-hidden="true"
@@ -52,19 +49,15 @@ export default function Notifications() {
                       </div>
                       <div className="ml-3 w-0 flex-1 pt-0.5">
                         <p className="text-sm font-medium text-gray-900">
-                          {txStatus === "error"
-                            ? "Transaction error"
-                            : txStatus === "success"
-                            ? "Transaction succeeded"
-                            : "Transaction pending"}
+                          {txStatus === 'error'
+                            ? 'Transaction error'
+                            : txStatus === 'success'
+                            ? 'Transaction succeeded'
+                            : 'Transaction pending'}
                         </p>
+                        <p className="mt-1 text-sm text-gray-500">{description}</p>
                         <p className="mt-1 text-sm text-gray-500">
-                          {description}
-                        </p>
-                        <p className="mt-1 text-sm text-gray-500">
-                          <a href={`https://etherscan.io/tx/${hash}`}>
-                            View on Etherscan
-                          </a>
+                          <a href={`https://etherscan.io/tx/${hash}`}>View on Etherscan</a>
                         </p>
                       </div>
                       <div className="ml-4 flex flex-shrink-0">

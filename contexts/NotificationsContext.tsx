@@ -1,13 +1,13 @@
-import { ReactNode, createContext, useContext, useState } from "react";
-import Notifications from "@/components/Notifications";
+import { ReactNode, createContext, useContext, useState } from 'react';
+import Notifications from '@/components/Notifications';
 
 export type Notification = {
   description: string;
   id: string;
   hash?: string;
   network?: string;
-  type: "tx" | "alert";
-  txStatus?: "success" | "error" | "loading";
+  type: 'tx' | 'alert';
+  txStatus?: 'success' | 'error' | 'loading';
 };
 
 type NotificationsContextType = {
@@ -22,11 +22,7 @@ const NotificationsContext = createContext<NotificationsContextType>({
   dismiss: (id: string) => {},
 });
 
-export const NotificationsProvider = ({
-  children,
-}: {
-  children: ReactNode;
-}) => {
+export const NotificationsProvider = ({ children }: { children: ReactNode }) => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const notify = (notification: Notification) => {
     setNotifications([...notifications, notification]);

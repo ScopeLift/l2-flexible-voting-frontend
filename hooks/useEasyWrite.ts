@@ -1,10 +1,8 @@
-import { usePrepareContractWrite, useContractWrite } from "wagmi";
-import { useNotifications } from "@/contexts/NotificationsContext";
-import { useEffect } from "react";
+import { usePrepareContractWrite, useContractWrite } from 'wagmi';
+import { useNotifications } from '@/contexts/NotificationsContext';
+import { useEffect } from 'react';
 
-export const useEasyWrite = (
-  params: Parameters<typeof usePrepareContractWrite>[0]
-) => {
+export const useEasyWrite = (params: Parameters<typeof usePrepareContractWrite>[0]) => {
   const { notify } = useNotifications();
   const {
     config,
