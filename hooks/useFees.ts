@@ -1,6 +1,10 @@
 import { useConfig } from "@/hooks/useConfig";
+import { parseAbi } from "viem";
 import { useContractRead } from "wagmi";
-import WormholeSender from "@/abi/WormholeSender.sol/WormholeSender.json";
+
+const wormholeSenderAbi = parseAbi([
+  "function quoteDeliveryCost(uint32) view returns (uint256)",
+]);
 
 export const useFees = () => {
   const config = useConfig();
@@ -10,7 +14,7 @@ export const useFees = () => {
     isLoading: l1IsLoading,
   } = useContractRead({
     address: config.l1.erc20Bridge,
-    abi: WormholeSender.abi,
+    abi: wormholeSenderAbi,
     functionName: "quoteDeliveryCost",
     args: [config.l2.wormholeChainId],
     chainId: config.l1.chain.id,
@@ -22,7 +26,7 @@ export const useFees = () => {
     isLoading: l2IsLoading,
   } = useContractRead({
     address: config.l2.tokenAddress,
-    abi: WormholeSender.abi,
+    abi: wormholeSenderAbi,
     functionName: "quoteDeliveryCost",
     args: [config.l1.wormholeChainId],
     chainId: config.l2.chain.id,
@@ -30,8 +34,8 @@ export const useFees = () => {
 
   return {
     fees: {
-      l1: l1Fees as bigint,
-      l2: l2Fees as bigint,
+      l1: l1Fees,
+      l2: l2Fees,
     },
     isLoading: l1IsLoading || l2IsLoading,
     error: l1Error || l2Error,
