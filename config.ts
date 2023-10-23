@@ -34,16 +34,16 @@ export const config = {
     l1: {
       chain: goerli,
       wormholeChainId: 2,
-      tokenAddress: '0xc7df884825f10bcA8043BBb88b8477D4Cd33Fba0' as `0x${string}`,
-      erc20Bridge: '0x8D5B3952A5F7Bd51714271Ec92379855595D9DE5' as `0x${string}`,
-			governor: '0xBDEc5BBD2a1c9Ef75e77b61738258D6dD7d846C0' as `0x${string}`,
-			metadataBridge: '0x42D6dDb7EE20D48A0bD678B333D516052b1747D2' as `0x${string}`,
+      tokenAddress: '0x449FdC2D5038E0447801025e8Eb47DD8b68a7B90' as `0x${string}`,
+      erc20Bridge: '0x46A5D1C7c2eF4d276562DB6f504b25bD88CfeeD2' as `0x${string}`,
+			governor: '0xA4c74075770582ad5873E3d9e288f7877BD90c85' as `0x${string}`,
+			metadataBridge: '0x49F8948E4455Eb1d8D3964a9DC17f831C12B0893' as `0x${string}`,
     },
     l2: {
       chain: optimismGoerli,
       wormholeChainId: 24,
-      tokenAddress: '0x28c3C9A98c91f1D33FA65E8591b2c9024F26FbD1' as `0x${string}`,
-			voteAggregator: '0xbE51ED9444CECD4cef070E13F6fe03E38dE49Bb2' as `0x${string}`,
+      tokenAddress: '0x08841d6c288EE8b2f25b58469492CF65701d0414' as `0x${string}`,
+			voteAggregator: '0x5C9B57f9886604899760D7C0eC812666b7d007dd' as `0x${string}`,
       logoUri:
         'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png',
     },
