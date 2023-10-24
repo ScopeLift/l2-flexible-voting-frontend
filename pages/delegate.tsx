@@ -7,7 +7,6 @@ import Image from 'next/image';
 import { useAccount, useWalletClient } from 'wagmi';
 import { isAddress, formatUnits } from 'viem';
 import { useForm } from 'react-hook-form';
-
 import ConnectWallet from '@/components/ConnectWallet';
 import { useBalances } from '@/hooks/useBalances';
 import { useConfig } from '@/hooks/useConfig';
