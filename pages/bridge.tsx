@@ -4,11 +4,20 @@ import { ExclamationCircleIcon } from "@heroicons/react/20/solid";
 import { useHasMounted } from "@/hooks/useHasMounted";
 import { useConfig } from "@/hooks/useConfig";
 import { useState } from "react";
-import { formatUnits } from "viem";
+import { formatUnits, maxUint256, parseAbi, parseUnits } from "viem";
 import { classNames } from "@/util";
 import { ArrowLongRightIcon } from "@heroicons/react/20/solid";
 import { useBalances } from "@/hooks/useBalances";
 import { useFees } from "@/hooks/useFees";
+import {
+  usePrepareContractWrite,
+  useAccount,
+  useContractWrite,
+  useContractRead,
+} from "wagmi";
+import { useEasyWrite } from "@/hooks/useEasyWrite";
+import ErrorBox from "@/components/ErrorBox";
+import Spinner from "@/components/Spinner";
 
 enum BridgeTarget {
   L1,
@@ -23,11 +32,90 @@ const Bridge = () => {
   const [bridgeTarget, setBridgeTarget] = useState<BridgeTarget>(
     BridgeTarget.L2
   );
+  const { address } = useAccount();
+  const [amount, setAmount] = useState<string>("0");
+
+  const rawAmount = parseUnits(amount, l1.token?.decimals || 18);
+
+  // 1️⃣ l1 bridge to l2
+  const { data: allowanceL1 } = useContractRead({
+    account: address,
+    chainId: l1Config.chain.id,
+    address: l1Config.tokenAddress,
+    abi: parseAbi([
+      "function allowance(address, address) public view returns (uint256)",
+    ]),
+    functionName: "allowance",
+    args: [address!, l1Config.erc20Bridge],
+    watch: true,
+  });
+  const { config: bridgeToL2Config, error: bridgeToL2Error } =
+    usePrepareContractWrite({
+      address: l1Config.erc20Bridge,
+      chainId: l1Config.chain.id,
+      abi: parseAbi([
+        "function deposit(address to, uint224 amount) public payable returns (uint256)",
+      ]),
+      functionName: "deposit",
+      args: [address!, rawAmount],
+      value: fees?.l1 || BigInt(0),
+    });
+  const {
+    data: bridgeToL2Response,
+    isLoading: bridgeToL2IsLoading,
+    isSuccess: bridgeToL2IsSuccess,
+    // error: bridgeToL2Error,
+    write: bridgeToL2,
+  } = useContractWrite(bridgeToL2Config);
+
+  // 2️⃣ l2 bridge to l1
+  const { config: bridgeToL1Config, error: bridgeToL1Error } =
+    usePrepareContractWrite({
+      address: l2Config.tokenAddress,
+      chainId: l2Config.chain.id,
+      abi: parseAbi([
+        "function l1Unlock(address to, uint256 amount) public payable",
+      ]),
+      functionName: "l1Unlock",
+      args: [address!, rawAmount],
+      value: fees?.l2 || BigInt(0),
+    });
+  const {
+    data: bridgeToL1Response,
+    isLoading: bridgeToL1IsLoading,
+    isSuccess: bridgeToL1IsSuccess,
+    // error: bridgeToL1Error,
+    write: bridgeToL1,
+  } = useContractWrite(bridgeToL1Config);
+
+  const {
+    data: approveL1Response,
+    isLoading: approveL1IsLoading,
+    write: approveL1,
+  } = useEasyWrite({
+    address: l1Config.tokenAddress,
+    abi: parseAbi(["function approve(address who, uint256 amount) public"]),
+    functionName: "approve",
+    args: [l1Config.erc20Bridge, maxUint256],
+  });
 
   const handleSwitchDirection = () => {
     setBridgeTarget(
       bridgeTarget === BridgeTarget.L2 ? BridgeTarget.L1 : BridgeTarget.L2
     );
+  };
+
+  const handleInputChange = (e: React.FormEvent<HTMLInputElement>) => {
+    setAmount(e.currentTarget.value);
+  };
+
+  const handleAllowance = () => {
+    if (!approveL1) return;
+    approveL1();
+  };
+
+  const handleBridge = () => {
+    return bridgeTarget === BridgeTarget.L2 ? bridgeToL2!() : bridgeToL1!();
   };
 
   const source =
@@ -40,6 +128,7 @@ const Bridge = () => {
       : { ...l1Config, ...l1, fee: fees?.l1 || BigInt(0) };
 
   const isAmountError = false;
+  const needsAllowanceL1 = (allowanceL1 || 0) < rawAmount;
 
   return (
     <>
@@ -115,6 +204,7 @@ const Bridge = () => {
                   defaultValue=""
                   aria-invalid={isAmountError}
                   aria-describedby="amount"
+                  onChange={handleInputChange}
                 />
               </div>
               <div className={classNames(isAmountError ? "" : "invisible")}>
@@ -134,12 +224,54 @@ const Bridge = () => {
                 {mounted ? formatUnits(source.fee, 18) : 0} ETH
               </div>
               <div className="text-center">
-                <button
-                  type="button"
-                  className="mt-5 rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                >
-                  Bridge to {target.chain.name}
-                </button>
+                {bridgeTarget === BridgeTarget.L2 && needsAllowanceL1 ? (
+                  <button
+                    type="button"
+                    className="mt-5 rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:bg-gray-300 disabled:cursor-not-allowed"
+                    onClick={handleAllowance}
+                    disabled={!approveL1}
+                  >
+                    Set allowance for {target.token?.symbol} on{" "}
+                    {target.chain.name}
+                    {approveL1IsLoading && <Spinner />}
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    className="mt-5 mx-auto flex flex-row items-center rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:bg-gray-300 disabled:cursor-not-allowed"
+                    onClick={handleBridge}
+                    disabled={
+                      bridgeTarget === BridgeTarget.L2
+                        ? !bridgeToL2
+                        : !bridgeToL1
+                    }
+                  >
+                    <span>Bridge to {target.chain.name}</span>
+                    {((bridgeTarget === BridgeTarget.L2 &&
+                      bridgeToL2IsLoading) ||
+                      (bridgeTarget === BridgeTarget.L1 &&
+                        bridgeToL1IsLoading)) && (
+                      <div className="ml-2">
+                        <Spinner />
+                      </div>
+                    )}
+                  </button>
+                )}
+              </div>
+              <div className="mt-5">
+                {bridgeTarget === BridgeTarget.L2
+                  ? bridgeToL2Error && (
+                      <ErrorBox heading="There's a problem simulating your bridge transaction:">
+                        {bridgeToL2Error.cause?.toString() ||
+                          bridgeToL2Error.message}
+                      </ErrorBox>
+                    )
+                  : bridgeToL1Error && (
+                      <ErrorBox heading="There's a problem simulating your bridge transaction:">
+                        {bridgeToL1Error.cause?.toString() ||
+                          bridgeToL1Error.message}
+                      </ErrorBox>
+                    )}
               </div>
             </div>
           </div>

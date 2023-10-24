@@ -3,7 +3,7 @@ import { parseAbi } from "viem";
 import { useContractRead } from "wagmi";
 
 const wormholeSenderAbi = parseAbi([
-  "function quoteDeliveryCost(uint32) view returns (uint256)",
+  "function quoteDeliveryCost(uint16) view returns (uint256)",
 ]);
 
 export const useFees = () => {

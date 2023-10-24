@@ -6,7 +6,8 @@ export type Notification = {
   id: string;
   hash?: string;
   network?: string;
-  type: "success" | "error" | "info";
+  type: "tx" | "alert";
+  txStatus?: "success" | "error" | "loading";
 };
 
 type NotificationsContextType = {
