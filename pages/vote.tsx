@@ -17,30 +17,6 @@ import {
 import { ChevronLeftIcon, ChevronRightIcon, ChevronDoubleRightIcon, ChevronDoubleLeftIcon } from '@heroicons/react/20/solid'
 import {useL2Proposals} from '@/hooks/useL2Proposals'
 
-// const data = [
-//   { proposal: 'First proposal', startBlock: 9889767, endBlock: 9989767, votingPower: 1, isCancelled: false, tallyLink: "https://www.tally.xyz/gov/l2-flexible-voting-l2-example-4/proposal/89270641089180915787469790455189606853722485468293246956123979295426618605092"  },
-//   { proposal: 'First proposal', startBlock: 9889767, endBlock: 9989767, votingPower: 1, isCancelled: false, tallyLink: "https://www.tally.xyz/gov/l2-flexible-voting-l2-example-4/proposal/89270641089180915787469790455189606853722485468293246956123979295426618605092"  },
-//   { proposal: 'First proposal', startBlock: 9889767, endBlock: 9989767, votingPower: 1, isCancelled: false, tallyLink: "https://www.tally.xyz/gov/l2-flexible-voting-l2-example-4/proposal/89270641089180915787469790455189606853722485468293246956123979295426618605092"  },
-//   { proposal: 'First proposal', startBlock: 9889767, endBlock: 9989767, votingPower: 1, isCancelled: false, tallyLink: "https://www.tally.xyz/gov/l2-flexible-voting-l2-example-4/proposal/89270641089180915787469790455189606853722485468293246956123979295426618605092"  },
-//   { proposal: 'First proposal', startBlock: 9889767, endBlock: 9989767, votingPower: 1, isCancelled: false, tallyLink: "https://www.tally.xyz/gov/l2-flexible-voting-l2-example-4/proposal/89270641089180915787469790455189606853722485468293246956123979295426618605092"  },
-//   { proposal: 'First proposal', startBlock: 9889767, endBlock: 9989767, votingPower: 1, isCancelled: false, tallyLink: "https://www.tally.xyz/gov/l2-flexible-voting-l2-example-4/proposal/89270641089180915787469790455189606853722485468293246956123979295426618605092"  },
-//   { proposal: 'First proposal', startBlock: 9889767, endBlock: 9989767, votingPower: 1, isCancelled: false, tallyLink: "https://www.tally.xyz/gov/l2-flexible-voting-l2-example-4/proposal/89270641089180915787469790455189606853722485468293246956123979295426618605092"  },
-//   { proposal: 'First proposal', startBlock: 9889767, endBlock: 9989767, votingPower: 1, isCancelled: false, tallyLink: "https://www.tally.xyz/gov/l2-flexible-voting-l2-example-4/proposal/89270641089180915787469790455189606853722485468293246956123979295426618605092"  },
-//   { proposal: 'First proposal', startBlock: 9889767, endBlock: 9989767, votingPower: 1, isCancelled: false, tallyLink: "https://www.tally.xyz/gov/l2-flexible-voting-l2-example-4/proposal/89270641089180915787469790455189606853722485468293246956123979295426618605092"  },
-//   { proposal: 'First proposal', startBlock: 9889767, endBlock: 9989767, votingPower: 1, isCancelled: false, tallyLink: "https://www.tally.xyz/gov/l2-flexible-voting-l2-example-4/proposal/89270641089180915787469790455189606853722485468293246956123979295426618605092"  },
-//   { proposal: 'First proposal', startBlock: 9889767, endBlock: 9989767, votingPower: 1, isCancelled: false, tallyLink: "https://www.tally.xyz/gov/l2-flexible-voting-l2-example-4/proposal/89270641089180915787469790455189606853722485468293246956123979295426618605092"  },
-//   { proposal: 'First proposal', startBlock: 9889767, endBlock: 9989767, votingPower: 1, isCancelled: false, tallyLink: "https://www.tally.xyz/gov/l2-flexible-voting-l2-example-4/proposal/89270641089180915787469790455189606853722485468293246956123979295426618605092"  },
-//   { proposal: 'First proposal', startBlock: 9889767, endBlock: 9989767, votingPower: 1, isCancelled: false, tallyLink: "https://www.tally.xyz/gov/l2-flexible-voting-l2-example-4/proposal/89270641089180915787469790455189606853722485468293246956123979295426618605092"  },
-//   { proposal: 'First proposal', startBlock: 9889767, endBlock: 9989767, votingPower: 1, isCancelled: false, tallyLink: "https://www.tally.xyz/gov/l2-flexible-voting-l2-example-4/proposal/89270641089180915787469790455189606853722485468293246956123979295426618605092"  },
-//   { proposal: 'First proposal', startBlock: 9889767, endBlock: 9989767, votingPower: 1, isCancelled: false, tallyLink: "https://www.tally.xyz/gov/l2-flexible-voting-l2-example-4/proposal/89270641089180915787469790455189606853722485468293246956123979295426618605092"  },
-//   { proposal: 'First proposal', startBlock: 9889767, endBlock: 9989767, votingPower: 1, isCancelled: false, tallyLink: "https://www.tally.xyz/gov/l2-flexible-voting-l2-example-4/proposal/89270641089180915787469790455189606853722485468293246956123979295426618605092"  },
-//   { proposal: 'First proposal', startBlock: 9889767, endBlock: 9989767, votingPower: 1, isCancelled: false, tallyLink: "https://www.tally.xyz/gov/l2-flexible-voting-l2-example-4/proposal/89270641089180915787469790455189606853722485468293246956123979295426618605092"  },
-//   { proposal: 'First proposal', startBlock: 9889767, endBlock: 9989767, votingPower: 1, isCancelled: false, tallyLink: "https://www.tally.xyz/gov/l2-flexible-voting-l2-example-4/proposal/89270641089180915787469790455189606853722485468293246956123979295426618605092"  },
-//   { proposal: 'First proposal', startBlock: 9889767, endBlock: 9989767, votingPower: 1, isCancelled: false, tallyLink: "https://www.tally.xyz/gov/l2-flexible-voting-l2-example-4/proposal/89270641089180915787469790455189606853722485468293246956123979295426618605092"  },
-//   { proposal: 'Boo', startBlock: 9889767, endBlock: 9989767, votingPower: 1, isCancelled: false, tallyLink: "https://www.tally.xyz/gov/l2-flexible-voting-l2-example-4/proposal/89270641089180915787469790455189606853722485468293246956123979295426618605092"  },
-//   { proposal: 'First proposal', startBlock: 9889767, endBlock: 9989767, votingPower: 1, isCancelled: false, tallyLink: "https://www.tally.xyz/gov/l2-flexible-voting-l2-example-4/proposal/89270641089180915787469790455189606853722485468293246956123979295426618605092"  },
-// ]
-
 type Proposal = {
 	proposalId: string;
 	startBlock: string;
@@ -48,6 +24,7 @@ type Proposal = {
 	votingPower: number;
 	isCancelled: boolean;
 	tallyLink: string;
+	description: string;
 }
 
 
@@ -91,6 +68,10 @@ const columns = [
   }),
   columnHelper.accessor('tallyLink', {
     header: 'Tally link',
+    footer: info => info.column.id,
+  }),
+  columnHelper.accessor('description', {
+    header: 'Description',
     footer: info => info.column.id,
   }),
 ]
