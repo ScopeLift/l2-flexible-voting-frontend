@@ -1,8 +1,8 @@
 import { usePublicClient } from 'wagmi'
 import { parseAbiItem } from 'viem'
-import L2VoteAggregator from '@/abi/L2VoteAggregator.sol/L2VoteAggregator';
 import { useConfig } from '@/hooks/useConfig';
 import useSWR from 'swr'
+import {L2_TALLY_GOVERNOR_DOMAIN} from '@/util/constants'
 
 // 1. Get events
 // 2. Get voting weight
@@ -34,13 +34,13 @@ export const useL2Proposals = () => {
 		return createdLogs.map((event) => {
 			const args = event.args
 			return {
-				proposalId: args[0],
-				proposer: args[1],
-				startBlock: args[6],
-				endBlock: args[7],
-				description: args[8],
-				isCancelled: canceledProposals.get(args[0]),
-				tallyLink: `${L2_TALLY_GOVERNOR_DOMAIN}/proposal/${args[0]}`
+				proposalId: args[0]?.toString() || '0',
+				startBlock: args[6]?.toString() || '0',
+				endBlock: args[7]?.toString() || '0',
+				description: args[8]?.toString() || '',
+				isCancelled: Boolean(canceledProposals.get(args[0])),
+				tallyLink: `${L2_TALLY_GOVERNOR_DOMAIN}/proposal/${args[0]}`,
+				votingPower: 0
 			}
 		})
 

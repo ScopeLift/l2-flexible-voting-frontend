@@ -42,9 +42,9 @@ import {useL2Proposals} from '@/hooks/useL2Proposals'
 // ]
 
 type Proposal = {
-	proposal: string;
-	startBlock: number;
-	endBlock: number;
+	proposalId: string;
+	startBlock: string;
+	endBlock: string;
 	votingPower: number;
 	isCancelled: boolean;
 	tallyLink: string;
@@ -66,31 +66,31 @@ const Vote: NextPage = () => {
 	console.log(isProposalLoading)
 	console.log("Hi")
 const columns = [
-  columnHelper.accessor('proposal', {
+  columnHelper.accessor('proposalId', {
     cell: info => info.getValue(),
     footer: info => info.column.id,
   }),
   columnHelper.accessor(row => row.startBlock, {
-    id: 'starBlock',
+    id: 'startBlock',
     cell: info => <i>{info.getValue()}</i>,
-    header: () => <span>Last Name</span>,
+    header: () => <span>Start Block</span>,
     footer: info => info.column.id,
   }),
   columnHelper.accessor('endBlock', {
-    header: () => 'Age',
+    header: () => 'End Block',
     cell: info => info.renderValue(),
     footer: info => info.column.id,
   }),
   columnHelper.accessor('votingPower', {
-    header: () => <span>Visits</span>,
+    header: () => <span>Voting Power</span>,
     footer: info => info.column.id,
   }),
   columnHelper.accessor('isCancelled', {
-    header: 'Status',
+    header: 'Canceled',
     footer: info => info.column.id,
   }),
   columnHelper.accessor('tallyLink', {
-    header: 'Profile Progress',
+    header: 'Tally link',
     footer: info => info.column.id,
   }),
 ]
