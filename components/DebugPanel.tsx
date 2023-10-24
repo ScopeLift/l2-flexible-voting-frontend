@@ -7,9 +7,11 @@ import { useAccount } from "wagmi";
 import { useBalances } from "@/hooks/useBalances";
 import { parseAbi, parseUnits } from "viem";
 import { useEasyWrite } from "@/hooks/useEasyWrite";
+import { useNotifications } from "@/contexts/NotificationsContext";
 
 export default function DebugPanel() {
   const { isOpen, setIsOpen } = useDebugPanel();
+  const { notify } = useNotifications();
   const { address } = useAccount();
   const { l1: l1Config, l2: l2Config } = useConfig();
   const { l1, l2 } = useBalances();
@@ -78,6 +80,7 @@ export default function DebugPanel() {
                         Mint 1000 {l1.token?.symbol} on L1
                       </button>
                       <h3 className="mt-5">L2: {l2Config.chain.name}</h3>
+                      <button onClick={() => notify("hi")}>hey</button>
                     </div>
                   </div>
                 </Dialog.Panel>
