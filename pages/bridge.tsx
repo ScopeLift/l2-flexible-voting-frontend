@@ -6,6 +6,7 @@ import { useConfig } from "@/hooks/useConfig";
 import { useState } from "react";
 import { formatUnits, maxUint256, parseAbi, parseUnits } from "viem";
 import { classNames } from "@/util";
+import { ZERO_ADDRESS } from "@/util/constants"
 import { ArrowLongRightIcon } from "@heroicons/react/20/solid";
 import { useBalances } from "@/hooks/useBalances";
 import { useFees } from "@/hooks/useFees";
@@ -77,7 +78,7 @@ const Bridge = () => {
         "function l1Unlock(address to, uint256 amount) public payable",
       ]),
       functionName: "l1Unlock",
-      args: [address!, rawAmount],
+      args: [address || ZERO_ADDRESS, rawAmount],
       value: fees?.l2 || BigInt(0),
     });
   const {

@@ -1,5 +1,5 @@
-import config from "@/config";
+import {config, DaoId} from "@/config";
 
 export const useConfig = () => {
-  return config;
+  return config[DaoId.Example];
 };
