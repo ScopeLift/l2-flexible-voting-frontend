@@ -22,8 +22,8 @@ export const config = {
     l2: {
       chain: optimismGoerli,
       wormholeChainId: 24,
-      tokenAddress: '0xaF2E86479a6181A30F411c35eF946Ff22b15b2dc' as `0x${string}`,
-			voteAggregator: '0x74f00907CFC6E44Fb72535cdD1eC52a37EacAbE4' as `0x${string}`,
+      tokenAddress: '0x12272085eEfBd3585617Bd5Ae7A2C2942444ADFa' as `0x${string}`,
+			voteAggregator: '0xe1c385E394bCCc5F6D9E6a9E22F0B5668724c726' as `0x${string}`,
       logoUri:
         'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png',
     },
