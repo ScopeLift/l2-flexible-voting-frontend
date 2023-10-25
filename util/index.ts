@@ -1,3 +1,4 @@
+import { isHex } from 'viem';
 import * as chains from 'viem/chains';
 
 export const classNames = (...classes: string[]) => {
@@ -21,4 +22,16 @@ export const getChain = (chainId: number) => {
     }
   }
   throw new Error(`no chain found at chainId ${chainId}`);
+};
+
+export const getEtherscanUrl = (txHashOrAddress: string, chainId: number) => {
+  const group = isHex(txHashOrAddress) ? (txHashOrAddress.length === 42 ? 'address' : 'tx') : 'ens';
+  const chain = getChain(chainId);
+  const networkPrefix =
+    'blockExplorers' in chain ? chain.blockExplorers.default.url : 'https://etherscan.io';
+  if (group === 'ens') {
+    return `${networkPrefix}/enslookup-search?search=${txHashOrAddress}`;
+  } else {
+    return `${networkPrefix}/${group}/${txHashOrAddress}`;
+  }
 };

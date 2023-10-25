@@ -7,11 +7,13 @@ import {
 } from '@heroicons/react/24/outline';
 import { XMarkIcon } from '@heroicons/react/20/solid';
 import { useNotifications } from '@/contexts/NotificationsContext';
+import { useNetwork } from 'wagmi';
 import PillAction from '@/components/PillAction';
-import { truncateHash, getChain } from '@/util';
+import { truncateHash, getChain, getEtherscanUrl } from '@/util';
 
 export default function Notifications() {
   const { notifications, dismiss } = useNotifications();
+  const { chain } = useNetwork();
 
   return (
     <>
@@ -74,7 +76,7 @@ export default function Notifications() {
                           </PillAction>
                           <a
                             className="ml-2"
-                            href={`https://etherscan.io/tx/${hash}`}
+                            href={getEtherscanUrl(hash!, chainId!)}
                             target="_blank"
                           >
                             <PillAction icon="external-link">View on Etherscan</PillAction>
