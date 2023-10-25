@@ -1,5 +1,5 @@
-import { useBalance, useAccount } from "wagmi";
-import { useConfig } from "@/hooks/useConfig";
+import { useBalance, useAccount } from 'wagmi';
+import { useConfig } from '@/hooks/useConfig';
 
 export const useBalances = () => {
   const { address } = useAccount();
@@ -36,11 +36,7 @@ export const useBalances = () => {
       eth: l2Eth.data,
       token: l2Token.data,
     },
-    isLoading:
-      l1Eth.isLoading ||
-      l2Eth.isLoading ||
-      l1Token.isLoading ||
-      l2Token.isLoading,
+    isLoading: l1Eth.isLoading || l2Eth.isLoading || l1Token.isLoading || l2Token.isLoading,
     error: l1Eth.error || l2Eth.error || l1Token.error || l2Token.error,
   };
 };

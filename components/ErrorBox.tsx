@@ -1,13 +1,7 @@
-import { XCircleIcon } from "@heroicons/react/20/solid";
-import { ReactNode } from "react";
+import { XCircleIcon } from '@heroicons/react/20/solid';
+import { ReactNode } from 'react';
 
-export default function ErrorBox({
-  heading,
-  children,
-}: {
-  heading: string;
-  children: ReactNode;
-}) {
+export default function ErrorBox({ heading, children }: { heading: string; children: ReactNode }) {
   return (
     <div className="rounded-md bg-red-50 p-4">
       <div className="flex">

@@ -1,5 +1,5 @@
-import DebugPanel from "@/components/DebugPanel";
-import { ReactNode, createContext, useContext, useState } from "react";
+import DebugPanel from '@/components/DebugPanel';
+import { ReactNode, createContext, useContext, useState } from 'react';
 
 type DebugPanelContextType = {
   isOpen: boolean;
