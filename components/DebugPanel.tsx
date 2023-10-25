@@ -1,13 +1,13 @@
-import { Fragment } from "react";
-import { Dialog, Transition } from "@headlessui/react";
-import { XMarkIcon } from "@heroicons/react/24/outline";
-import { useDebugPanel } from "@/contexts/DebugPanel";
-import { useConfig } from "@/hooks/useConfig";
-import { useAccount } from "wagmi";
-import { useBalances } from "@/hooks/useBalances";
-import { parseAbi, parseUnits } from "viem";
-import { useEasyWrite } from "@/hooks/useEasyWrite";
-import { useNotifications } from "@/contexts/NotificationsContext";
+import { Fragment } from 'react';
+import { Dialog, Transition } from '@headlessui/react';
+import { XMarkIcon } from '@heroicons/react/24/outline';
+import { useDebugPanel } from '@/contexts/DebugPanel';
+import { useConfig } from '@/hooks/useConfig';
+import { useAccount } from 'wagmi';
+import { useBalances } from '@/hooks/useBalances';
+import { parseAbi, parseUnits } from 'viem';
+import { useEasyWrite } from '@/hooks/useEasyWrite';
+import { useNotifications } from '@/contexts/NotificationsContext';
 
 export default function DebugPanel() {
   const { isOpen, setIsOpen } = useDebugPanel();
@@ -17,19 +17,15 @@ export default function DebugPanel() {
   const { l1, l2 } = useBalances();
   const { write: writeL1Mint } = useEasyWrite({
     address: l1Config.tokenAddress,
-    abi: parseAbi(["function mint(address to, uint256 amount) public"]),
-    functionName: "mint",
+    abi: parseAbi(['function mint(address to, uint256 amount) public']),
+    functionName: 'mint',
     chainId: l1Config.chain.id,
-    args: [address!, parseUnits("1000", l1.token?.decimals || 18)],
+    args: [address!, parseUnits('1000', l1.token?.decimals || 18)],
   });
 
   return (
     <Transition.Root show={isOpen} as={Fragment}>
-      <Dialog
-        as="div"
-        className="relative z-10"
-        onClose={() => setIsOpen(false)}
-      >
+      <Dialog as="div" className="relative z-10" onClose={() => setIsOpen(false)}>
         <div className="fixed inset-0" />
 
         <div className="fixed inset-0 overflow-hidden">
@@ -80,7 +76,7 @@ export default function DebugPanel() {
                         Mint 1000 {l1.token?.symbol} on L1
                       </button>
                       <h3 className="mt-5">L2: {l2Config.chain.name}</h3>
-                      <button onClick={() => notify("hi")}>hey</button>
+                      <button onClick={() => notify('hi')}>hey</button>
                     </div>
                   </div>
                 </Dialog.Panel>

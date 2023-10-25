@@ -8,8 +8,8 @@ const nextConfig = {
   async redirects() {
     return [
       {
-        source: "/",
-        destination: "/bridge",
+        source: '/',
+        destination: '/bridge',
         permanent: false,
       },
     ];

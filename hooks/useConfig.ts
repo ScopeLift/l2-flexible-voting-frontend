@@ -1,4 +1,4 @@
-import {config, DaoId} from "@/config";
+import { config, DaoId } from '@/config';
 
 export const useConfig = () => {
   return config[DaoId.Example];
