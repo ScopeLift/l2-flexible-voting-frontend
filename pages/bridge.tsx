@@ -210,14 +210,17 @@ const Bridge = () => {
                     type="button"
                     className="mt-5 mx-auto flex flex-row items-center rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:bg-gray-300 disabled:cursor-not-allowed"
                     onClick={handleBridge}
-                    disabled={bridgeTarget === BridgeTarget.L2 ? !bridgeToL2 : !bridgeToL1}
+                    disabled={
+                      bridgeTarget === BridgeTarget.L2 ? bridgeToL2IsError : bridgeToL1IsError
+                    }
                   >
-                    <span>Bridge to {target.chain.name}</span>
-                    {((bridgeTarget === BridgeTarget.L2 && bridgeToL2IsLoading) ||
-                      (bridgeTarget === BridgeTarget.L1 && bridgeToL1IsLoading)) && (
-                      <div className="ml-2">
-                        <Spinner />
-                      </div>
+                    {(bridgeTarget === BridgeTarget.L2 && bridgeToL2IsLoading) ||
+                    (bridgeTarget === BridgeTarget.L1 && bridgeToL1IsLoading) ? (
+                      <Spinner />
+                    ) : (
+                      <span>
+                        Bridge to {target.chain.name} {bridgeToL2IsLoading.toString()}
+                      </span>
                     )}
                   </button>
                 )}
