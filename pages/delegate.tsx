@@ -74,7 +74,7 @@ const Delegate: NextPage = () => {
         >
           <div className="flex flex-col m-4 w-full gap-5">
             <div className="flex flex-col self-center">
-              <h1 className="py-5 block text-xl">Voting and Delegation</h1>
+              <h1 className="py-5 block text-xl">Delegate on {config.l2.chain.name}</h1>
               <div className="flex w-full py-4 justify-between">
                 <div className="flex flex-col">
                   <div>Token Balance</div>
