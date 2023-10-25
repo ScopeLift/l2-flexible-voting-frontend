@@ -48,7 +48,6 @@ const Delegate: NextPage = () => {
     write?.();
   });
 
-  const l2Balance = formatUnits(l2.token?.value || BigInt(0), l2.token?.decimals || 18);
   const l2VotingWeightFormatted = formatUnits(
     l2VotingWeight || BigInt(0),
     l2.token?.decimals || 18
@@ -86,8 +85,8 @@ const Delegate: NextPage = () => {
                       src={config.l2.logoUri}
                       alt={`${config.name}'s Governor token logo`}
                     />
-                    <div className="self-center">{l2Balance}</div>
-                    <div className="self-center">{l2.token?.symbol}</div>
+                    <div className="self-center">{l2.token?.formatted || 0}</div>
+                    <div className="self-center">{l2.token?.symbol || '---'}</div>
                   </div>
                 </div>
                 <div className="flex flex-col">
@@ -100,7 +99,7 @@ const Delegate: NextPage = () => {
                       alt={`${config.name}'s Governor token logo`}
                     />
                     <div className="self-center">{l2VotingWeightFormatted}</div>
-                    <div className="self-center">{l2.token?.symbol}</div>
+                    <div className="self-center">{l2.token?.symbol || '---'}</div>
                   </div>
                 </div>
               </div>
