@@ -1,31 +1,30 @@
 import { ReactNode, createContext, useContext, useState } from 'react';
 import Notifications from '@/components/Notifications';
 
-export type Notification = {
-  description: string;
+export type TxNotification = {
   id: string;
   hash?: string;
-  network?: string;
-  type: 'tx' | 'alert';
-  txStatus?: 'success' | 'error' | 'loading';
+  description: string;
+  txStatus?: 'pending' | 'success' | 'reverted';
+  chainId?: number;
 };
 
 type NotificationsContextType = {
-  notifications: Notification[];
+  notifications: TxNotification[];
   notify: Function;
   dismiss: Function;
 };
 
 const NotificationsContext = createContext<NotificationsContextType>({
   notifications: [],
-  notify: () => {},
+  notify: (notification: TxNotification) => {},
   dismiss: (id: string) => {},
 });
 
 export const NotificationsProvider = ({ children }: { children: ReactNode }) => {
-  const [notifications, setNotifications] = useState<Notification[]>([]);
-  const notify = (notification: Notification) => {
-    setNotifications([...notifications, notification]);
+  const [notifications, setNotifications] = useState<TxNotification[]>([]);
+  const notify = (notification: TxNotification) => {
+    setNotifications([notification, ...notifications]);
   };
   const dismiss = (id: string) => {
     setNotifications(notifications.filter((n) => n.id !== id));

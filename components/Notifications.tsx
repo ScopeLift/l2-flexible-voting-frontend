@@ -19,7 +19,7 @@ export default function Notifications() {
         className="pointer-events-none fixed inset-0 flex items-end px-4 py-6 sm:items-start sm:p-6"
       >
         <div className="flex w-full mt-10 flex-col items-center space-y-4 sm:items-end">
-          {notifications.map(({ id, type, hash, description, txStatus }) => {
+          {notifications.map(({ id, hash, description, chainId, txStatus }) => {
             return (
               <Transition
                 key={id}
@@ -38,7 +38,7 @@ export default function Notifications() {
                       <div className="flex-shrink-0">
                         {txStatus === 'success' ? (
                           <CheckCircleIcon className="h-6 w-6 text-green-400" aria-hidden="true" />
-                        ) : txStatus === 'error' ? (
+                        ) : txStatus === 'reverted' ? (
                           <ExclamationCircleIcon
                             className="h-6 w-6 text-red-400"
                             aria-hidden="true"
@@ -49,7 +49,7 @@ export default function Notifications() {
                       </div>
                       <div className="ml-3 w-0 flex-1 pt-0.5">
                         <p className="text-sm font-medium text-gray-900">
-                          {txStatus === 'error'
+                          {txStatus === 'reverted'
                             ? 'Transaction error'
                             : txStatus === 'success'
                             ? 'Transaction succeeded'
@@ -84,5 +84,3 @@ export default function Notifications() {
     </>
   );
 }
-
-const Success = () => {};
