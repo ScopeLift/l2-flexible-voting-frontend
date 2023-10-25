@@ -5,9 +5,8 @@ import type { NextPage } from 'next';
 import Head from 'next/head';
 import Image from 'next/image';
 import { useAccount, useWalletClient } from 'wagmi';
-import { isAddress, formatUnits} from 'viem';
+import { isAddress, formatUnits } from 'viem';
 import { useForm } from 'react-hook-form';
-
 import ConnectWallet from '@/components/ConnectWallet';
 import { useBalances } from '@/hooks/useBalances';
 import { useConfig } from '@/hooks/useConfig';
@@ -50,7 +49,10 @@ const Delegate: NextPage = () => {
   });
 
   const l2Balance = formatUnits(l2.token?.value || BigInt(0), l2.token?.decimals || 18);
-  const l2VotingWeightFormatted = formatUnits(l2VotingWeight || BigInt(0), l2.token?.decimals || 18);
+  const l2VotingWeightFormatted = formatUnits(
+    l2VotingWeight || BigInt(0),
+    l2.token?.decimals || 18
+  );
 
   if (error) {
     console.error(`Fetch balances has failed: ${error}`);
@@ -84,9 +86,7 @@ const Delegate: NextPage = () => {
                       src={config.l2.logoUri}
                       alt={`${config.name}'s Governor token logo`}
                     />
-                    <div className="self-center">
-                      {l2Balance}
-                    </div>
+                    <div className="self-center">{l2Balance}</div>
                     <div className="self-center">{l2.token?.symbol}</div>
                   </div>
                 </div>
@@ -99,9 +99,7 @@ const Delegate: NextPage = () => {
                       src={config.l2.logoUri}
                       alt={`${config.name}'s Governor token logo`}
                     />
-                    <div className="self-center">
-                      {l2VotingWeightFormatted}
-                    </div>
+                    <div className="self-center">{l2VotingWeightFormatted}</div>
                     <div className="self-center">{l2.token?.symbol}</div>
                   </div>
                 </div>
