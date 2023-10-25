@@ -1,5 +1,5 @@
-import WormholeL2ERC20 from '@/abi/WormholeL2ERC20.sol/WormholeL2ERC20';
 import { usePrepareContractWrite, useContractWrite } from 'wagmi';
+import { parseAbi } from 'viem';
 import { useConfig } from '@/hooks/useConfig';
 
 type Props = {
@@ -10,7 +10,7 @@ export const useL2DelegateVote = ({ delegateAddress }: Props) => {
   const { l2 } = useConfig();
   const { config, error: prepareError } = usePrepareContractWrite({
     address: l2.tokenAddress,
-    abi: WormholeL2ERC20.abi,
+    abi: parseAbi(['function delegate(address) public']),
     functionName: 'delegate',
     args: [delegateAddress],
     chainId: l2.chain.id,
