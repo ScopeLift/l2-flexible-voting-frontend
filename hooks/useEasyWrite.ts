@@ -58,15 +58,30 @@ export const useEasyWrite = (params: UsePrepareContractWriteConfig) => {
     // succeed
     if (hash && transactionData?.status === 'success' && prev.status !== 'success') {
       console.log('notify success');
-      notify({ hash, txStatus: 'success' });
+      notify({
+        hash,
+        description: params.functionName,
+        txStatus: 'success',
+        chainId: config.request?.chainId,
+      });
       // revert
     } else if (hash && waitError && prev.waitError?.message !== waitError.message) {
       console.log('notify fail');
-      notify({ hash, txStatus: 'reverted' });
+      notify({
+        hash,
+        description: params.functionName,
+        txStatus: 'reverted',
+        chainId: config.request?.chainId,
+      });
       // pending
     } else if (hash && isTransactionDataLoading && !prev.isTransactionDataLoading) {
       console.log('notify pending');
-      notify({ hash, txStatus: 'pending' });
+      notify({
+        hash,
+        description: params.functionName,
+        txStatus: 'pending',
+        chainId: config.request?.chainId,
+      });
     }
   }, [
     notify,
@@ -77,6 +92,8 @@ export const useEasyWrite = (params: UsePrepareContractWriteConfig) => {
     prev.isTransactionDataLoading,
     waitError,
     prev.waitError,
+    params.functionName,
+    config.request?.chainId,
   ]);
 
   const write = () => {
