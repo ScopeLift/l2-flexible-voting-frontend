@@ -76,7 +76,19 @@ export default function DebugPanel() {
                         Mint 1000 {l1.token?.symbol} on L1
                       </button>
                       <h3 className="mt-5">L2: {l2Config.chain.name}</h3>
-                      <button onClick={() => notify('hi')}>hey</button>
+                      <button
+                        onClick={() =>
+                          notify({
+                            hash: '0x1305b0d3be7ea022b6e72f9ae6dd3b601264da1bd5939d124cff2f5f23dc46ce',
+                            txStatus: 'success',
+                            description: 'mint',
+                            chainId: 5,
+                            id: '0x1305b0d3be7ea022b6e72f9ae6dd3b601264da1bd5939d124cff2f5f23dc46ce',
+                          })
+                        }
+                      >
+                        hey
+                      </button>
                     </div>
                   </div>
                 </Dialog.Panel>

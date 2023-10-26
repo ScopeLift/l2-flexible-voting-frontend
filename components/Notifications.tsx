@@ -7,6 +7,8 @@ import {
 } from '@heroicons/react/24/outline';
 import { XMarkIcon } from '@heroicons/react/20/solid';
 import { useNotifications } from '@/contexts/NotificationsContext';
+import PillAction from '@/components/PillAction';
+import { truncateHash, getChain } from '@/util';
 
 export default function Notifications() {
   const { notifications, dismiss } = useNotifications();
@@ -48,18 +50,37 @@ export default function Notifications() {
                         )}
                       </div>
                       <div className="ml-3 w-0 flex-1 pt-0.5">
-                        <p className="text-sm font-medium text-gray-900">
+                        <div className="text-sm font-medium text-gray-900">
                           {txStatus === 'reverted'
                             ? 'Transaction error'
                             : txStatus === 'success'
                             ? 'Transaction succeeded'
                             : 'Transaction pending'}
-                        </p>
-                        <p className="mt-1 text-sm text-gray-500">{description}</p>
-                        <p className="mt-1 text-sm text-gray-500">{description}</p>
-                        <p className="mt-1 text-sm text-gray-500">
-                          <a href={`https://etherscan.io/tx/${hash}`}>View on Etherscan</a>
-                        </p>
+                          <span className="inline-block ml-2 text-indigo-500 text-xs">
+                            {description}
+                          </span>
+                        </div>
+                        <div className="mt-1 text-xs text-gray-500">
+                          <span className="font-bold">{getChain(chainId!).name}: </span>
+                          <span>{truncateHash(hash!, 8)}</span>
+                        </div>
+                        {/* Action pills */}
+                        <div className="mt-3">
+                          <PillAction
+                            icon="copy-to-clipboard"
+                            onClick={() => navigator.clipboard.writeText(hash!)}
+                          >
+                            Copy tx hash
+                          </PillAction>
+                          <a
+                            className="ml-2"
+                            href={`https://etherscan.io/tx/${hash}`}
+                            target="_blank"
+                          >
+                            <PillAction icon="external-link">View on Etherscan</PillAction>
+                          </a>
+                        </div>
+                        {/* End action pills */}
                       </div>
                       <div className="ml-4 flex flex-shrink-0">
                         <button
