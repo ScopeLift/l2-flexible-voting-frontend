@@ -31,7 +31,7 @@ const Bridge = () => {
 
   const rawAmount = parseUnits(amount, l1.token?.decimals || 18);
 
-  // 1️⃣ l1 bridge to l2
+  // l1 token allowance
   const { data: allowanceL1 } = useContractRead({
     account: address,
     chainId: l1Config.chain.id,
@@ -41,41 +41,6 @@ const Bridge = () => {
     args: [address!, l1Config.erc20Bridge],
     watch: true,
   });
-  const { config: bridgeToL2Config, error: bridgeToL2Error } = usePrepareContractWrite({
-    address: l1Config.erc20Bridge,
-    chainId: l1Config.chain.id,
-    abi: parseAbi([
-      'function deposit(address to, uint224 amount) public payable returns (uint256)',
-    ]),
-    functionName: 'deposit',
-    args: [address!, rawAmount],
-    value: fees?.l1 || BigInt(0),
-  });
-  const {
-    data: bridgeToL2Response,
-    isLoading: bridgeToL2IsLoading,
-    isSuccess: bridgeToL2IsSuccess,
-    // error: bridgeToL2Error,
-    write: bridgeToL2,
-  } = useContractWrite(bridgeToL2Config);
-
-  // 2️⃣ l2 bridge to l1
-  const { config: bridgeToL1Config, error: bridgeToL1Error } = usePrepareContractWrite({
-    address: l2Config.tokenAddress,
-    chainId: l2Config.chain.id,
-    abi: parseAbi(['function l1Unlock(address to, uint256 amount) public payable']),
-    functionName: 'l1Unlock',
-    args: [address || ZERO_ADDRESS, rawAmount],
-    value: fees?.l2 || BigInt(0),
-  });
-  const {
-    data: bridgeToL1Response,
-    isLoading: bridgeToL1IsLoading,
-    isSuccess: bridgeToL1IsSuccess,
-    // error: bridgeToL1Error,
-    write: bridgeToL1,
-  } = useContractWrite(bridgeToL1Config);
-
   const {
     data: approveL1Response,
     isLoading: approveL1IsLoading,
@@ -85,6 +50,38 @@ const Bridge = () => {
     abi: parseAbi(['function approve(address who, uint256 amount) public']),
     functionName: 'approve',
     args: [l1Config.erc20Bridge, maxUint256],
+  });
+
+  // 1️⃣ l1 bridge to l2
+  const {
+    write: bridgeToL2,
+    data: bridgeToL2Response,
+    isLoading: bridgeToL2IsLoading,
+    error: bridgeToL2Error,
+  } = useEasyWrite({
+    address: l1Config.erc20Bridge,
+    chainId: l1Config.chain.id,
+    abi: parseAbi([
+      'function deposit(address to, uint224 amount) public payable returns (uint256)',
+    ]),
+    functionName: 'deposit',
+    args: [address!, rawAmount],
+    value: fees?.l1 || BigInt(0),
+  });
+
+  // 2️⃣ l2 bridge to l1
+  const {
+    write: bridgeToL1,
+    data: bridgeToL1Response,
+    isLoading: bridgeToL1IsLoading,
+    error: bridgeToL1Error,
+  } = useEasyWrite({
+    address: l2Config.tokenAddress,
+    chainId: l2Config.chain.id,
+    abi: parseAbi(['function l1Unlock(address to, uint256 amount) public payable']),
+    functionName: 'l1Unlock',
+    args: [address || ZERO_ADDRESS, rawAmount],
+    value: fees?.l2 || BigInt(0),
   });
 
   const handleSwitchDirection = () => {

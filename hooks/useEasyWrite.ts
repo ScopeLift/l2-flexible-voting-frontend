@@ -1,9 +1,14 @@
-import { usePrepareContractWrite, useContractWrite, useWaitForTransaction } from 'wagmi';
+import {
+  usePrepareContractWrite,
+  useContractWrite,
+  useWaitForTransaction,
+  UsePrepareContractWriteConfig,
+} from 'wagmi';
 import { useNotifications } from '@/contexts/NotificationsContext';
-import { experimental_useEffectEvent, useEffect } from 'react';
+import { useEffect } from 'react';
 import usePrevious from '@/hooks/usePrevious';
 
-export const useEasyWrite = (params: Parameters<typeof usePrepareContractWrite>[0]) => {
+export const useEasyWrite = (params: UsePrepareContractWriteConfig) => {
   const { notify } = useNotifications();
   const {
     config,
