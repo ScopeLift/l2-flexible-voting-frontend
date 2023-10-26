@@ -14,16 +14,20 @@ export const config = {
     l1: {
       chain: goerli,
       wormholeChainId: 2,
+      deployBlock: 9885079n,
       tokenAddress: '0x10d1B06c702F24B8d1fF6d2Bec57Ae4fC62b7A86' as `0x${string}`,
       erc20Bridge: '0xD217A95FdEaD17eE0C80361E1eb2601131F3Da9A' as `0x${string}`,
-      governor: '0xF93BaC2e1a0f355Cd4fC4C9175eA56FF32532546' as `0x${string}`,
+      governor: '0x0a5571f9E5779d0534938ed2060631dAC4F07b32' as `0x${string}`,
       metadataBridge: '0x480fC82eD089193486ad2Ac860393A3Eb11c93A9' as `0x${string}`,
+      tallyGovernorDomain: 'https://www.tally.xyz/gov/l2-flexible-voting-l1-example-6',
     },
     l2: {
       chain: optimismGoerli,
       wormholeChainId: 24,
+      deployBlock: 16154713n,
       tokenAddress: '0xaF2E86479a6181A30F411c35eF946Ff22b15b2dc' as `0x${string}`,
       voteAggregator: '0xe1c385E394bCCc5F6D9E6a9E22F0B5668724c726' as `0x${string}`,
+      tallyGovernorDomain: 'https://www.tally.xyz/gov/l2-flexible-voting-l2-example-6',
       logoUri:
         'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png',
     },
