@@ -1,6 +1,7 @@
-import { usePrepareContractWrite, useContractWrite } from 'wagmi';
+import { usePrepareContractWrite, useContractWrite, useWaitForTransaction } from 'wagmi';
 import { useNotifications } from '@/contexts/NotificationsContext';
-import { useEffect } from 'react';
+import { experimental_useEffectEvent, useEffect } from 'react';
+import usePrevious from '@/hooks/usePrevious';
 
 export const useEasyWrite = (params: Parameters<typeof usePrepareContractWrite>[0]) => {
   const { notify } = useNotifications();
@@ -16,15 +17,72 @@ export const useEasyWrite = (params: Parameters<typeof usePrepareContractWrite>[
     write: contractWrite,
     status,
   } = useContractWrite(config);
+  const {
+    error: waitError,
+    data: transactionData,
+    isLoading: isTransactionDataLoading,
+  } = useWaitForTransaction({
+    hash: writeData?.hash,
+    enabled: writeData?.hash !== undefined,
+    chainId: config.request?.chainId,
+  });
   const error = prepareError || writeError;
   const isLoading = prepareIsLoading || writeIsLoading;
+  const prev = usePrevious({
+    hash: writeData?.hash,
+    status: transactionData?.status,
+    isTransactionDataLoading,
+    waitError,
+  });
 
   useEffect(() => {
-    if (writeData?.hash) notify({ hash: writeData?.hash, status });
-  }, [notify, writeData?.hash, status]);
+    // The different statuses that we intend to show are:
+    //   - has a hash, but tx status is loading => 'pending'
+    //   - has a hash, and tx status is success => 'success'
+    //   - has a hash, and tx status is reverted => 'reverted'
+    //   - has no hash, and there was some other error => 'error'
+    const hash = writeData?.hash;
+    console.log(
+      `hash: ${hash}
+      transactionData?.status: ${transactionData?.status}
+      prev.status: ${prev.status}
+      isTransactionDataLoading: ${isTransactionDataLoading}
+      prev.isTransactionDataLoading: ${prev.isTransactionDataLoading}
+      `
+    );
+    // succeed
+    if (hash && transactionData?.status === 'success' && prev.status !== 'success') {
+      console.log('notify success');
+      notify({ hash, txStatus: 'success' });
+      // revert
+    } else if (hash && waitError && prev.waitError?.message !== waitError.message) {
+      console.log('notify fail');
+      notify({ hash, txStatus: 'reverted' });
+      // pending
+    } else if (hash && isTransactionDataLoading && !prev.isTransactionDataLoading) {
+      console.log('notify pending');
+      notify({ hash, txStatus: 'pending' });
+    }
+  }, [
+    notify,
+    writeData?.hash,
+    prev.status,
+    isTransactionDataLoading,
+    transactionData,
+    prev.isTransactionDataLoading,
+    waitError,
+    prev.waitError,
+  ]);
 
   const write = () => {
     contractWrite!();
   };
-  return { data: writeData, isLoading, error, write };
+  return {
+    data: writeData,
+    hash: writeData?.hash,
+    chainId: config.request?.chainId,
+    isLoading,
+    error,
+    write,
+  };
 };
