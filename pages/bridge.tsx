@@ -148,7 +148,7 @@ const Bridge = () => {
                 </button>
               </div>
               {/* Target data */}
-              <div className="mt-3 relative flex flex-grow w-32 flex-col rounded-lg borde bg-gray-100 px-6 py-5 shadow-sm">
+              <div className="mt-3 relative flex flex-grow w-32 flex-col rounded-lg border bg-gray-100 px-6 py-5 shadow-sm">
                 <h3 className="gray-600 font-bold">To</h3>
                 <div>{target.chain.name}</div>
                 <div className="mt-3">
@@ -210,14 +210,17 @@ const Bridge = () => {
                     type="button"
                     className="mt-5 mx-auto flex flex-row items-center rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:bg-gray-300 disabled:cursor-not-allowed"
                     onClick={handleBridge}
-                    disabled={bridgeTarget === BridgeTarget.L2 ? !bridgeToL2 : !bridgeToL1}
+                    disabled={
+                      (bridgeTarget === BridgeTarget.L2 ? !bridgeToL2 : !bridgeToL1) ||
+                      bridgeToL2IsLoading ||
+                      bridgeToL1IsLoading
+                    }
                   >
-                    <span>Bridge to {target.chain.name}</span>
-                    {((bridgeTarget === BridgeTarget.L2 && bridgeToL2IsLoading) ||
-                      (bridgeTarget === BridgeTarget.L1 && bridgeToL1IsLoading)) && (
-                      <div className="ml-2">
-                        <Spinner />
-                      </div>
+                    {(bridgeTarget === BridgeTarget.L2 && bridgeToL2IsLoading) ||
+                    (bridgeTarget === BridgeTarget.L1 && bridgeToL1IsLoading) ? (
+                      <Spinner />
+                    ) : (
+                      <span>Bridge to {target.chain.name}</span>
                     )}
                   </button>
                 )}
