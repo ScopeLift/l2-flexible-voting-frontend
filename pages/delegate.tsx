@@ -11,7 +11,7 @@ import ConnectWallet from '@/components/ConnectWallet';
 import { useBalances } from '@/hooks/useBalances';
 import { useConfig } from '@/hooks/useConfig';
 import { useHasMounted } from '@/hooks/useHasMounted';
-import { useL2VotingWeight } from '@/hooks/useL2VotingWeight';
+import { useL2CurrentVotingWeight } from '@/hooks/useCurrentVotingWeight';
 import { useL2DelegateVote } from '@/hooks/useL2DelegateVote';
 import { useL2Delegate } from '@/hooks/useL2Delegate';
 import { ZERO_ADDRESS } from '@/util/constants';
@@ -29,7 +29,7 @@ const Delegate: NextPage = () => {
 
   const [delegateAddress, setDelegateAddress] = useState(address);
   const { data: delegatee } = useL2Delegate({});
-  const { data: l2VotingWeight } = useL2VotingWeight({
+  const { data: l2VotingWeight } = useL2CurrentVotingWeight({
     voterAddress: address || ZERO_ADDRESS,
   });
   const {

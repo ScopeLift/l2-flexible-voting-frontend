@@ -4,6 +4,11 @@ export const classNames = (...classes: string[]) => {
   return classes.filter(Boolean).join(' ');
 };
 
+export const truncate = (str: string, n?: number) => {
+  if (!n) n = 4;
+  return `${str.slice(0, n)}...${str.slice(-n)}`;
+};
+
 export const truncateHash = (hash: string, n?: number) => {
   if (!n) n = 4;
   return `${hash.slice(0, n + 2)}...${hash.slice(-n)}`;
