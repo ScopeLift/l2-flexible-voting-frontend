@@ -844,25 +844,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tanstack/react-table@npm:^8.10.7":
-  version: 8.10.7
-  resolution: "@tanstack/react-table@npm:8.10.7"
-  dependencies:
-    "@tanstack/table-core": 8.10.7
-  peerDependencies:
-    react: ">=16"
-    react-dom: ">=16"
-  checksum: f8f19ae3ad8531e0f3cb838b61213d9acd0b64b27d1a8a05a699e6ed50e25c9d3c9478ae3f6d20883288f601eec06e8264fac9503b36122471c2f8778782e1e2
-  languageName: node
-  linkType: hard
-
-"@tanstack/table-core@npm:8.10.7":
-  version: 8.10.7
-  resolution: "@tanstack/table-core@npm:8.10.7"
-  checksum: 2a364917e7ab051ef3f33d6f18e5e1ddb75cfed4b5ee0e2b9c74a8cb72d3b86cdd4ffbab67565c68b4333f761b6fde9a7215196387a9a3b3d5811119d8859bad
-  languageName: node
-  linkType: hard
-
 "@tootallnate/once@npm:2":
   version: 2.0.0
   resolution: "@tootallnate/once@npm:2.0.0"
@@ -6876,7 +6857,6 @@ __metadata:
     "@heroicons/react": ^2.0.18
     "@rainbow-me/rainbowkit": ^1.0.11
     "@tailwindcss/forms": ^0.5.6
-    "@tanstack/react-table": ^8.10.7
     "@types/node": ^18.16.12
     "@types/react": ^18.2.21
     "@wagmi/core": ^1.4.5

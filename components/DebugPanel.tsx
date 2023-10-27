@@ -9,6 +9,17 @@ import { parseAbi, parseUnits } from 'viem';
 import { useEasyWrite } from '@/hooks/useEasyWrite';
 import { useNotifications } from '@/contexts/NotificationsContext';
 
+const randomWords = ((n: number = 3) => {
+  const randomWord = () => {
+    const rnd = Math.floor(Math.random() * 5);
+    const words = ['Fantastic', 'Governance', 'Fair', 'Awesome', 'Great'];
+    return words[rnd];
+  };
+  return Array.from(Array(n).keys())
+    .map(() => randomWord())
+    .join(' ');
+})();
+
 export default function DebugPanel() {
   const { isOpen, setIsOpen } = useDebugPanel();
   const { notify } = useNotifications();
@@ -20,7 +31,17 @@ export default function DebugPanel() {
     abi: parseAbi(['function mint(address to, uint256 amount) public']),
     functionName: 'mint',
     chainId: l1Config.chain.id,
-    args: [address!, parseUnits('1000', l1.token?.decimals || 18)],
+    args: [address!, parseUnits('500000', l1.token?.decimals || 18)],
+  });
+
+  const { write: writeL1Propose } = useEasyWrite({
+    address: l1Config.governor,
+    abi: parseAbi([
+      'function propose(address[] targets, uint256[] values, bytes[] calldatas, string description) public returns (uint256 proposalId)',
+    ]),
+    functionName: 'propose',
+    chainId: l1Config.chain.id,
+    args: [[address], [0], ['0x'], randomWords],
   });
 
   return (
@@ -73,8 +94,17 @@ export default function DebugPanel() {
                         onClick={() => writeL1Mint!()}
                         disabled={!writeL1Mint}
                       >
-                        Mint 1000 {l1.token?.symbol} on L1
+                        Mint 500k {l1.token?.symbol} on L1
                       </button>
+                      <button
+                        type="button"
+                        className="ml-2 rounded-md bg-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:bg-gray-400 disabled:cursor-not-allowed"
+                        onClick={() => writeL1Propose!()}
+                        disabled={!writeL1Propose}
+                      >
+                        Create proposal
+                      </button>
+
                       <h3 className="mt-5">L2: {l2Config.chain.name}</h3>
                       <button
                         onClick={() =>
@@ -87,7 +117,7 @@ export default function DebugPanel() {
                           })
                         }
                       >
-                        hey
+                        test notification
                       </button>
                     </div>
                   </div>
