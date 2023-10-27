@@ -4,7 +4,7 @@ import { ExclamationCircleIcon } from '@heroicons/react/20/solid';
 import type { NextPage } from 'next';
 import Head from 'next/head';
 import Image from 'next/image';
-import { useAccount, useWalletClient } from 'wagmi';
+import { useAccount, useNetwork, useWalletClient } from 'wagmi';
 import { isAddress, formatUnits } from 'viem';
 import { useForm } from 'react-hook-form';
 import ConnectWallet from '@/components/ConnectWallet';
@@ -25,8 +25,8 @@ const Delegate: NextPage = () => {
   const mounted = useHasMounted();
   const { l2, error } = useBalances();
   const { isConnected, address } = useAccount();
-  const { data: walletClient } = useWalletClient();
-
+  const { data: walletClient, isLoading: walletIsLoading } = useWalletClient();
+  const { chain } = useNetwork();
   const [delegateAddress, setDelegateAddress] = useState(address);
   const { data: delegatee } = useL2Delegate({});
   const { data: l2VotingWeight } = useL2CurrentVotingWeight({
@@ -42,11 +42,6 @@ const Delegate: NextPage = () => {
     handleSubmit,
     formState: { errors },
   } = useForm<FormData>();
-  const onSubmit = handleSubmit(async (data) => {
-    await walletClient?.switchChain({ id: config.l2.chain.id });
-    console.log(data);
-    write?.();
-  });
 
   const l2VotingWeightFormatted = formatUnits(
     l2VotingWeight || BigInt(0),
@@ -114,12 +109,17 @@ const Delegate: NextPage = () => {
                 </div>
               </div>
               <div className="flex flex-col max-w-lg self-center">
-                <div>
-                  Tokens determine voting power on {config.l2.chain.name} for {config.name}. They
-                  must be delegated before a proposal has been proposed in order to be considered
-                  for that propoosal.
+                <div className="text-sm">
+                  <p>
+                    {l2.token?.symbol} determines {config.name} voting power on{' '}
+                    {config.l2.chain.name}.
+                  </p>
+                  <p className="mt-2">
+                    <span className="font-bold">Note:</span> They must be delegated before a
+                    proposal has been proposed in order to be considered for that propoosal.
+                  </p>
                 </div>
-                <form className="py-3" onSubmit={onSubmit}>
+                <form className="py-3" onSubmit={() => write!()}>
                   <label className="block text-sm font-medium leading-6 text-gray-900">
                     Delegate Address
                   </label>
@@ -159,13 +159,24 @@ const Delegate: NextPage = () => {
                       Not a valid address.
                     </p>
                   )}
-                  <button
-                    className="rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 mt-5 disabled:opacity-75 disabled:bg-indigo-600"
-                    type="submit"
-                    disabled={(l2.token?.value || BigInt(0)) <= BigInt(0) || isLoading}
-                  >
-                    Delegate
-                  </button>
+                  {chain?.id !== config.l2.chain.id ? (
+                    <button
+                      type="button"
+                      className="mt-5 rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:bg-gray-300 disabled:cursor-not-allowed"
+                      onClick={() => walletClient?.switchChain({ id: config.l2.chain.id })}
+                      disabled={walletIsLoading}
+                    >
+                      Switch network to {config.l2.chain.name}
+                    </button>
+                  ) : (
+                    <button
+                      className="rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 mt-5 disabled:opacity-75 disabled:bg-indigo-600"
+                      type="submit"
+                      disabled={(l2.token?.value || BigInt(0)) <= BigInt(0) || isLoading}
+                    >
+                      Delegate
+                    </button>
+                  )}
                 </form>
               </div>
             </div>
