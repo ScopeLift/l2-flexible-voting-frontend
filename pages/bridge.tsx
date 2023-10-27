@@ -10,10 +10,11 @@ import { ZERO_ADDRESS } from '@/util/constants';
 import { ArrowLongRightIcon } from '@heroicons/react/20/solid';
 import { useBalances } from '@/hooks/useBalances';
 import { useFees } from '@/hooks/useFees';
-import { usePrepareContractWrite, useAccount, useContractWrite, useContractRead } from 'wagmi';
+import { useAccount, useContractRead, useNetwork } from 'wagmi';
 import { useEasyWrite } from '@/hooks/useEasyWrite';
 import ErrorBox from '@/components/ErrorBox';
 import Spinner from '@/components/Spinner';
+import { useWalletClient } from 'wagmi';
 
 enum BridgeTarget {
   L1,
@@ -22,13 +23,16 @@ enum BridgeTarget {
 
 const Bridge = () => {
   const mounted = useHasMounted();
-  const { fees, error: feeError } = useFees();
-  const { l1, l2, isLoading, error } = useBalances();
+  const { fees } = useFees();
+  const { l1, l2 } = useBalances();
   const { l1: l1Config, l2: l2Config } = useConfig();
   const [bridgeTarget, setBridgeTarget] = useState<BridgeTarget>(BridgeTarget.L2);
   const { address } = useAccount();
-  const [amount, setAmount] = useState<string>('0');
+  const { chain } = useNetwork();
+  const { data: walletClient, isLoading: walletIsLoading } = useWalletClient();
 
+  // State for amount input
+  const [amount, setAmount] = useState<string>('0');
   const rawAmount = parseUnits(amount, l1.token?.decimals || 18);
 
   // l1 token allowance
@@ -42,9 +46,9 @@ const Bridge = () => {
     watch: true,
   });
   const {
-    data: approveL1Response,
-    isLoading: approveL1IsLoading,
     write: approveL1,
+    isLoading: approveL1IsLoading,
+    error: approveL1Error,
   } = useEasyWrite({
     address: l1Config.tokenAddress,
     abi: parseAbi(['function approve(address who, uint256 amount) public']),
@@ -55,7 +59,6 @@ const Bridge = () => {
   // 1️⃣ l1 bridge to l2
   const {
     write: bridgeToL2,
-    data: bridgeToL2Response,
     isLoading: bridgeToL2IsLoading,
     error: bridgeToL2Error,
   } = useEasyWrite({
@@ -72,7 +75,6 @@ const Bridge = () => {
   // 2️⃣ l2 bridge to l1
   const {
     write: bridgeToL1,
-    data: bridgeToL1Response,
     isLoading: bridgeToL1IsLoading,
     error: bridgeToL1Error,
   } = useEasyWrite({
@@ -129,10 +131,10 @@ const Bridge = () => {
                 <div>{source.chain.name}</div>
                 <div className="mt-3">
                   <span className="gray-600 font-bold">
-                    {mounted ? source.token?.symbol : ''} balance
+                    {mounted && source.token ? source.token.symbol : 'Token'} balance
                   </span>
                   <br />
-                  {mounted ? source.token?.formatted : 0}{' '}
+                  {mounted && source.token ? source.token.formatted : '0.00'}{' '}
                 </div>
               </div>
 
@@ -153,10 +155,10 @@ const Bridge = () => {
                 <div>{target.chain.name}</div>
                 <div className="mt-3">
                   <span className="gray-600 font-bold">
-                    {mounted ? target.token?.symbol : ''} balance
+                    {mounted && target.token ? target.token.symbol : 'Token'} balance
                   </span>
                   <br />
-                  {mounted ? target.token?.formatted : 0}{' '}
+                  {mounted && target.token ? target.token.formatted : '0.00'}{' '}
                 </div>
               </div>
             </div>
@@ -195,44 +197,60 @@ const Bridge = () => {
 
               <div>Wormhole relayer fee: {mounted ? formatUnits(source.fee, 18) : 0} ETH</div>
               <div className="text-center">
-                {bridgeTarget === BridgeTarget.L2 && needsAllowanceL1 ? (
-                  <button
-                    type="button"
-                    className="mt-5 rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:bg-gray-300 disabled:cursor-not-allowed"
-                    onClick={handleAllowance}
-                    disabled={!approveL1}
-                  >
-                    Set allowance for {target.token?.symbol} on {target.chain.name}
-                    {approveL1IsLoading && <Spinner />}
-                  </button>
-                ) : (
-                  <button
-                    type="button"
-                    className="mt-5 mx-auto flex flex-row items-center rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:bg-gray-300 disabled:cursor-not-allowed"
-                    onClick={handleBridge}
-                    disabled={
-                      (bridgeTarget === BridgeTarget.L2 ? !bridgeToL2 : !bridgeToL1) ||
-                      bridgeToL2IsLoading ||
-                      bridgeToL1IsLoading
-                    }
-                  >
-                    {(bridgeTarget === BridgeTarget.L2 && bridgeToL2IsLoading) ||
-                    (bridgeTarget === BridgeTarget.L1 && bridgeToL1IsLoading) ? (
-                      <Spinner />
-                    ) : (
-                      <span>Bridge to {target.chain.name}</span>
-                    )}
-                  </button>
-                )}
+                {
+                  /* ⚪️ First, if we are on the wrong network, prompt to switch networks. */
+                  source.chain.id !== chain?.id ? (
+                    <button
+                      type="button"
+                      className="mt-5 rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:bg-gray-300 disabled:cursor-not-allowed"
+                      onClick={() => walletClient?.switchChain({ id: source.chain.id })}
+                      disabled={walletIsLoading}
+                    >
+                      Switch network to {target.chain.name}
+                    </button>
+                  ) : /* ⚪️ Otherwise, if we're bridging to L2 and need an allowance first, show allowance button. */
+                  bridgeTarget === BridgeTarget.L2 && needsAllowanceL1 ? (
+                    <button
+                      type="button"
+                      className="mt-5 rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:bg-gray-300 disabled:cursor-not-allowed"
+                      onClick={handleAllowance}
+                      disabled={!approveL1 || approveL1IsLoading || !!approveL1Error}
+                    >
+                      Set allowance for {target.token?.symbol} on {target.chain.name}
+                      {approveL1IsLoading && <Spinner />}
+                    </button>
+                  ) : (
+                    /* ⚪️ Finally, we can show the bridge button. */
+                    <button
+                      type="button"
+                      className="mt-5 mx-auto flex flex-row items-center rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:bg-gray-300 disabled:cursor-not-allowed"
+                      onClick={handleBridge}
+                      disabled={
+                        bridgeTarget === BridgeTarget.L2
+                          ? !bridgeToL2 || bridgeToL2IsLoading || !!bridgeToL2Error
+                          : !bridgeToL1 || bridgeToL1IsLoading || !!bridgeToL1Error
+                      }
+                    >
+                      {(bridgeTarget === BridgeTarget.L2 && bridgeToL2IsLoading) ||
+                      (bridgeTarget === BridgeTarget.L1 && bridgeToL1IsLoading) ? (
+                        <Spinner />
+                      ) : (
+                        <span>Bridge to {target.chain.name}</span>
+                      )}
+                    </button>
+                  )
+                }
               </div>
               <div className="mt-5">
                 {bridgeTarget === BridgeTarget.L2
-                  ? bridgeToL2Error && (
+                  ? bridgeToL2Error &&
+                    BigInt(amount) !== BigInt(0) && (
                       <ErrorBox heading="There's a problem simulating your bridge transaction:">
                         {bridgeToL2Error.cause?.toString() || bridgeToL2Error.message}
                       </ErrorBox>
                     )
-                  : bridgeToL1Error && (
+                  : bridgeToL1Error &&
+                    BigInt(amount) !== BigInt(0) && (
                       <ErrorBox heading="There's a problem simulating your bridge transaction:">
                         {bridgeToL1Error.cause?.toString() || bridgeToL1Error.message}
                       </ErrorBox>
