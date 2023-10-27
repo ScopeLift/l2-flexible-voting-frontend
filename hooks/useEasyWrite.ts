@@ -97,6 +97,7 @@ export const useEasyWrite = (params: UsePrepareContractWriteConfig) => {
   ]);
 
   const write = () => {
+    if (!contractWrite) throw new Error('contractWrite is undefined');
     contractWrite!();
   };
   return {

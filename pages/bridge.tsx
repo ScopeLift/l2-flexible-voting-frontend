@@ -197,29 +197,30 @@ const Bridge = () => {
 
               <div>Wormhole relayer fee: {mounted ? formatUnits(source.fee, 18) : 0} ETH</div>
               <div className="text-center">
-                {
-                  /* ⚪️ First, if we are on the wrong network, prompt to switch networks. */
-                  source.chain.id !== chain?.id ? (
-                    <button
-                      type="button"
-                      className="mt-5 rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:bg-gray-300 disabled:cursor-not-allowed"
-                      onClick={() => walletClient?.switchChain({ id: source.chain.id })}
-                      disabled={walletIsLoading}
-                    >
-                      Switch network to {target.chain.name}
-                    </button>
-                  ) : /* ⚪️ Otherwise, if we're bridging to L2 and need an allowance first, show allowance button. */
-                  bridgeTarget === BridgeTarget.L2 && needsAllowanceL1 ? (
-                    <button
-                      type="button"
-                      className="mt-5 rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:bg-gray-300 disabled:cursor-not-allowed"
-                      onClick={handleAllowance}
-                      disabled={!approveL1 || approveL1IsLoading || !!approveL1Error}
-                    >
-                      Set allowance for {target.token?.symbol} on {target.chain.name}
-                      {approveL1IsLoading && <Spinner />}
-                    </button>
-                  ) : (
+                {mounted &&
+                /* ⚪️ First, if we are on the wrong network, prompt to switch networks. */
+                source.chain.id !== chain?.id ? (
+                  <button
+                    type="button"
+                    className="mt-5 rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:bg-gray-300 disabled:cursor-not-allowed"
+                    onClick={() => walletClient?.switchChain({ id: source.chain.id })}
+                    disabled={walletIsLoading}
+                  >
+                    Switch network to {target.chain.name}
+                  </button>
+                ) : /* ⚪️ Otherwise, if we're bridging to L2 and need an allowance first, show allowance button. */
+                bridgeTarget === BridgeTarget.L2 && needsAllowanceL1 ? (
+                  <button
+                    type="button"
+                    className="mt-5 rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:bg-gray-300 disabled:cursor-not-allowed"
+                    onClick={handleAllowance}
+                    disabled={!approveL1 || approveL1IsLoading || !!approveL1Error}
+                  >
+                    Set allowance for {target.token?.symbol} on {target.chain.name}
+                    {approveL1IsLoading && <Spinner />}
+                  </button>
+                ) : (
+                  mounted && (
                     /* ⚪️ Finally, we can show the bridge button. */
                     <button
                       type="button"
@@ -239,7 +240,7 @@ const Bridge = () => {
                       )}
                     </button>
                   )
-                }
+                )}
               </div>
               <div className="mt-5">
                 {bridgeTarget === BridgeTarget.L2
