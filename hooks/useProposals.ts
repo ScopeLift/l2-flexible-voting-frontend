@@ -1,4 +1,4 @@
-import { PublicClient, usePublicClient } from 'wagmi';
+import { PublicClient, useAccount, useContractReads, usePublicClient } from 'wagmi';
 import { parseAbiItem } from 'viem';
 import { useConfig } from '@/hooks/useConfig';
 import useSWR from 'swr';
@@ -20,6 +20,10 @@ export type Proposal = {
   votes: {
     l1: { againstVotes: bigint; forVotes: bigint; abstainVotes: bigint };
     l2?: { againstVotes: bigint; forVotes: bigint; abstainVotes: bigint };
+  };
+  votingPower: {
+    l1: bigint;
+    l2?: bigint;
   };
 };
 
@@ -88,19 +92,36 @@ const createFetcher =
     );
   };
 
-export const useL2Proposals = () => {
-  const { l2 } = useConfig();
-  const publicClient = usePublicClient({ chainId: l2.chain.id });
+export const useL1Proposals = () => {
+  const { l1 } = useConfig();
+  const publicClient = usePublicClient({ chainId: l1.chain.id });
+  const { address } = useAccount();
   const fetcher = createFetcher({
     publicClient,
-    deployBlock: BigInt(l2.deployBlock),
-    address: l2.voteAggregator,
+    deployBlock: BigInt(l1.deployBlock),
+    address: l1.governor,
   });
-  const { data: proposalData, error, isLoading } = useSWR('fetchL2Proposals', fetcher);
-  const data = proposalData?.map((proposal) => {
+  const { data: proposalData, error, isLoading } = useSWR('fetchL1Proposals', fetcher);
+  const { data: votingPower } = useContractReads({
+    contracts: proposalData?.map((proposal) => {
+      return {
+        address: l1.tokenAddress,
+        abi: [
+          parseAbiItem(
+            'function getPastVotes(address account, uint256 blockNumber) external view returns (uint256 votingPower)'
+          ),
+        ],
+        functionName: 'getPastVotes',
+        chainId: l1.chain.id,
+        args: [address || '0x0000000000000000000000000000000000000000', proposal.startBlock],
+      };
+    }),
+  });
+  const data = proposalData?.map((proposal, i) => {
     return {
-      tallyLink: `${l2.tallyGovernorDomain}/proposal/${proposal.proposalId}`,
+      tallyLink: `${l1.tallyGovernorDomain}/proposal/${proposal.proposalId}`,
       ...proposal,
+      votingPower: (votingPower?.[i]?.result as bigint) || BigInt(0),
     };
   });
   return {
@@ -110,19 +131,43 @@ export const useL2Proposals = () => {
   };
 };
 
-export const useL1Proposals = () => {
-  const { l1 } = useConfig();
-  const publicClient = usePublicClient({ chainId: l1.chain.id });
+export const useL2Proposals = (
+  l1Proposals: { proposalId: string; startBlock: string }[] | undefined
+) => {
+  const { l2 } = useConfig();
+  const publicClient = usePublicClient({ chainId: l2.chain.id });
+  const { address } = useAccount();
   const fetcher = createFetcher({
     publicClient,
-    deployBlock: BigInt(l1.deployBlock),
-    address: l1.governor,
+    deployBlock: BigInt(l2.deployBlock),
+    address: l2.voteAggregator,
   });
-  const { data: proposalData, error, isLoading } = useSWR('fetchL1Proposals', fetcher);
-  const data = proposalData?.map((proposal) => {
+  const { data: proposalData, error, isLoading } = useSWR('fetchL2Proposals', fetcher);
+  const { data: votingPower } = useContractReads({
+    contracts: proposalData?.map((proposal) => {
+      return {
+        address: l2.tokenAddress,
+        abi: [
+          parseAbiItem(
+            'function getPastVotes(address account, uint256 blockNumber) external view returns (uint256 votingPower)'
+          ),
+        ],
+        chainId: l2.chain.id,
+        functionName: 'getPastVotes',
+        args: [
+          address || '0x0000000000000000000000000000000000000000',
+          l1Proposals?.find((l1Proposal) => l1Proposal.proposalId === proposal.proposalId)
+            ?.startBlock || 0,
+        ],
+      };
+    }),
+  });
+
+  const data = proposalData?.map((proposal, i) => {
     return {
-      tallyLink: `${l1.tallyGovernorDomain}/proposal/${proposal.proposalId}`,
+      tallyLink: `${l2.tallyGovernorDomain}/proposal/${proposal.proposalId}`,
       ...proposal,
+      votingPower: (votingPower?.[i]?.result as bigint) || BigInt(0),
     };
   });
   return {
@@ -134,10 +179,7 @@ export const useL1Proposals = () => {
 
 export const useProposals = () => {
   const { data: l1Proposals, isLoading: isL1Loading } = useL1Proposals();
-  const { data: l2Proposals, isLoading: isL2Loading } = useL2Proposals();
-
-  console.log(l1Proposals);
-  console.log(l2Proposals);
+  const { data: l2Proposals, isLoading: isL2Loading } = useL2Proposals(l1Proposals);
 
   const data: Proposal[] | undefined = l1Proposals
     ?.map((proposal) => {
@@ -167,6 +209,10 @@ export const useProposals = () => {
         votes: {
           l1: proposal.votes,
           l2: l2Proposal?.votes,
+        },
+        votingPower: {
+          l1: proposal.votingPower,
+          l2: l2Proposal?.votingPower,
         },
       };
     })

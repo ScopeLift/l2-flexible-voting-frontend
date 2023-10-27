@@ -15,6 +15,7 @@ export default function ProposalRow({
   startBlock,
   votes,
   tallyLink,
+  votingPower,
 }: Proposal) {
   const { l1, l2 } = useConfig();
   const { fees } = useFees();
@@ -69,7 +70,7 @@ export default function ProposalRow({
           <tbody>
             <tr className="p-1">
               <td>L1</td>
-              <td>--</td>
+              <td>{formatUnits(votingPower.l1, l1.tokenDecimals)}</td>
               <td>
                 <span className="text-green-500">
                   {formatUnits(votes.l1.forVotes, l1.tokenDecimals)}
@@ -91,7 +92,13 @@ export default function ProposalRow({
             {/* L2 */}
             <tr className={clsx(isBridged ? '' : 'bg-gray-100 text-gray-300')}>
               <td>L2</td>
-              <td>--</td>
+              <td>
+                {votingPower.l2 !== undefined ? (
+                  <span>{formatUnits(votingPower.l2, l2.tokenDecimals)}</span>
+                ) : (
+                  '--'
+                )}
+              </td>
               <td>
                 {votes.l2 ? (
                   <span className="text-green-500">
