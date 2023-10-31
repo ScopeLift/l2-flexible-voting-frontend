@@ -3,10 +3,10 @@ import Notifications from '@/components/Notifications';
 
 export type TxNotification = {
   id: string;
-  hash?: string;
+  hash: `0x${string}`;
   description: string;
-  txStatus?: 'pending' | 'success' | 'reverted';
-  chainId?: number;
+  txStatus: 'pending' | 'success' | 'reverted';
+  chainId: number;
 };
 
 type NotificationsContextType = {
