@@ -4,7 +4,7 @@ import { ExclamationCircleIcon } from '@heroicons/react/20/solid';
 import { useHasMounted } from '@/hooks/useHasMounted';
 import { useConfig } from '@/hooks/useConfig';
 import { useState } from 'react';
-import { formatUnits, maxUint256, parseAbi, parseUnits } from 'viem';
+import { formatUnits, maxUint256, parseAbi, parseEther, parseUnits } from 'viem';
 import { classNames } from '@/util';
 import { ZERO_ADDRESS } from '@/util/constants';
 import { ArrowLongRightIcon } from '@heroicons/react/20/solid';
@@ -245,13 +245,13 @@ const Bridge = () => {
               <div className="mt-5">
                 {bridgeTarget === BridgeTarget.L2
                   ? bridgeToL2Error &&
-                    BigInt(amount) !== BigInt(0) && (
+                    parseEther(amount) !== BigInt(0) && (
                       <ErrorBox heading="There's a problem simulating your bridge transaction:">
                         {bridgeToL2Error.cause?.toString() || bridgeToL2Error.message}
                       </ErrorBox>
                     )
                   : bridgeToL1Error &&
-                    BigInt(amount) !== BigInt(0) && (
+                    parseEther(amount) !== BigInt(0) && (
                       <ErrorBox heading="There's a problem simulating your bridge transaction:">
                         {bridgeToL1Error.cause?.toString() || bridgeToL1Error.message}
                       </ErrorBox>
