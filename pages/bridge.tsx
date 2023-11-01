@@ -212,12 +212,16 @@ const Bridge = () => {
                 bridgeTarget === BridgeTarget.L2 && needsAllowanceL1 ? (
                   <button
                     type="button"
-                    className="mt-5 rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:bg-gray-300 disabled:cursor-not-allowed"
+                    className="flex mx-auto mt-5 rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:bg-gray-300 disabled:cursor-not-allowed"
                     onClick={handleAllowance}
                     disabled={!approveL1 || approveL1IsLoading || !!approveL1Error}
                   >
                     Set allowance for {target.token?.symbol} on {target.chain.name}
-                    {approveL1IsLoading && <Spinner />}
+                    {approveL1IsLoading && (
+                      <div className="ml-2">
+                        <Spinner />
+                      </div>
+                    )}
                   </button>
                 ) : (
                   mounted && (
