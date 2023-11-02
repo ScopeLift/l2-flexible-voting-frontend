@@ -236,11 +236,11 @@ const Bridge = () => {
                           : !bridgeToL1 || bridgeToL1IsLoading || !!bridgeToL1Error
                       }
                     >
-                      {(bridgeTarget === BridgeTarget.L2 && bridgeToL2IsLoading) ||
-                      (bridgeTarget === BridgeTarget.L1 && bridgeToL1IsLoading) ? (
-                        <Spinner />
-                      ) : (
-                        <span>Bridge to {target.chain.name}</span>
+                      Bridge to {target.chain.name}
+                      {(bridgeToL2IsLoading || bridgeToL1IsLoading) && (
+                        <span className="ml-2">
+                          <Spinner />
+                        </span>
                       )}
                     </button>
                   )
