@@ -113,7 +113,13 @@ const Delegate: NextPage = () => {
                   has been proposed in order to be considered for that proposal.
                 </p>
               </div>
-              <form className="py-3" onSubmit={() => write!()}>
+              <form
+                className="py-3"
+                onSubmit={(event) => {
+                  event?.preventDefault();
+                  write!();
+                }}
+              >
                 <label className="block text-sm font-medium leading-6 text-gray-900">
                   Delegate Address
                 </label>
