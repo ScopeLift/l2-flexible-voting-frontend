@@ -206,7 +206,7 @@ const Bridge = () => {
                     onClick={() => walletClient?.switchChain({ id: source.chain.id })}
                     disabled={walletIsLoading}
                   >
-                    Switch network to {target.chain.name}
+                    Switch network to {source.chain.name}
                   </button>
                 ) : /* ⚪️ Otherwise, if we're bridging to L2 and need an allowance first, show allowance button. */
                 bridgeTarget === BridgeTarget.L2 && needsAllowanceL1 ? (
