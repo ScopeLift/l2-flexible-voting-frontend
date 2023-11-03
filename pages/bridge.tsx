@@ -3,16 +3,15 @@ import CardWithHeader from '@/components/CardWithHeader';
 import { ExclamationCircleIcon } from '@heroicons/react/20/solid';
 import { useHasMounted } from '@/hooks/useHasMounted';
 import { useConfig } from '@/hooks/useConfig';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { formatUnits, maxUint256, parseAbi, parseUnits } from 'viem';
 import { classNames } from '@/util';
 import { ZERO_ADDRESS } from '@/util/constants';
 import { ArrowLongRightIcon } from '@heroicons/react/20/solid';
 import { useBalances } from '@/hooks/useBalances';
 import { useFees } from '@/hooks/useFees';
-import { useAccount, useContractRead, useNetwork } from 'wagmi';
+import { useAccount, useBalance, useContractRead, useNetwork } from 'wagmi';
 import { useEasyWrite } from '@/hooks/useEasyWrite';
-import ErrorBox from '@/components/ErrorBox';
 import Spinner from '@/components/Spinner';
 import { useWalletClient } from 'wagmi';
 
@@ -35,6 +34,11 @@ const Bridge = () => {
   const [amount, setAmount] = useState<string>('0');
   const rawAmount = parseUnits(amount, l1.token?.decimals || 18);
 
+  // Form validation
+  const [isValidForm, setIsValidForm] = useState<boolean>(false);
+  const [isAmountError, setIsAmountError] = useState<boolean>(false);
+  const [amountErrorMessage, setAmountErrorMessage] = useState<string>('');
+
   // l1 token allowance
   const { data: allowanceL1 } = useContractRead({
     account: address,
@@ -56,6 +60,20 @@ const Bridge = () => {
     args: [l1Config.erc20Bridge, maxUint256],
   });
 
+  // l1 token balance
+  const { data: balanceL1 } = useContractRead({
+    account: address,
+    chainId: l1Config.chain.id,
+    address: l1Config.tokenAddress,
+    abi: parseAbi(['function balanceOf(address) public view returns (uint256)']),
+    functionName: 'balanceOf',
+    args: [address!],
+    watch: true,
+  });
+
+  // ETH balance
+  const { data: ethBalance } = useBalance({ address: address });
+
   // 1️⃣ l1 bridge to l2
   const {
     write: bridgeToL2,
@@ -70,6 +88,7 @@ const Bridge = () => {
     functionName: 'deposit',
     args: [address!, rawAmount],
     value: fees?.l1 || BigInt(0),
+    enabled: isValidForm,
   });
 
   // 2️⃣ l2 bridge to l1
@@ -84,6 +103,7 @@ const Bridge = () => {
     functionName: 'l1Unlock',
     args: [address || ZERO_ADDRESS, rawAmount],
     value: fees?.l2 || BigInt(0),
+    enabled: isValidForm,
   });
 
   const handleSwitchDirection = () => {
@@ -112,8 +132,27 @@ const Bridge = () => {
       ? { ...l2Config, ...l2, fee: fees?.l2 || BigInt(0) }
       : { ...l1Config, ...l1, fee: fees?.l1 || BigInt(0) };
 
-  const isAmountError = false;
   const needsAllowanceL1 = (allowanceL1 || 0) < rawAmount;
+  const hasAllowance = !needsAllowanceL1;
+  const hasBalance = balanceL1! > rawAmount;
+  const hasEthBalance = ethBalance?.value! > (fees?.l1 || BigInt(0));
+
+  useEffect(() => {
+    if (rawAmount > 0) {
+      !hasBalance
+        ? setAmountErrorMessage('Not enough token balance.')
+        : !hasAllowance
+        ? setAmountErrorMessage('You need to set an allowance for the bridge contract.')
+        : !hasEthBalance
+        ? setAmountErrorMessage('Not enough ETH balance.')
+        : setAmountErrorMessage('');
+      setIsAmountError(!hasBalance || !hasAllowance || !hasEthBalance);
+      setIsValidForm(hasAllowance && hasBalance && hasEthBalance);
+    } else {
+      setIsAmountError(false);
+      setIsValidForm(true);
+    }
+  }, [amount]);
 
   return (
     <>
@@ -190,12 +229,14 @@ const Bridge = () => {
                 <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
                   <ExclamationCircleIcon className="h-5 w-5 text-red-500" aria-hidden="true" />
                 </div>
-                <p className="mt-2 text-sm text-red-600" id="amount-error">
-                  Not a valid amount.
+                <p className="mt-1 ml-1 text-sm text-red-600" id="amount-error">
+                  {amountErrorMessage}
                 </p>
               </div>
 
-              <div>Wormhole relayer fee: {mounted ? formatUnits(source.fee, 18) : 0} ETH</div>
+              <div className="ml-1">
+                Wormhole relayer fee: {mounted ? formatUnits(source.fee, 18) : 0} ETH
+              </div>
               <div className="text-center">
                 {mounted &&
                 /* ⚪️ First, if we are on the wrong network, prompt to switch networks. */
@@ -216,7 +257,7 @@ const Bridge = () => {
                     onClick={handleAllowance}
                     disabled={!approveL1 || approveL1IsLoading || !!approveL1Error}
                   >
-                    Set allowance for {target.token?.symbol} on {target.chain.name}
+                    Set allowance for {source.token?.symbol} on {source.chain.name}
                     {approveL1IsLoading && (
                       <div className="ml-2">
                         <Spinner />
@@ -231,7 +272,9 @@ const Bridge = () => {
                       className="mt-5 mx-auto flex flex-row items-center rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:bg-gray-300 disabled:cursor-not-allowed"
                       onClick={handleBridge}
                       disabled={
-                        bridgeTarget === BridgeTarget.L2
+                        !isValidForm
+                          ? true
+                          : bridgeTarget === BridgeTarget.L2
                           ? !bridgeToL2 || bridgeToL2IsLoading || !!bridgeToL2Error
                           : !bridgeToL1 || bridgeToL1IsLoading || !!bridgeToL1Error
                       }
@@ -245,21 +288,6 @@ const Bridge = () => {
                     </button>
                   )
                 )}
-              </div>
-              <div className="mt-5">
-                {bridgeTarget === BridgeTarget.L2
-                  ? bridgeToL2Error &&
-                    BigInt(amount) !== BigInt(0) && (
-                      <ErrorBox heading="There's a problem simulating your bridge transaction:">
-                        {bridgeToL2Error.cause?.toString() || bridgeToL2Error.message}
-                      </ErrorBox>
-                    )
-                  : bridgeToL1Error &&
-                    BigInt(amount) !== BigInt(0) && (
-                      <ErrorBox heading="There's a problem simulating your bridge transaction:">
-                        {bridgeToL1Error.cause?.toString() || bridgeToL1Error.message}
-                      </ErrorBox>
-                    )}
               </div>
             </div>
           </div>
