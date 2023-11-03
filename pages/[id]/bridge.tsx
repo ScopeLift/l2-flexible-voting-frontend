@@ -22,6 +22,16 @@ enum BridgeTarget {
   L2,
 }
 
+// Errors we know how to handle:
+enum ErrorType {
+  UserRejectedRequest, // user clicked reject on tx
+  ERC20AmountError, // not enough gov token based on input amount (ERC20: transfer amount exceeds balance)
+  InsufficientNativeCurrencyError, // not enough eth to pay gas + relayer fee
+  Unknown,
+}
+
+type ErrorReturnType = { errorType?: ErrorType; errorReason?: string };
+
 const Bridge = () => {
   const mounted = useHasMounted();
   const { fees } = useFees();
@@ -35,6 +45,16 @@ const Bridge = () => {
   // State for amount input
   const [amount, setAmount] = useState<string>('0');
   const rawAmount = parseUnits(amount, l1.token?.decimals || 18);
+  const isNonZeroInput = rawAmount !== BigInt(0);
+
+  const source =
+    bridgeTarget === BridgeTarget.L2
+      ? { ...l1Config, ...l1, fee: fees?.l1 || BigInt(0) }
+      : { ...l2Config, ...l2, fee: fees?.l2 || BigInt(0) };
+  const target =
+    bridgeTarget === BridgeTarget.L2
+      ? { ...l2Config, ...l2, fee: fees?.l2 || BigInt(0) }
+      : { ...l1Config, ...l1, fee: fees?.l1 || BigInt(0) };
 
   // l1 token allowance
   const { data: allowanceL1 } = useContractRead({
@@ -46,12 +66,17 @@ const Bridge = () => {
     args: [address!, l1Config.erc20Bridge],
     watch: true,
   });
+
+  const needsAllowanceL1 = (allowanceL1 || 0) < rawAmount;
+
   const {
     write: approveL1,
     isLoading: approveL1IsLoading,
     error: approveL1Error,
   } = useEasyWrite({
+    enabled: bridgeTarget === BridgeTarget.L2 && source.chain.id === chain?.id && needsAllowanceL1,
     address: l1Config.tokenAddress,
+    chainId: l1Config.chain.id,
     abi: parseAbi(['function approve(address who, uint256 amount) public']),
     functionName: 'approve',
     args: [l1Config.erc20Bridge, maxUint256],
@@ -63,6 +88,12 @@ const Bridge = () => {
     isLoading: bridgeToL2IsLoading,
     error: bridgeToL2Error,
   } = useEasyWrite({
+    enabled:
+      isNonZeroInput &&
+      bridgeTarget === BridgeTarget.L2 &&
+      !needsAllowanceL1 &&
+      !approveL1IsLoading &&
+      source.chain.id === chain?.id,
     address: l1Config.erc20Bridge,
     chainId: l1Config.chain.id,
     abi: parseAbi([
@@ -79,6 +110,7 @@ const Bridge = () => {
     isLoading: bridgeToL1IsLoading,
     error: bridgeToL1Error,
   } = useEasyWrite({
+    enabled: isNonZeroInput && bridgeTarget === BridgeTarget.L1 && source.chain.id === chain?.id,
     address: l2Config.tokenAddress,
     chainId: l2Config.chain.id,
     abi: parseAbi(['function l1Unlock(address to, uint256 amount) public payable']),
@@ -86,6 +118,20 @@ const Bridge = () => {
     args: [address || ZERO_ADDRESS, rawAmount],
     value: fees?.l2 || BigInt(0),
   });
+
+  console.log(
+    'bridge to L2 enabled:',
+    isNonZeroInput &&
+      bridgeTarget === BridgeTarget.L2 &&
+      !needsAllowanceL1 &&
+      !approveL1IsLoading &&
+      source.chain.id === chain?.id
+  );
+
+  console.log(
+    'bridge to L1 enabled: ',
+    isNonZeroInput && bridgeTarget === BridgeTarget.L1 && source.chain.id === chain?.id
+  );
 
   const handleSwitchDirection = () => {
     setBridgeTarget(bridgeTarget === BridgeTarget.L2 ? BridgeTarget.L1 : BridgeTarget.L2);
@@ -101,20 +147,63 @@ const Bridge = () => {
   };
 
   const handleBridge = () => {
-    return bridgeTarget === BridgeTarget.L2 ? bridgeToL2!() : bridgeToL1!();
+    if (bridgeTarget === BridgeTarget.L2) {
+      if (!bridgeToL2) throw new Error('bridgeToL2 is not defined');
+      bridgeToL2();
+    } else {
+      if (!bridgeToL1) throw new Error('bridgeToL1 is not defined');
+      bridgeToL1();
+    }
   };
 
-  const source =
-    bridgeTarget === BridgeTarget.L2
-      ? { ...l1Config, ...l1, fee: fees?.l1 || BigInt(0) }
-      : { ...l2Config, ...l2, fee: fees?.l2 || BigInt(0) };
-  const target =
-    bridgeTarget === BridgeTarget.L2
-      ? { ...l2Config, ...l2, fee: fees?.l2 || BigInt(0) }
-      : { ...l1Config, ...l1, fee: fees?.l1 || BigInt(0) };
+  const formatError = (e: Error | null): ErrorReturnType => {
+    if (e === null) return { errorType: undefined, errorReason: undefined };
+    // Suppress ChainMismatchError as we have other checks in place to prevent
+    if (e.name === 'ChainMismatchError') return { errorType: undefined, errorReason: undefined };
+    const errorTypes = [
+      {
+        errorType: ErrorType.UserRejectedRequest,
+        errorSearchString: 'User rejected the request.',
+        prettyReason: `Error: User rejected the request.`,
+      },
+      {
+        errorType: ErrorType.ERC20AmountError,
+        errorSearchString: 'ERC20: transfer amount exceeds balance',
+        prettyReason: `Error: Not enough ${source.token?.symbol} in wallet.`,
+      },
+      {
+        // Here we duplicate the ERC20AmountError -- this is because the error search string is slightly different for L1 and L2,
+        // but they're functionally equivalent.
+        errorType: ErrorType.ERC20AmountError,
+        errorSearchString: 'ERC20: burn amount exceeds balance',
+        prettyReason: `Error: Not enough ${source.token?.symbol} in wallet.`,
+      },
+      {
+        errorType: ErrorType.InsufficientNativeCurrencyError,
+        errorSearchString:
+          'The total cost (gas * gas fee + value) of executing this transaction exceeds the balance of the account',
+        prettyReason: `Error: Not enough ${chain?.nativeCurrency.symbol} balance${
+          (bridgeToL1Error || bridgeToL2Error) && ' for Wormhole relayer fee.'
+        }.`,
+      },
+    ];
+    const foundError = errorTypes.find(({ errorSearchString }) =>
+      e.message?.includes(errorSearchString)
+    );
+    if (!foundError)
+      return { errorType: ErrorType.Unknown, errorReason: `Can't parse error.\n\n${e.message}.` };
+    return { errorType: foundError.errorType, errorReason: foundError.prettyReason };
+  };
 
-  const isAmountError = false;
-  const needsAllowanceL1 = (allowanceL1 || 0) < rawAmount;
+  // Only get errors relevant to the current bridge direction
+  const error =
+    bridgeTarget === BridgeTarget.L2 ? bridgeToL2Error : bridgeToL1Error || approveL1Error;
+
+  // Define new variables that help control UI states and display pretty error strings
+  const { errorType, errorReason } = formatError(error);
+  // Helpers for different parts of UI state
+  const isAmountError = errorType === ErrorType.ERC20AmountError;
+  const isEthError = errorType === ErrorType.InsufficientNativeCurrencyError;
 
   return (
     <>
@@ -219,28 +308,44 @@ const Bridge = () => {
                   name="amount"
                   id="amount"
                   className={classNames(
-                    isAmountError
+                    errorType === ErrorType.ERC20AmountError
                       ? 'text-red-900 ring-red-300 placeholder:text-red-300 focus:ring-red-500'
                       : 'text-gray-900',
                     'block w-full rounded-md border-0 py-1.5 pr-10 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6'
                   )}
                   placeholder="0.00"
                   defaultValue=""
-                  aria-invalid={isAmountError}
+                  aria-invalid={errorType === ErrorType.ERC20AmountError}
                   aria-describedby="amount"
                   onChange={handleInputChange}
                 />
-              </div>
-              <div className={classNames(isAmountError ? '' : 'invisible')}>
-                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+                <div
+                  className={classNames(
+                    'pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3',
+                    isAmountError ? '' : 'invisible'
+                  )}
+                >
                   <ExclamationCircleIcon className="h-5 w-5 text-red-500" aria-hidden="true" />
                 </div>
-                <p className="mt-2 text-sm text-red-600" id="amount-error">
-                  Not a valid amount.
-                </p>
               </div>
+              <p
+                className={classNames(
+                  'mt-2 text-sm text-red-600',
+                  isAmountError ? '' : 'invisible'
+                )}
+                id="amount-error"
+              >
+                {errorReason}&nbsp;
+              </p>
 
-              <div>Wormhole relayer fee: {mounted ? formatUnits(source.fee, 18) : 0} ETH</div>
+              <div>
+                <span className="block text-sm font-medium leading-6 text-gray-900">
+                  Wormhole relayer fee
+                </span>
+                <div className="text-gray-500 text-sm ml-2">
+                  {mounted ? formatUnits(source.fee, 18) : 0} ETH
+                </div>
+              </div>
               <div className="text-center">
                 {mounted &&
                 /* ⚪️ First, if we are on the wrong network, prompt to switch networks. */
@@ -259,7 +364,7 @@ const Bridge = () => {
                     type="button"
                     className="flex mx-auto mt-5 rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:bg-gray-300 disabled:cursor-not-allowed"
                     onClick={handleAllowance}
-                    disabled={!approveL1 || approveL1IsLoading || !!approveL1Error}
+                    disabled={!approveL1 || approveL1IsLoading}
                   >
                     Set allowance for {target.token?.symbol} on {target.chain.name}
                     {approveL1IsLoading && (
@@ -276,11 +381,10 @@ const Bridge = () => {
                       className="mt-5 mx-auto flex flex-row items-center rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:bg-gray-300 disabled:cursor-not-allowed"
                       onClick={handleBridge}
                       disabled={
-                        !amount ||
-                        amount === '0' ||
+                        rawAmount === BigInt(0) ||
                         (bridgeTarget === BridgeTarget.L2
-                          ? !bridgeToL2 || bridgeToL2IsLoading
-                          : !bridgeToL1 || bridgeToL1IsLoading)
+                          ? !bridgeToL2 || bridgeToL2IsLoading || isEthError
+                          : !bridgeToL1 || bridgeToL1IsLoading || isEthError)
                       }
                     >
                       Bridge to {target.chain.name}
@@ -294,19 +398,11 @@ const Bridge = () => {
                 )}
               </div>
               <div className="mt-5">
-                {bridgeTarget === BridgeTarget.L2
-                  ? bridgeToL2Error &&
-                    rawAmount !== BigInt(0) && (
-                      <ErrorBox heading="There's a problem simulating your bridge transaction:">
-                        {bridgeToL2Error.cause?.toString() || bridgeToL2Error.message}
-                      </ErrorBox>
-                    )
-                  : bridgeToL1Error &&
-                    rawAmount !== BigInt(0) && (
-                      <ErrorBox heading="There's a problem simulating your bridge transaction:">
-                        {bridgeToL1Error.cause?.toString() || bridgeToL1Error.message}
-                      </ErrorBox>
-                    )}
+                {errorReason && !isAmountError && (
+                  <ErrorBox heading="There's a problem simulating your bridge transaction:">
+                    {errorReason}
+                  </ErrorBox>
+                )}
               </div>
             </div>
           </div>
