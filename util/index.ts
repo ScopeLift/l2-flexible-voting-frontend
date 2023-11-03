@@ -17,8 +17,15 @@ export const truncateHash = (hash: string, n?: number) => {
 export const getChain = (chainId: number) => {
   for (const chain of Object.values(chains)) {
     if (chain.id === chainId) {
-      return chain;
+      return chain as chains.Chain;
     }
   }
   throw new Error(`no chain found at chainId ${chainId}`);
+};
+
+export const getBlockExplorerUrl = (txHash: `0x${string}`, chainId: number) => {
+  const chain = getChain(chainId);
+  const networkPrefix = chain.blockExplorers?.default.url;
+  if (!networkPrefix) return undefined;
+  return `${networkPrefix}/tx/${txHash}`;
 };
