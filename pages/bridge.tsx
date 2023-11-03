@@ -249,13 +249,13 @@ const Bridge = () => {
               <div className="mt-5">
                 {bridgeTarget === BridgeTarget.L2
                   ? bridgeToL2Error &&
-                    BigInt(amount) !== BigInt(0) && (
+                    rawAmount !== BigInt(0) && (
                       <ErrorBox heading="There's a problem simulating your bridge transaction:">
                         {bridgeToL2Error.cause?.toString() || bridgeToL2Error.message}
                       </ErrorBox>
                     )
                   : bridgeToL1Error &&
-                    BigInt(amount) !== BigInt(0) && (
+                    rawAmount !== BigInt(0) && (
                       <ErrorBox heading="There's a problem simulating your bridge transaction:">
                         {bridgeToL1Error.cause?.toString() || bridgeToL1Error.message}
                       </ErrorBox>
