@@ -55,6 +55,7 @@ export const useEasyWrite = (params: UsePrepareContractWriteConfig) => {
       prev.isTransactionDataLoading: ${prev.isTransactionDataLoading}
       `
     );
+    if (!config.request) return;
     // succeed
     if (hash && transactionData?.status === 'success' && prev.status !== 'success') {
       console.log('notify success');
@@ -62,7 +63,7 @@ export const useEasyWrite = (params: UsePrepareContractWriteConfig) => {
         hash,
         description: params.functionName,
         txStatus: 'success',
-        chainId: config.request?.chainId,
+        chainId: config.request.chainId,
       });
       // revert
     } else if (hash && waitError && prev.waitError?.message !== waitError.message) {
@@ -71,7 +72,7 @@ export const useEasyWrite = (params: UsePrepareContractWriteConfig) => {
         hash,
         description: params.functionName,
         txStatus: 'reverted',
-        chainId: config.request?.chainId,
+        chainId: config.request.chainId,
       });
       // pending
     } else if (hash && isTransactionDataLoading && !prev.isTransactionDataLoading) {
@@ -80,7 +81,7 @@ export const useEasyWrite = (params: UsePrepareContractWriteConfig) => {
         hash,
         description: params.functionName,
         txStatus: 'pending',
-        chainId: config.request?.chainId,
+        chainId: config.request.chainId,
       });
     }
   }, [
@@ -93,7 +94,7 @@ export const useEasyWrite = (params: UsePrepareContractWriteConfig) => {
     waitError,
     prev.waitError,
     params.functionName,
-    config.request?.chainId,
+    config.request,
   ]);
 
   const write = () => {

@@ -70,7 +70,7 @@ export default function Notifications() {
                             </span>
                           </div>
                           <div className="mt-1 text-xs text-gray-500">
-                            <span className="font-bold">{getChain(chainId!).name}: </span>
+                            <span className="font-bold">{getChain(chainId).name}: </span>
                             <span>{truncateHash(hash!, 8)}</span>
                           </div>
                           {/* Action pills */}
