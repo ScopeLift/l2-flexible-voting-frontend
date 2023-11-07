@@ -5,9 +5,12 @@ import { classNames } from '@/util';
 import { useConfig } from '@/hooks/useConfig';
 import { useDebugPanel } from '@/contexts/DebugPanel';
 import DaoMenu from '@/components/DaoMenu';
-import {DEFAULT_DAO_ID} from "@/util/constants";
+import { DEFAULT_DAO_ID } from '@/util/constants';
 
-const options = [{label: "Example", value: 1, logo: "/pooltogetherLogo.svg"}, {label: "ExampleComp", value: 2, logo: "/gitcoinLogo.svg"}]
+const options = [
+  { label: 'Example', value: 1, logo: '/pooltogetherLogo.svg' },
+  { label: 'ExampleComp', value: 2, logo: '/gitcoinLogo.svg' },
+];
 
 export const Header = () => {
   const { showDebug } = useConfig();
@@ -17,9 +20,8 @@ export const Header = () => {
     <header className="flex flex-row w-full items-center justify-between mx-auto">
       <div className="font-bold flex-1 flex">
         <h1>L2 Flex Voting</h1>{' '}
-	
         <div className={classNames('flex ml-3', showDebug ? 'visible' : 'hidden')}>
-		      <DaoMenu options={options} />
+          <DaoMenu options={options} />
           <button
             type="button"
             className="rounded bg-white px-2 py-1 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 ml-2 self-center"
@@ -37,14 +39,13 @@ export const Header = () => {
 
 const NavButtons = () => {
   const { pathname, query } = useRouter();
-	const id = query?.id || DEFAULT_DAO_ID
+  const id = query?.id || DEFAULT_DAO_ID;
   const tabs = [
     { name: 'Bridge', href: `/${id}/bridge` },
     { name: 'Delegate', href: `/${id}/delegate` },
     { name: 'Vote', href: `/${id}/vote` },
     { name: 'Stats', href: `/${id}/stats` },
   ];
-
 
   const current = tabs.find((tab) => tab.href === pathname);
 
