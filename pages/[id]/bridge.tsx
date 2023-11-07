@@ -16,8 +16,6 @@ import ErrorBox from '@/components/ErrorBox';
 import Spinner from '@/components/Spinner';
 import { useWalletClient } from 'wagmi';
 import Image from 'next/image';
-import gtc from '@/public/gtc.svg';
-import optimism from '@/public/optimism.svg';
 
 enum BridgeTarget {
   L1,
@@ -140,11 +138,23 @@ const Bridge = () => {
                     <div className="ml-5 gray-600 font-bold">
                       {mounted && source.token ? source.token.symbol : 'Token'}
                     </div>
-                    <Image className="ml-2 w-10" src={gtc} alt="GTC logo" />
+                    <Image
+                      className="ml-2"
+                      src={source.tokenLogo}
+                      width={40}
+                      height={40}
+                      alt={`${source.token?.symbol} logo`}
+                    />
                     {source.chain.id === 420 && (
                       <>
                         <div className="flex justify-end -ml-3 -mb-8 z-10">🗳️</div>
-                        <Image className="w-4 -ml-12 -mt-8" src={optimism} alt="Optimism logo" />
+                        <Image
+                          className="-ml-12 -mt-8"
+                          src={source.chainLogo}
+                          width={16}
+                          height={16}
+                          alt={`${source.chain.name} logo`}
+                        />
                       </>
                     )}
                   </div>
@@ -174,11 +184,23 @@ const Bridge = () => {
                     <div className="ml-5 gray-600 font-bold">
                       {mounted && target.token ? target.token.symbol : 'Token'}
                     </div>
-                    <Image className="ml-2 w-10" src={gtc} alt="GTC logo" />
+                    <Image
+                      className="ml-2 w-10"
+                      src={target.tokenLogo}
+                      width={40}
+                      height={40}
+                      alt={`${target.token?.symbol} logo`}
+                    />
                     {target.chain.id === 420 && (
                       <>
                         <div className="flex justify-end -ml-3 -mb-8 z-10">🗳️</div>
-                        <Image className="w-4 -ml-12 -mt-8" src={optimism} alt="Optimism logo" />
+                        <Image
+                          className="w-4 -ml-12 -mt-8"
+                          src={target.chainLogo}
+                          width={16}
+                          height={16}
+                          alt={`${source.chain.name} logo`}
+                        />
                       </>
                     )}
                   </div>
