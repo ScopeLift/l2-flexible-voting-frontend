@@ -9,8 +9,10 @@ export enum DaoId {
 
 export const config = {
   [DaoId.Example]: {
-    name: 'Example Governor',
+    name: 'Example',
+		id: DaoId.Example,
     showDebug: true,
+		daoLogo: "/pooltogetherLogo.svg",
     l1: {
       chain: goerli,
       wormholeChainId: 2,
@@ -35,8 +37,10 @@ export const config = {
     },
   },
   [DaoId.ExampleComp]: {
-    name: 'Example Governor Comp',
+    name: 'Example Comp',
     showDebug: true,
+		id: DaoId.ExampleComp,
+		daoLogo: "/gitcoinLogo.svg",
     l1: {
       chain: goerli,
       wormholeChainId: 2,

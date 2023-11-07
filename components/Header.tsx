@@ -7,7 +7,7 @@ import { useDebugPanel } from '@/contexts/DebugPanel';
 import DaoMenu from '@/components/DaoMenu';
 import {DEFAULT_DAO_ID} from "@/util/constants";
 
-const options = [{label: "Example", value: 1}, {label: "ExampleComp", value: 2}]
+const options = [{label: "Example", value: 1, logo: "/pooltogetherLogo.svg"}, {label: "ExampleComp", value: 2, logo: "/gitcoinLogo.svg"}]
 
 export const Header = () => {
   const { showDebug } = useConfig();
@@ -18,11 +18,11 @@ export const Header = () => {
       <div className="font-bold flex-1 flex">
         <h1>L2 Flex Voting</h1>{' '}
 	
-        <div className={classNames('ml-3', showDebug ? 'visible' : 'hidden')}>
-		<DaoMenu options={options} />
+        <div className={classNames('flex ml-3', showDebug ? 'visible' : 'hidden')}>
+		      <DaoMenu options={options} />
           <button
             type="button"
-            className="rounded bg-white px-2 py-1 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+            className="rounded bg-white px-2 py-1 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 ml-2 self-center"
             onClick={() => setIsOpen(true)}
           >
             Debug
