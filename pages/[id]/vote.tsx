@@ -7,7 +7,6 @@ import {
   ChevronDoubleLeftIcon,
 } from '@heroicons/react/20/solid';
 import { Proposal, useProposals } from '@/hooks/useProposals';
-import { useConfig } from '@/hooks/useConfig';
 import ProposalRow from '@/components/ProposalRow';
 
 // proposal information
@@ -52,7 +51,6 @@ function Table({ data }: { data: Proposal[] }) {
   const prevPage = () => {};
   const firstPage = () => {};
   const lastPage = () => {};
-  const { l1, l2 } = useConfig();
 
   return (
     <div className="p-2">
