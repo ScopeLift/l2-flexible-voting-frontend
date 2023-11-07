@@ -9,7 +9,7 @@ const nextConfig = {
     return [
       {
         source: '/',
-        destination: '/bridge',
+        destination: '/1/bridge',
         permanent: false,
       },
     ];

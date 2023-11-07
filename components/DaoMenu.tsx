@@ -1,9 +1,11 @@
 import { Fragment } from 'react'
 import Image from 'next/image'
+import { useRouter } from 'next/router';
 import clsx from 'clsx';
 import { Menu, Transition } from '@headlessui/react'
 import { ChevronDownIcon } from '@heroicons/react/20/solid'
 import {useConfig} from "@/hooks/useConfig"
+import {DaoId} from "@/config"
 
 type Option<T> = {
   value: T;
@@ -17,11 +19,16 @@ type Props<T> = {
 
 const DaoMenu = <T,>(props: Props<T>) => {
 	const config = useConfig()
+	let heading = {label: config.name, value: config.id, logo: config.daoLogo}
+  const {query} = useRouter();
+	if (Number(query?.id) !== config.id) {
+	  heading = {label: "...", value: DaoId.Example, logo: "/default.svg"}
+	}
   return (
     <Menu as="div" className="relative inline-block text-left">
       <div>
         <Menu.Button className="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-1 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
-				 <Image width={16} height={16} className="rounded-full self-center" src={config.daoLogo} alt="Dao logo"/>{config.name}
+				 <Image width={16} height={16} className="rounded-full self-center" src={heading.logo} alt="Dao logo"/>{heading.label}
           <ChevronDownIcon className="-mr-1 h-5 w-5 text-gray-400" aria-hidden="true" />
         </Menu.Button>
       </div>
