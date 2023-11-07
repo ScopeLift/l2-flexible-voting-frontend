@@ -50,6 +50,8 @@ export const config = {
       erc20Bridge: '0x46A5D1C7c2eF4d276562DB6f504b25bD88CfeeD2' as `0x${string}`,
       governor: '0xA4c74075770582ad5873E3d9e288f7877BD90c85' as `0x${string}`,
       metadataBridge: '0x49F8948E4455Eb1d8D3964a9DC17f831C12B0893' as `0x${string}`,
+      tallyGovernorDomain: '',
+      logoUri: 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png'  
     },
     l2: {
       chain: optimismGoerli,
@@ -58,6 +60,7 @@ export const config = {
       tokenAddress: '0x08841d6c288EE8b2f25b58469492CF65701d0414' as `0x${string}`,
       tokenDecimals: 18,
       voteAggregator: '0x5C9B57f9886604899760D7C0eC812666b7d007dd' as `0x${string}`,
+      tallyGovernorDomain: '',
       logoUri:
         'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png',
     },
