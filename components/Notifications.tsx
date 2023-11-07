@@ -18,7 +18,6 @@ export default function Notifications() {
       blockExplorerHref: getBlockExplorerUrl(notification.hash, notification.chainId),
     };
   });
-
   return (
     <>
       {/* Global notification live region, render this permanently at the end of the document */}
@@ -78,9 +77,7 @@ export default function Notifications() {
                           <div className="mt-3">
                             <PillAction
                               icon="copy-to-clipboard"
-                              onClick={() => {
-                                navigator.clipboard.writeText(hash!);
-                              }}
+                              onClick={() => navigator.clipboard.writeText(hash!)}
                             >
                               Copy tx hash
                             </PillAction>
