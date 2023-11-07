@@ -1,4 +1,4 @@
-import { Fragment } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import { Transition } from '@headlessui/react';
 import {
   CheckCircleIcon,
@@ -9,15 +9,32 @@ import { XMarkIcon } from '@heroicons/react/20/solid';
 import { useNotifications } from '@/contexts/NotificationsContext';
 import PillAction from '@/components/PillAction';
 import { truncateHash, getChain, getBlockExplorerUrl } from '@/util';
+import { IconType } from '@/components/PillAction';
 
 export default function Notifications() {
   const { notifications, dismiss } = useNotifications();
+  const [pillActionIconName, setPillActionIconName] = useState<IconType>('copy-to-clipboard');
   const notificationsWithBlockExplorerLinks = notifications.map((notification) => {
     return {
       ...notification,
       blockExplorerHref: getBlockExplorerUrl(notification.hash, notification.chainId),
     };
   });
+
+  useEffect(() => {
+    let timeoutId: NodeJS.Timeout;
+
+    if (pillActionIconName === 'copy-to-clipboard-succeeded') {
+      timeoutId = setTimeout(() => {
+        setPillActionIconName('copy-to-clipboard');
+      }, 2000);
+    }
+
+    return () => {
+      if (timeoutId) clearTimeout(timeoutId);
+    };
+  }, [pillActionIconName]);
+
   return (
     <>
       {/* Global notification live region, render this permanently at the end of the document */}
@@ -76,8 +93,11 @@ export default function Notifications() {
                           {/* Action pills */}
                           <div className="mt-3">
                             <PillAction
-                              icon="copy-to-clipboard"
-                              onClick={() => navigator.clipboard.writeText(hash!)}
+                              icon={pillActionIconName}
+                              onClick={() => {
+                                navigator.clipboard.writeText(hash!);
+                                setPillActionIconName('copy-to-clipboard-succeeded');
+                              }}
                             >
                               Copy tx hash
                             </PillAction>

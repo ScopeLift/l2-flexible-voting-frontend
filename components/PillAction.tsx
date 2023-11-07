@@ -10,6 +10,7 @@ const icons = {
   'copy-to-clipboard': <ClipboardDocumentIcon height="15" width="15" />,
   'copy-to-clipboard-succeeded': <ClipboardDocumentCheckIcon height="15" width="15" />,
 };
+export type IconType = keyof typeof icons;
 
 export default function Pill({
   children,
