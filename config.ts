@@ -44,7 +44,7 @@ export const config = {
     l1: {
       chain: goerli,
       wormholeChainId: 2,
-      deployBlock: 9885079n,
+      deployBlock: 9895307n,
       tokenAddress: '0x449FdC2D5038E0447801025e8Eb47DD8b68a7B90' as `0x${string}`,
       tokenDecimals: 18,
       erc20Bridge: '0x46A5D1C7c2eF4d276562DB6f504b25bD88CfeeD2' as `0x${string}`,
@@ -54,7 +54,7 @@ export const config = {
     l2: {
       chain: optimismGoerli,
       wormholeChainId: 24,
-      deployBlock: 16154713n,
+      deployBlock: 16325609,
       tokenAddress: '0x08841d6c288EE8b2f25b58469492CF65701d0414' as `0x${string}`,
       tokenDecimals: 18,
       voteAggregator: '0x5C9B57f9886604899760D7C0eC812666b7d007dd' as `0x${string}`,

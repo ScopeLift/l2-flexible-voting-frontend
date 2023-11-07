@@ -1,5 +1,6 @@
 import { Fragment } from 'react'
 import Image from 'next/image'
+import Link from 'next/link'
 import { useRouter } from 'next/router';
 import clsx from 'clsx';
 import { Menu, Transition } from '@headlessui/react'
@@ -19,16 +20,11 @@ type Props<T> = {
 
 const DaoMenu = <T,>(props: Props<T>) => {
 	const config = useConfig()
-	let heading = {label: config.name, value: config.id, logo: config.daoLogo}
-  const {query} = useRouter();
-	if (Number(query?.id) !== config.id) {
-	  heading = {label: "...", value: DaoId.Example, logo: "/default.svg"}
-	}
   return (
     <Menu as="div" className="relative inline-block text-left">
       <div>
         <Menu.Button className="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-1 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
-				 <Image width={16} height={16} className="rounded-full self-center" src={heading.logo} alt="Dao logo"/>{heading.label}
+				 <Image width={16} height={16} className="rounded-full self-center" src={config.daoLogo} alt="Dao logo"/>{config.name}
           <ChevronDownIcon className="-mr-1 h-5 w-5 text-gray-400" aria-hidden="true" />
         </Menu.Button>
       </div>
@@ -47,7 +43,7 @@ const DaoMenu = <T,>(props: Props<T>) => {
 					{ props.options.map((option, key) =>
             <Menu.Item key={key}>
               {({ active }) => {
-							return (<a
+							return (<Link
                   href={`/${option.value}/bridge`}
                   className={clsx(
                     active ? ' flex bg-gray-100 text-gray-900' : 'text-gray-700',
@@ -56,7 +52,7 @@ const DaoMenu = <T,>(props: Props<T>) => {
                 >
 				         <Image width={16} height={16} className="rounded-full mr-1" src={option.logo} alt="Dao logo"/>
 								 {option.label} 
-                </a>
+                </Link>
               )
 							}
 							}
