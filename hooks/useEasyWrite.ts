@@ -21,7 +21,6 @@ export const useEasyWrite = (params: UsePrepareContractWriteConfig) => {
     isLoading: writeIsLoading,
     write: contractWrite,
     status,
-    reset,
   } = useContractWrite(config);
   const {
     error: waitError,
@@ -96,10 +95,6 @@ export const useEasyWrite = (params: UsePrepareContractWriteConfig) => {
     params.functionName,
     config.request?.chainId,
   ]);
-
-  useEffect(() => {
-    if (writeError) reset();
-  }, [params]);
 
   const write = () => {
     if (!contractWrite) throw new Error('contractWrite is undefined');
