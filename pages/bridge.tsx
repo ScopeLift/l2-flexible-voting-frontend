@@ -232,8 +232,8 @@ const Bridge = () => {
                       onClick={handleBridge}
                       disabled={
                         bridgeTarget === BridgeTarget.L2
-                          ? !bridgeToL2 || bridgeToL2IsLoading || !!bridgeToL2Error
-                          : !bridgeToL1 || bridgeToL1IsLoading || !!bridgeToL1Error
+                          ? !bridgeToL2 || bridgeToL2IsLoading
+                          : !bridgeToL1 || bridgeToL1IsLoading
                       }
                     >
                       Bridge to {target.chain.name}
