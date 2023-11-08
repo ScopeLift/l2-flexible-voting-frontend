@@ -14,6 +14,7 @@ import { useL2CurrentVotingWeight } from '@/hooks/useCurrentVotingWeight';
 import { useL2DelegateVote } from '@/hooks/useL2DelegateVote';
 import { useL2Delegate } from '@/hooks/useL2Delegate';
 import { ZERO_ADDRESS } from '@/util/constants';
+import Spinner from '@/components/Spinner';
 
 type FormData = {
   delegateAddress: string;
@@ -167,11 +168,16 @@ const Delegate: NextPage = () => {
                   </button>
                 ) : (
                   <button
-                    className="rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 mt-5 disabled:opacity-75 disabled:bg-indigo-600"
+                    className="flex flex-row mt-5 items-center rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:bg-gray-300 disabled:cursor-not-allowed"
                     type="submit"
                     disabled={(l2.token?.value || BigInt(0)) <= BigInt(0) || isLoading}
                   >
                     Delegate
+                    {isLoading && (
+                      <span className="ml-2">
+                        <Spinner />
+                      </span>
+                    )}
                   </button>
                 )}
               </form>
