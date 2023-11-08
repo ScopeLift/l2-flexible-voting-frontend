@@ -1,6 +1,7 @@
 import clsx from 'clsx';
 import { truncate } from '@/util';
 import PillAction from '@/components/PillAction';
+import Spinner from '@/components/Spinner';
 import { formatUnits } from 'viem';
 import { Proposal } from '@/hooks/useProposals';
 import { useConfig } from '@/hooks/useConfig';
@@ -21,7 +22,8 @@ export default function ProposalRow({
   const { l1, l2 } = useConfig();
   const { fees } = useFees();
   const { data: walletClient } = useWalletClient();
-  const { data: bridged } = useL1ProposalMetadataBridged({ proposalId: id });
+  const { data: bridged, isLoading: proposalMetadataBridgeIsLoading } =
+    useL1ProposalMetadataBridged({ proposalId: id });
   const {
     write: bridgeProposal,
     isLoading: bridgeProposalIsLoading,
@@ -37,7 +39,7 @@ export default function ProposalRow({
     value: fees?.l1 || BigInt(0),
   });
   const bridgeButton =
-    bridged !== null ? (
+    bridged !== null && !proposalMetadataBridgeIsLoading ? (
       <div className="rounded bg-gray-500 px-2 py-1 text-xs font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
         Waiting for relayer 🕓
       </div>
@@ -50,7 +52,10 @@ export default function ProposalRow({
         }}
         disabled={!bridgeProposal || bridgeProposalIsLoading}
       >
-        Bridge Proposal!
+        <span className="flex items-center gap-2">
+          Bridge Proposal!
+          {bridgeProposalIsLoading && <Spinner />}
+        </span>
       </button>
     );
 
