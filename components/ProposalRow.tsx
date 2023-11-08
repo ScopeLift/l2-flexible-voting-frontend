@@ -21,7 +21,7 @@ export default function ProposalRow({
   const { l1, l2 } = useConfig();
   const { fees } = useFees();
   const { data: walletClient } = useWalletClient();
-  const { data: bridged } = useL1ProposalMetadataBridged({proposalId: id});
+  const { data: bridged } = useL1ProposalMetadataBridged({ proposalId: id });
   const {
     write: bridgeProposal,
     isLoading: bridgeProposalIsLoading,
@@ -38,7 +38,9 @@ export default function ProposalRow({
   });
   const bridgeButton =
     bridged !== null ? (
-      <div className="rounded bg-gray-500 px-2 py-1 text-xs font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Waiting for relayer 🕓</div>
+      <div className="rounded bg-gray-500 px-2 py-1 text-xs font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+        Waiting for relayer 🕓
+      </div>
     ) : (
       <button
         className="rounded bg-indigo-600 px-2 py-1 text-xs font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"

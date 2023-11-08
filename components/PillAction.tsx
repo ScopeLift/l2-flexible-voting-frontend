@@ -12,12 +12,12 @@ const icons = {
 };
 
 export default function Pill({
-	className,
+  className,
   children,
   icon,
   onClick,
 }: {
-	className?: string
+  className?: string;
   children: ReactNode;
   icon?: keyof typeof icons;
   onClick?: () => void;
