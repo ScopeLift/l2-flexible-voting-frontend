@@ -7,6 +7,7 @@ import { useConfig } from '@/hooks/useConfig';
 import { useEasyWrite } from '@/hooks/useEasyWrite';
 import { parseAbi } from 'viem';
 import { useFees } from '@/hooks/useFees';
+import { useL1ProposalMetadataBridged } from '@/hooks/useL1ProposalMetadataBridged';
 import { useWalletClient } from 'wagmi';
 export default function ProposalRow({
   id,
@@ -20,6 +21,7 @@ export default function ProposalRow({
   const { l1, l2 } = useConfig();
   const { fees } = useFees();
   const { data: walletClient } = useWalletClient();
+  const { data: bridged } = useL1ProposalMetadataBridged({proposalId: id});
   const {
     write: bridgeProposal,
     isLoading: bridgeProposalIsLoading,
@@ -34,6 +36,22 @@ export default function ProposalRow({
     args: [id],
     value: fees?.l1 || BigInt(0),
   });
+  const bridgeButton =
+    bridged !== null ? (
+      <div className="rounded bg-gray-500 px-2 py-1 text-xs font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Waiting for relayer 🕓</div>
+    ) : (
+      <button
+        className="rounded bg-indigo-600 px-2 py-1 text-xs font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+        onClick={async () => {
+          await walletClient!.switchChain({ id: l1.chain.id });
+          bridgeProposal();
+        }}
+        disabled={!bridgeProposal || bridgeProposalIsLoading}
+      >
+        Bridge Proposal!
+      </button>
+    );
+
   return (
     <li key={id} className="relative flex justify-between py-5">
       <div className="flex gap-x-4 pr-6 w-1/3">
@@ -123,18 +141,7 @@ export default function ProposalRow({
                     <PillAction icon="external-link">Vote on Tally</PillAction>
                   </a>
                 ) : (
-                  <div className="inline-block">
-                    <button
-                      className="rounded bg-indigo-600 px-2 py-1 text-xs font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                      onClick={async () => {
-                        await walletClient!.switchChain({ id: l1.chain.id });
-                        bridgeProposal();
-                      }}
-                      disabled={!bridgeProposal || bridgeProposalIsLoading}
-                    >
-                      Bridge Proposal!
-                    </button>
-                  </div>
+                  <div className="inline-block">{bridgeButton}</div>
                 )}
               </td>
             </tr>
