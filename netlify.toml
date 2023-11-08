@@ -1,4 +1,4 @@
 [[redirects]]
   from = "/"
-  to = "/bridge"
+  to = "/1/bridge"
   status = 302
