@@ -36,8 +36,6 @@ export const config = {
       tokenLogo: '/gtc.svg',
       voteAggregator: '0xe1c385E394bCCc5F6D9E6a9E22F0B5668724c726' as `0x${string}`,
       tallyGovernorDomain: 'https://www.tally.xyz/gov/l2-flexible-voting-l2-example-6',
-      logoUri:
-        'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png',
     },
   },
   [DaoId.ExampleComp]: {
@@ -57,7 +55,8 @@ export const config = {
       governor: '0xA4c74075770582ad5873E3d9e288f7877BD90c85' as `0x${string}`,
       metadataBridge: '0x49F8948E4455Eb1d8D3964a9DC17f831C12B0893' as `0x${string}`,
       tallyGovernorDomain: 'https://www.tally.xyz/gov/l2-flexible-voting-l1-comp-example-6',
-      logoUri: 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png'  
+      logoUri:
+        'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png',
     },
     l2: {
       chain: optimismGoerli,
