@@ -3,7 +3,7 @@ import { Dialog, Transition } from '@headlessui/react';
 import { XMarkIcon } from '@heroicons/react/24/outline';
 import { useDebugPanel } from '@/contexts/DebugPanel';
 import { useConfig } from '@/hooks/useConfig';
-import { useAccount } from 'wagmi';
+import { useAccount, useNetwork } from 'wagmi';
 import { useBalances } from '@/hooks/useBalances';
 import { parseAbi, parseUnits } from 'viem';
 import { useEasyWrite } from '@/hooks/useEasyWrite';
@@ -24,9 +24,13 @@ export default function DebugPanel() {
   const { isOpen, setIsOpen } = useDebugPanel();
   const { notify } = useNotifications();
   const { address } = useAccount();
+  const { chain } = useNetwork();
   const { l1: l1Config, l2: l2Config } = useConfig();
   const { l1, l2 } = useBalances();
+
+  const isWriteL1MintEnabled = chain?.id === l1Config.chain.id;
   const { write: writeL1Mint } = useEasyWrite({
+    enabled: isWriteL1MintEnabled,
     address: l1Config.tokenAddress,
     abi: parseAbi(['function mint(address to, uint256 amount) public']),
     functionName: 'mint',
@@ -34,7 +38,9 @@ export default function DebugPanel() {
     args: [address!, parseUnits('500000', l1.token?.decimals || 18)],
   });
 
+  const isWriteProposalEnabled = chain?.id === l1Config.chain.id;
   const { write: writeL1Propose } = useEasyWrite({
+    enabled: isWriteProposalEnabled,
     address: l1Config.governor,
     abi: parseAbi([
       'function propose(address[] targets, uint256[] values, bytes[] calldatas, string description) public returns (uint256 proposalId)',
@@ -92,7 +98,7 @@ export default function DebugPanel() {
                         type="button"
                         className="rounded-md bg-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:bg-gray-400 disabled:cursor-not-allowed"
                         onClick={() => writeL1Mint!()}
-                        disabled={!writeL1Mint}
+                        disabled={!writeL1Mint || !isWriteL1MintEnabled}
                       >
                         Mint 500k {l1.token?.symbol} on L1
                       </button>
@@ -100,7 +106,7 @@ export default function DebugPanel() {
                         type="button"
                         className="ml-2 rounded-md bg-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:bg-gray-400 disabled:cursor-not-allowed"
                         onClick={() => writeL1Propose!()}
-                        disabled={!writeL1Propose}
+                        disabled={!writeL1Propose || !isWriteProposalEnabled}
                       >
                         Create proposal
                       </button>
