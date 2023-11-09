@@ -15,6 +15,7 @@ import { useEasyWrite } from '@/hooks/useEasyWrite';
 import ErrorBox from '@/components/ErrorBox';
 import Spinner from '@/components/Spinner';
 import { useWalletClient } from 'wagmi';
+import Image from 'next/image';
 
 enum BridgeTarget {
   L1,
@@ -130,11 +131,33 @@ const Bridge = () => {
                 <h3 className="gray-600 font-bold">From</h3>
                 <div>{source.chain.name}</div>
                 <div className="mt-3">
-                  <span className="gray-600 font-bold">
-                    {mounted && source.token ? source.token.symbol : 'Token'} balance
-                  </span>
+                  <span className="gray-600 font-bold">Balance</span>
                   <br />
-                  {mounted && source.token ? source.token.formatted : '0.00'}{' '}
+                  <div className="items-center flex">
+                    {mounted && source.token ? source.token.formatted : '0.00'}{' '}
+                    <div className="ml-5 gray-600 font-bold">
+                      {mounted && source.token ? source.token.symbol : 'Token'}
+                    </div>
+                    <Image
+                      className="ml-2"
+                      src={source.tokenLogo}
+                      width={40}
+                      height={40}
+                      alt={`${source.token?.symbol} logo`}
+                    />
+                    {source.chain.id === 420 && (
+                      <>
+                        <div className="flex justify-end -ml-3 -mb-8 z-10">🗳️</div>
+                        <Image
+                          className="-ml-12 -mt-8"
+                          src={source.chainLogo}
+                          width={16}
+                          height={16}
+                          alt={`${source.chain.name} logo`}
+                        />
+                      </>
+                    )}
+                  </div>
                 </div>
               </div>
 
@@ -154,11 +177,33 @@ const Bridge = () => {
                 <h3 className="gray-600 font-bold">To</h3>
                 <div>{target.chain.name}</div>
                 <div className="mt-3">
-                  <span className="gray-600 font-bold">
-                    {mounted && target.token ? target.token.symbol : 'Token'} balance
-                  </span>
+                  <span className="gray-600 font-bold">Balance</span>
                   <br />
-                  {mounted && target.token ? target.token.formatted : '0.00'}{' '}
+                  <div className="items-center flex">
+                    {mounted && target.token ? target.token.formatted : '0.00'}{' '}
+                    <div className="ml-5 gray-600 font-bold">
+                      {mounted && target.token ? target.token.symbol : 'Token'}
+                    </div>
+                    <Image
+                      className="ml-2 w-10"
+                      src={target.tokenLogo}
+                      width={40}
+                      height={40}
+                      alt={`${target.token?.symbol} logo`}
+                    />
+                    {target.chain.id === 420 && (
+                      <>
+                        <div className="flex justify-end -ml-3 -mb-8 z-10">🗳️</div>
+                        <Image
+                          className="w-4 -ml-12 -mt-8"
+                          src={target.chainLogo}
+                          width={16}
+                          height={16}
+                          alt={`${source.chain.name} logo`}
+                        />
+                      </>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>

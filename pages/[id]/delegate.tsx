@@ -71,7 +71,7 @@ const Delegate: NextPage = () => {
                   <Image
                     height="32"
                     width="32"
-                    src={config.l2.logoUri}
+                    src={config.l2.tokenLogo}
                     alt={`${config.name}'s Governor token logo`}
                   />
                   <div className="self-center">{mounted && (l2.token?.formatted || 0)}</div>
@@ -84,7 +84,7 @@ const Delegate: NextPage = () => {
                   <Image
                     height="32"
                     width="32"
-                    src={config.l2.logoUri}
+                    src={config.l2.tokenLogo}
                     alt={`${config.name}'s Governor token logo`}
                   />
                   <div className="self-center">{mounted && l2VotingWeightFormatted}</div>
