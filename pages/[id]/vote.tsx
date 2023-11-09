@@ -6,6 +6,7 @@ import {
   ChevronDoubleRightIcon,
   ChevronDoubleLeftIcon,
 } from '@heroicons/react/20/solid';
+import { useState } from 'react';
 import { Proposal, useProposals } from '@/hooks/useProposals';
 import ProposalRow from '@/components/ProposalRow';
 
@@ -45,18 +46,30 @@ const Vote: NextPage = () => {
 };
 
 function Table({ data }: { data: Proposal[] }) {
-  const currentPage = 1;
-  const pageCount = 1;
-  const nextPage = () => {};
-  const prevPage = () => {};
-  const firstPage = () => {};
-  const lastPage = () => {};
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const proposalsPerPage = 5;
+  const pageCount = Math.ceil(data.length / proposalsPerPage);
+  const nextPage = () => {
+    setCurrentPage(currentPage + 1);
+  };
+  const prevPage = () => {
+    setCurrentPage(currentPage - 1);
+  };
+  const firstPage = () => {
+    setCurrentPage(1);
+  };
+  const lastPage = () => {
+    setCurrentPage(pageCount);
+  };
+  const visibleProposals = data.filter(
+    (proposal, i) => i >= (currentPage - 1) * proposalsPerPage && i < currentPage * proposalsPerPage
+  );
 
   return (
     <div className="p-2">
       <div className="h-2" />
       <ul role="list" className="divide-y divide-gray-100">
-        {data.map((proposal) => (
+        {visibleProposals.map((proposal) => (
           <ProposalRow key={proposal.id} {...proposal} />
         ))}
       </ul>
@@ -89,28 +102,28 @@ function Table({ data }: { data: Proposal[] }) {
             >
               <div className="flex items-center gap-2">
                 <button
-                  className="border rounded p-1 cursor-pointer"
+                  className="border rounded p-1 cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
                   onClick={firstPage}
                   disabled={currentPage === 1}
                 >
                   <ChevronDoubleLeftIcon className="h-5 w-5" aria-hidden="true" />
                 </button>
                 <button
-                  className="border rounded p-1 cursor-pointer"
+                  className="border rounded p-1 cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
                   onClick={prevPage}
                   disabled={currentPage === 1}
                 >
                   <ChevronLeftIcon className="h-5 w-5" aria-hidden="true" />
                 </button>
                 <button
-                  className="border rounded p-1 cursor-pointer"
+                  className="border rounded p-1 cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
                   onClick={nextPage}
                   disabled={currentPage === pageCount}
                 >
                   <ChevronRightIcon className="h-5 w-5" aria-hidden="true" />
                 </button>
                 <button
-                  className="border rounded p-1 cursor-pointer"
+                  className="border rounded p-1 cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
                   onClick={lastPage}
                   disabled={currentPage === pageCount}
                 >
