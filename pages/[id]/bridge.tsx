@@ -231,7 +231,8 @@ const Bridge = () => {
                       className="mt-5 mx-auto flex flex-row items-center rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:bg-gray-300 disabled:cursor-not-allowed"
                       onClick={handleBridge}
                       disabled={
-                        amount == '' ||
+                        !amount ||
+                        amount === '0' ||
                         (bridgeTarget === BridgeTarget.L2
                           ? !bridgeToL2 || bridgeToL2IsLoading
                           : !bridgeToL1 || bridgeToL1IsLoading)
