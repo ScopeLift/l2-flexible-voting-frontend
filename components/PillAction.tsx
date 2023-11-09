@@ -15,10 +15,12 @@ export default function Pill({
   children,
   icon,
   onClick,
+  className,
 }: {
   children: ReactNode;
   icon?: keyof typeof icons | undefined;
   onClick?: () => void;
+  className?: string;
 }) {
   const [pillActionIconName, setPillActionIconName] = useState(icon || 'copy-to-clipboard');
   const handleClick = () => {
@@ -44,7 +46,10 @@ export default function Pill({
     <button
       type="button"
       onClick={handleClick}
-      className="inline-flex items-center gap-x-0.5 rounded-md ring-1 ring-inset ring-gray-200 px-2 py-1 text-xs font-medium text-gray-500 hover:bg-gray-200 hover:text-gray-600"
+      className={
+        'inline-flex items-center gap-x-0.5 rounded-md ring-1 ring-inset ring-gray-200 px-2 py-1 text-xs font-medium text-gray-500 hover:bg-gray-200 hover:text-gray-600 ' +
+        className
+      }
     >
       {children}
       {<div className="ml-1">{icons[pillActionIconName]}</div>}
