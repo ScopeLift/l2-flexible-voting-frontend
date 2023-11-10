@@ -5,22 +5,23 @@ import clsx from 'clsx';
 import { Menu, Transition } from '@headlessui/react';
 import { ChevronDownIcon } from '@heroicons/react/20/solid';
 import { useConfig } from '@/hooks/useConfig';
-import { usePathname } from 'next/navigation'
+import { usePathname } from 'next/navigation';
+import { DaoId } from '@/config';
 
-type Option<T> = {
-  value: T;
+type Option = {
+  daoId: DaoId;
   label: string;
   logo: string;
 };
 
-type Props<T> = {
-  options: Option<T>[];
-  className?: string;
+type Props = {
+  options: Option[];
+  className: string;
 };
 
-const DaoMenu = <T,>(props: Props<T>) => {
+const DaoMenu = (props: Props) => {
   const config = useConfig();
-  const pathName= usePathname();
+  const pathName = usePathname();
 
   return (
     <Menu as="div" className={`relative inline-block text-left ${props.className}`}>
@@ -49,15 +50,16 @@ const DaoMenu = <T,>(props: Props<T>) => {
       >
         <Menu.Items className="absolute right-0 z-10 mt-2 w-44 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
           <div className="py-1">
-            {props.options.map((option, key) => (
-              <Menu.Item key={key}>
+            {props.options.map((option, index) => (
+              <Menu.Item key={index}>
                 {({ active }) => {
+                  const currentPage = pathName.split('/').slice(-1);
                   return (
                     <Link
-                      href={`/${option.value}/${pathName.split("/").slice(-1)}`}
+                      href={`/${option.daoId}/${currentPage}`}
                       className={clsx(
                         active ? ' flex bg-gray-100 text-gray-900' : 'text-gray-700',
-                        'flex block px-4 py-2 text-sm'
+                        'flex px-4 py-2 text-sm'
                       )}
                     >
                       <Image

@@ -3,8 +3,8 @@ import { goerli, optimismGoerli } from 'wagmi/chains';
 export const chains = [goerli, optimismGoerli];
 
 export enum DaoId {
-  PoolTogether = 1,
-  Gitcoin = 2,
+  PoolTogether = 'pool-together',
+  Gitcoin = 'gitcoin',
 }
 
 export const config = {

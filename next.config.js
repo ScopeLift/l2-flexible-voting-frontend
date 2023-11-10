@@ -9,7 +9,7 @@ const nextConfig = {
     return [
       {
         source: '/',
-        destination: '/1/bridge',
+        destination: '/pool-together/bridge',
         permanent: false,
       },
     ];

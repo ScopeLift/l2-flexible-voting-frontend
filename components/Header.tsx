@@ -4,12 +4,11 @@ import { useRouter } from 'next/router';
 
 import DaoMenu from '@/components/DaoMenu';
 import { classNames } from '@/util';
-import { DEFAULT_DAO_ID } from '@/util/constants';
+import { config } from '@/config';
 
-const options = [
-  { label: 'PoolTogether', value: 1, logo: '/poolTogether.svg' },
-  { label: 'Gitcoin', value: 2, logo: '/gitcoinLogo.svg' },
-];
+const options = Object.values(config).map((configEntry) => {
+  return { daoId: configEntry.id, label: configEntry.name, logo: configEntry.daoLogo };
+});
 
 export const Header = () => {
   return (
@@ -25,14 +24,14 @@ export const Header = () => {
 
 const NavButtons = () => {
   const { pathname, query } = useRouter();
-  const id = query?.id || DEFAULT_DAO_ID;
+  const id = query?.id || options[0].daoId;
   const tabs = [
     { name: 'Bridge', href: `/${id}/bridge` },
     { name: 'Delegate', href: `/${id}/delegate` },
     { name: 'Vote', href: `/${id}/vote` },
   ];
 
-  const current = tabs.find((tab) => tab.href === pathname);
+  const current = tabs.find((tab) => pathname.includes(tab.href.split('/').at(-1) as string));
 
   return (
     <div>
