@@ -4,11 +4,8 @@ import PillAction from '@/components/PillAction';
 import { formatUnits } from 'viem';
 import { Proposal } from '@/hooks/useProposals';
 import { useConfig } from '@/hooks/useConfig';
-import { useEasyWrite } from '@/hooks/useEasyWrite';
-import { parseAbi } from 'viem';
 import { useFees } from '@/hooks/useFees';
 import Image from 'next/image';
-import { useWalletClient } from 'wagmi';
 export default function ProposalRow({
   id,
   isBridged,

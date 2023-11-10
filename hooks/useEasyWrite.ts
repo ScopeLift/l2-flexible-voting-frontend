@@ -97,16 +97,12 @@ export const useEasyWrite = (params: UsePrepareContractWriteConfig) => {
     config.request,
   ]);
 
-  const write = () => {
-    if (!contractWrite) throw new Error('contractWrite is undefined');
-    contractWrite!();
-  };
   return {
     data: writeData,
     hash: writeData?.hash,
     chainId: config.request?.chainId,
     isLoading,
     error,
-    write,
+    write: contractWrite,
   };
 };
