@@ -1,4 +1,4 @@
-import { PublicClient, useAccount, useContractReads, usePublicClient } from 'wagmi';
+import { useBlockNumber, PublicClient, useAccount, useContractReads, usePublicClient } from 'wagmi';
 import { parseAbiItem } from 'viem';
 import { useConfig } from '@/hooks/useConfig';
 import useSWR from 'swr';
@@ -20,6 +20,8 @@ export type Proposal = {
   votes: {
     l1: { againstVotes: bigint; forVotes: bigint; abstainVotes: bigint };
     l2?: { againstVotes: bigint; forVotes: bigint; abstainVotes: bigint };
+    l2Bridged?: { againstVotes: bigint; forVotes: bigint; abstainVotes: bigint };
+    l2NotBridged?: { againstVotes: bigint; forVotes: bigint; abstainVotes: bigint };
   };
   votingPower: {
     l1: bigint;
@@ -54,12 +56,19 @@ const createFetcher =
       event: parseAbiItem('event ProposalCanceled(uint256 proposalId)'),
       fromBlock: deployBlock,
     });
-    console.log(canceledLogs);
+    // TODO: ensure sorting is indeed time desc
+    const voteBridgedLogs = await publicClient.getLogs({
+      address,
+      event: parseAbiItem(
+        'event VoteBridged(uint256 indexed proposalId, uint256 againstVotes, uint256 forVotes, uint256 abstainVotes)'
+      ),
+      strict: true,
+      fromBlock: deployBlock,
+    });
     const canceledProposals = new Map();
     for (const canceledProposal of canceledLogs) {
       canceledProposals.set(canceledProposal.args, true);
     }
-    console.log(createdLogs);
     const getProposalVotes = async (proposalId: bigint) => {
       return publicClient.readContract({
         address,
@@ -77,8 +86,10 @@ const createFetcher =
       createdLogs.map(async (event) => {
         const args = event.args;
         const proposalId = args[0]?.toString() || '0';
+        const bridgedVotes = voteBridgedLogs?.find(
+          (event) => event.args.proposalId?.toString() === proposalId
+        )?.args;
         const [againstVotes, forVotes, abstainVotes] = await getProposalVotes(BigInt(proposalId));
-
         return {
           proposalId,
           startBlock: args[6]?.toString() || '0',
@@ -87,6 +98,7 @@ const createFetcher =
           isCancelled: Boolean(canceledProposals.get(args[0])),
           votingPower: 0,
           votes: { againstVotes, forVotes, abstainVotes },
+          bridgedVotes,
         };
       })
     );
@@ -180,19 +192,31 @@ export const useL2Proposals = (
 export const useProposals = () => {
   const { data: l1Proposals, isLoading: isL1Loading } = useL1Proposals();
   const { data: l2Proposals, isLoading: isL2Loading } = useL2Proposals(l1Proposals);
+  const { l1, l2 } = useConfig();
+  const { data: l1Block } = useBlockNumber({ chainId: l1.chain.id });
+  const { data: l2Block } = useBlockNumber({ chainId: l2.chain.id });
 
   const data: Proposal[] | undefined = l1Proposals
     ?.map((proposal) => {
       const l2Proposal = l2Proposals?.find(
         (l2Proposal) => l2Proposal.proposalId === proposal.proposalId
       );
+      const l1ProposalStatus = proposal.isCancelled
+        ? 'cancelled'
+        : l1Block && l1Block > BigInt(proposal.endBlock)
+        ? 'closed'
+        : 'open';
+      const l2ProposalStatus =
+        l2Proposal?.isCancelled || (l2Block && l2Block > BigInt(l2Proposal?.endBlock || 0))
+          ? 'closed'
+          : 'open';
       return {
         id: proposal.proposalId,
         description: proposal.description,
         isBridged: Boolean(l2Proposal),
         status: {
-          l1: proposal.isCancelled ? 'cancelled' : 'open',
-          l2: l2Proposal?.isCancelled ? 'cancelled' : 'open',
+          l1: l1ProposalStatus,
+          l2: l2ProposalStatus,
         },
         startBlock: {
           l1: proposal.startBlock,
@@ -209,6 +233,19 @@ export const useProposals = () => {
         votes: {
           l1: proposal.votes,
           l2: l2Proposal?.votes,
+          l2Bridged: l2Proposal?.bridgedVotes,
+          l2NotBridged: l2Proposal
+            ? {
+                forVotes:
+                  l2Proposal.votes.forVotes - (l2Proposal.bridgedVotes?.forVotes || BigInt(0)),
+                againstVotes:
+                  l2Proposal.votes.againstVotes -
+                  (l2Proposal.bridgedVotes?.againstVotes || BigInt(0)),
+                abstainVotes:
+                  l2Proposal.votes.abstainVotes -
+                  (l2Proposal.bridgedVotes?.abstainVotes || BigInt(0)),
+              }
+            : undefined,
         },
         votingPower: {
           l1: proposal.votingPower,

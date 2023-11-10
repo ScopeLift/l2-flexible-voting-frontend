@@ -14,6 +14,10 @@ export const truncateHash = (hash: string, n?: number) => {
   return `${hash.slice(0, n + 2)}...${hash.slice(-n)}`;
 };
 
+export const nFormatter = (num: number) => {
+  return Intl.NumberFormat('en', { notation: 'compact', maximumSignificantDigits: 2 }).format(num);
+};
+
 export const getChain = (chainId: number) => {
   for (const chain of Object.values(chains)) {
     if (chain.id === chainId) {
