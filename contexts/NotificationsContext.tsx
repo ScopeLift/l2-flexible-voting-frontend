@@ -7,6 +7,7 @@ export type TxNotification = {
   description: string;
   txStatus: 'pending' | 'success' | 'reverted';
   chainId: number;
+	crossChain?: boolean;
 };
 
 type NotificationsContextType = {

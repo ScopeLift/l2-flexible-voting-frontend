@@ -102,6 +102,7 @@ const Bridge = () => {
     functionName: 'deposit',
     args: [address!, rawAmount],
     value: fees?.l1 || BigInt(0),
+		crossChain: true,
   });
 
   // 2️⃣ l2 bridge to l1
@@ -117,6 +118,7 @@ const Bridge = () => {
     functionName: 'l1Unlock',
     args: [address || ZERO_ADDRESS, rawAmount],
     value: fees?.l2 || BigInt(0),
+		crossChain: true,
   });
 
   console.log(
