@@ -61,7 +61,7 @@ const BridgeTransactionModal = ({ isOpen, onClose, txHash }: Props) => {
                     will arrive <strong>~20</strong> minutes after the transaction is confirmed.
                   </p>
                   <p className="text-sm py-2 mt-4 w-3/4">
-                    You can verify on it has arrived on{' '}
+                    You can verify it has arrived on{' '}
                     <a
                       className="cursor-pointer font-bold text-gray-700 decoration-1 underline"
                       target="_blank"
