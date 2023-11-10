@@ -1,12 +1,10 @@
 import { Fragment } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
 import clsx from 'clsx';
 import { Menu, Transition } from '@headlessui/react';
 import { ChevronDownIcon } from '@heroicons/react/20/solid';
 import { useConfig } from '@/hooks/useConfig';
-import { DaoId } from '@/config';
 
 type Option<T> = {
   value: T;
