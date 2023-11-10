@@ -7,7 +7,7 @@ import { useState } from 'react';
 import { formatUnits, maxUint256, parseAbi, parseUnits } from 'viem';
 import { classNames } from '@/util';
 import { ZERO_ADDRESS } from '@/util/constants';
-import { ArrowLongRightIcon } from '@heroicons/react/20/solid';
+import { ArrowLongDownIcon } from '@heroicons/react/20/solid';
 import { useBalances } from '@/hooks/useBalances';
 import { useFees } from '@/hooks/useFees';
 import { useAccount, useContractRead, useNetwork } from 'wagmi';
@@ -210,98 +210,47 @@ const Bridge = () => {
       <Head>
         <title>Cross Chain Voting: Bridge</title>
       </Head>
-      <div className="flex flex-row justify-center align-center items-top content-center">
-        <CardWithHeader header={'Bridge tokens'} className="w-full lg:max-w-2xl m-5">
+      <div className="flex flex-row max-w-lg w-full justify-center align-center items-top content-center mx-auto">
+        <CardWithHeader header={'Bridge tokens'} className="w-full m-5">
           <div className="flex flex-col">
             {/* Top row */}
-            <div className="flex flex-row justify-between items-center">
+            <div className="flex flex-col justify-between items-center">
               {/* Source data */}
-              <div className="relative flex flex-grow w-32 flex-col rounded-lg bg-gray-100 px-6 py-5 shadow-sm">
-                <h3 className="gray-600 font-bold">From</h3>
-                <div>{source.chain.name}</div>
-                <div className="mt-3">
-                  <span className="gray-600 font-bold">Balance</span>
-                  <br />
-                  <div className="items-center flex">
-                    {mounted && source.token ? source.token.formatted : '0.00'}{' '}
-                    <div className="ml-5 gray-600 font-bold">
-                      {mounted && source.token ? source.token.symbol : 'Token'}
-                    </div>
-                    <Image
-                      className="ml-2"
-                      src={source.tokenLogo}
-                      width={40}
-                      height={40}
-                      alt={`${source.token?.symbol} logo`}
-                    />
-                    {source.chain.id === 420 && (
-                      <>
-                        <div className="flex justify-end -ml-3 -mb-8 z-10">🗳️</div>
-                        <Image
-                          className="-ml-12 -mt-8"
-                          src={source.chainLogo}
-                          width={16}
-                          height={16}
-                          alt={`${source.chain.name} logo`}
-                        />
-                      </>
-                    )}
-                  </div>
-                </div>
-              </div>
-
+              <BalanceBox
+                label="From"
+                chainName={source.chain.name}
+                tokenLogo={source.tokenLogo}
+                formattedBalance={source.token?.formatted}
+                chainLogo={source.chainLogo}
+                tokenSymbol={source.token?.symbol}
+                isFV={bridgeTarget === BridgeTarget.L1}
+              />
               {/* Switch direction button */}
-              <div className="grow-0 mx-5 flex flex-col items-center">
-                <ArrowLongRightIcon className="h-10 w-10 text-gray-400" />
+              <div className="grow-0 flex flex-col items-center">
                 <button
                   type="button"
-                  className="mt-2 rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+                  className="my-4 rounded-full bg-white px-3 py-3 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
                   onClick={handleSwitchDirection}
                 >
-                  Switch Direction
+                  <ArrowLongDownIcon className="h-5 w-5 text-gray-400" />
                 </button>
               </div>
               {/* Target data */}
-              <div className="mt-3 relative flex flex-grow w-32 flex-col rounded-lg border bg-gray-100 px-6 py-5 shadow-sm">
-                <h3 className="gray-600 font-bold">To</h3>
-                <div>{target.chain.name}</div>
-                <div className="mt-3">
-                  <span className="gray-600 font-bold">Balance</span>
-                  <br />
-                  <div className="items-center flex">
-                    {mounted && target.token ? target.token.formatted : '0.00'}{' '}
-                    <div className="ml-5 gray-600 font-bold">
-                      {mounted && target.token ? target.token.symbol : 'Token'}
-                    </div>
-                    <Image
-                      className="ml-2 w-10"
-                      src={target.tokenLogo}
-                      width={40}
-                      height={40}
-                      alt={`${target.token?.symbol} logo`}
-                    />
-                    {target.chain.id === 420 && (
-                      <>
-                        <div className="flex justify-end -ml-3 -mb-8 z-10">🗳️</div>
-                        <Image
-                          className="w-4 -ml-12 -mt-8"
-                          src={target.chainLogo}
-                          width={16}
-                          height={16}
-                          alt={`${source.chain.name} logo`}
-                        />
-                      </>
-                    )}
-                  </div>
-                </div>
-              </div>
+              <BalanceBox
+                label="To"
+                chainName={target.chain.name}
+                tokenLogo={target.tokenLogo}
+                formattedBalance={target.token?.formatted}
+                chainLogo={target.chainLogo}
+                tokenSymbol={target.token?.symbol}
+                isFV={bridgeTarget === BridgeTarget.L2}
+              />
             </div>
             {/* Bottom row: Input form */}
-            <div className="m-4">
+            <div className="mt-7 mx-2">
               <label htmlFor="amount" className="block text-sm font-medium leading-6 text-gray-900">
                 Amount
               </label>
-
               <div className="relative mt-2 rounded-md shadow-sm">
                 <input
                   type="number"
@@ -338,7 +287,7 @@ const Bridge = () => {
                 {errorReason}&nbsp;
               </p>
 
-              <div>
+              <div className="my-6">
                 <span className="block text-sm font-medium leading-6 text-gray-900">
                   Wormhole relayer fee
                 </span>
@@ -409,6 +358,53 @@ const Bridge = () => {
         </CardWithHeader>
       </div>
     </>
+  );
+};
+
+export const BalanceBox = ({
+  chainName,
+  formattedBalance,
+  tokenSymbol,
+  tokenLogo,
+  chainLogo,
+  isFV,
+  label,
+}: {
+  chainName: string;
+  formattedBalance?: string;
+  tokenSymbol?: string;
+  tokenLogo: string;
+  chainLogo?: string;
+  isFV: boolean;
+  label: 'From' | 'To';
+}) => {
+  const mounted = useHasMounted();
+  return !mounted ? undefined : (
+    <div className="flex flex-row items-center px-5 justify-between w-full rounded-lg bg-gray-50 py-9 shadow-md h-32">
+      <div className="flex flex-col justify-between h-full">
+        <label className="gray-600 font-bold text-sm">{label}</label>
+        <div>{chainName}</div>
+      </div>
+      <div className="flex flex-col justify-between h-full">
+        <label className="gray-600 font-bold text-sm">Balance</label>
+        <div className="items-center flex ml-2">
+          <div className="relative mr-3">
+            <Image src={tokenLogo} width={24} height={24} alt={`${tokenSymbol} logo`} />
+            {isFV && <div className="absolute -right-1 -bottom-2 text-sm">🗳️</div>}
+            {chainLogo && (
+              <Image
+                className="absolute -top-1 -left-2"
+                src={chainLogo}
+                width={14}
+                height={14}
+                alt={`${chainName} logo`}
+              />
+            )}
+          </div>
+          {formattedBalance || '0.00'} <div className="ml-5 gray-600">{tokenSymbol || 'Token'}</div>
+        </div>
+      </div>
+    </div>
   );
 };
 
