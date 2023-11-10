@@ -8,7 +8,9 @@ import { useNotifications } from '@/contexts/NotificationsContext';
 import { useEffect } from 'react';
 import usePrevious from '@/hooks/usePrevious';
 
-export const useEasyWrite = (params: UsePrepareContractWriteConfig) => {
+export const useEasyWrite = (
+  params: UsePrepareContractWriteConfig & { isCrossChain?: boolean }
+) => {
   const { notify } = useNotifications();
   const {
     config,
@@ -59,9 +61,19 @@ export const useEasyWrite = (params: UsePrepareContractWriteConfig) => {
     // succeed
     if (hash && transactionData?.status === 'success' && prev.status !== 'success') {
       console.log('notify success');
+      if (params.isCrossChain) {
+        notify({
+          hash,
+          functionName: params.functionName,
+          txStatus: 'success',
+          chainId: config.request.chainId,
+          isCrossChain: true,
+        });
+        return;
+      }
       notify({
         hash,
-        description: params.functionName,
+        functionName: params.functionName,
         txStatus: 'success',
         chainId: config.request.chainId,
       });
@@ -70,7 +82,7 @@ export const useEasyWrite = (params: UsePrepareContractWriteConfig) => {
       console.log('notify fail');
       notify({
         hash,
-        description: params.functionName,
+        functionName: params.functionName,
         txStatus: 'reverted',
         chainId: config.request.chainId,
       });
@@ -79,7 +91,7 @@ export const useEasyWrite = (params: UsePrepareContractWriteConfig) => {
       console.log('notify pending');
       notify({
         hash,
-        description: params.functionName,
+        functionName: params.functionName,
         txStatus: 'pending',
         chainId: config.request.chainId,
       });
