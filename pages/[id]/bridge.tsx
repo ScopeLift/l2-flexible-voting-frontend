@@ -214,29 +214,32 @@ const Bridge = () => {
         <CardWithHeader header={'Bridge tokens'} className="w-full lg:max-w-2xl m-5">
           <div className="flex flex-col">
             {/* Top row */}
-            <div className="flex flex-row justify-between items-center">
+            <div className="flex flex-row justify-between items-center my-4">
               {/* Source data */}
-              <div className="relative flex flex-grow w-32 flex-col rounded-lg bg-gray-100 px-6 py-5 shadow-sm">
-                <h3 className="gray-600 font-bold">From</h3>
-                <div>{source.chain.name}</div>
+              <div className="relative flex flex-grow w-32 flex-col rounded-lg bg-gray-50 px-6 py-10 shadow-md">
+                {/* "FROM" */}
+                <div className="my-2">
+                  <label className="gray-600 font-bold text-sm">From</label>
+                  <div>{source.chain.name}</div>
+                </div>
                 <div className="mt-3">
-                  <span className="gray-600 font-bold">Balance</span>
+                  <label className="gray-600 font-bold text-sm">Balance</label>
                   <br />
                   <div className="items-center flex">
                     {mounted && source.token ? source.token.formatted : '0.00'}{' '}
-                    <div className="ml-5 gray-600 font-bold">
+                    <div className="ml-5 gray-600">
                       {mounted && source.token ? source.token.symbol : 'Token'}
                     </div>
                     <Image
                       className="ml-2"
                       src={source.tokenLogo}
-                      width={40}
-                      height={40}
+                      width={30}
+                      height={30}
                       alt={`${source.token?.symbol} logo`}
                     />
                     {source.chain.id === 420 && (
                       <>
-                        <div className="flex justify-end -ml-3 -mb-8 z-10">🗳️</div>
+                        <div className="flex justify-end -ml-3 -mb-8 z-10 select-none">🗳️</div>
                         <Image
                           className="-ml-12 -mt-8"
                           src={source.chainLogo}
