@@ -35,7 +35,7 @@ export default function Notifications() {
         />
         <div className="flex w-full mt-10 flex-col items-center space-y-4 sm:items-end">
           {notificationsWithBlockExplorerLinks.map(
-            ({ id, hash, functionName, chainId, txStatus, blockExplorerHref, crossChain }) => {
+            ({ id, hash, functionName, chainId, txStatus, blockExplorerHref, isCrossChain }) => {
               return (
                 <Transition
                   key={id}
@@ -77,7 +77,7 @@ export default function Notifications() {
                               {functionName}
                             </span>
                             <span className="inline-block ml-2 text-indigo-500 text-xs">
-                              {crossChain && (
+                              {isCrossChain && (
                                 <>
                                   <p>Cross chain request will resolve in ~20 mins</p>
                                   <div

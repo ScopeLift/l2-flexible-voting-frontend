@@ -8,7 +8,9 @@ import { useNotifications } from '@/contexts/NotificationsContext';
 import { useEffect } from 'react';
 import usePrevious from '@/hooks/usePrevious';
 
-export const useEasyWrite = (params: UsePrepareContractWriteConfig & { crossChain?: boolean }) => {
+export const useEasyWrite = (
+  params: UsePrepareContractWriteConfig & { isCrossChain?: boolean }
+) => {
   const { notify } = useNotifications();
   const {
     config,
@@ -59,13 +61,13 @@ export const useEasyWrite = (params: UsePrepareContractWriteConfig & { crossChai
     // succeed
     if (hash && transactionData?.status === 'success' && prev.status !== 'success') {
       console.log('notify success');
-      if (params.crossChain) {
+      if (params.isCrossChain) {
         notify({
           hash,
           functionName: params.functionName,
           txStatus: 'success',
           chainId: config.request.chainId,
-          crossChain: true,
+          isCrossChain: true,
         });
         return;
       }
