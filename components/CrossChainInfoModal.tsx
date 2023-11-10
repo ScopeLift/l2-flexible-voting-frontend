@@ -4,14 +4,14 @@ import Image from 'next/image';
 import { Dialog, Transition } from '@headlessui/react';
 import { XMarkIcon } from '@heroicons/react/24/outline';
 import Spinner from '@/components/Spinner';
-import {InformationCircleIcon } from '@heroicons/react/24/outline';
-
+import { InformationCircleIcon } from '@heroicons/react/24/outline';
 
 type Props = {
   isOpen: boolean;
   onClose: () => void;
+  txHash?: string;
 };
-const BridgeTransactionModal = ({ isOpen, onClose}: Props) => {
+const BridgeTransactionModal = ({ isOpen, onClose, txHash }: Props) => {
   return (
     <Transition.Root show={isOpen} as={Fragment}>
       <Dialog as="div" className="relative z-10" onClose={onClose}>
@@ -49,16 +49,27 @@ const BridgeTransactionModal = ({ isOpen, onClose}: Props) => {
                     <XMarkIcon className="h-6 w-6" aria-hidden="true" />
                   </button>
                 </div>
-								<Dialog.Title as="h3" className="flex items-center text-base font-semibold leading-6 text-gray-900">
-                  <InformationCircleIcon className="mr-1 h-5"/> Cross Chain Info
+                <Dialog.Title
+                  as="h3"
+                  className="flex items-center text-base font-semibold leading-6 text-gray-900"
+                >
+                  <InformationCircleIcon className="mr-1 h-5" /> Cross Chain Info
                 </Dialog.Title>
                 <div className="flex flex-col items-center">
-                   <p className="text-sm py-2 mt-4 w-3/4">
-                    We are currently waiting for the relayer to relay your transactions. Your tokens will arrive <strong>~20</strong> minutes after the
-                    transaction is confirmed.
+                  <p className="text-sm py-2 mt-4 w-3/4">
+                    We are currently waiting for the relayer to relay your transactions. Your tokens
+                    will arrive <strong>~20</strong> minutes after the transaction is confirmed.
                   </p>
-                   <p className="text-sm py-2 mt-4 w-3/4">
-									 You can verify on it has arrived on <a className="cursor-pointer font-bold" target="_blank" href="https://wormholescan.io/#/tx/0xb35abc3523ee7f4c6ff581421058f05fb8fc498eb8fdad0fc9b6f3f37642e57e">Wormholescan</a>.
+                  <p className="text-sm py-2 mt-4 w-3/4">
+                    You can verify on it has arrived on{' '}
+                    <a
+                      className="cursor-pointer font-bold text-gray-700 decoration-1 underline"
+                      target="_blank"
+                      href={`https://wormholescan.io/#/tx/${txHash}`}
+                    >
+                      Wormholescan
+                    </a>
+                    .
                   </p>
                 </div>
                 <div className="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse"></div>

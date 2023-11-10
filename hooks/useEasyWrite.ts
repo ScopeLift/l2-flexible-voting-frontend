@@ -8,7 +8,7 @@ import { useNotifications } from '@/contexts/NotificationsContext';
 import { useEffect } from 'react';
 import usePrevious from '@/hooks/usePrevious';
 
-export const useEasyWrite = (params: UsePrepareContractWriteConfig & {crossChain?: boolean}) => {
+export const useEasyWrite = (params: UsePrepareContractWriteConfig & { crossChain?: boolean }) => {
   const { notify } = useNotifications();
   const {
     config,
@@ -59,19 +59,19 @@ export const useEasyWrite = (params: UsePrepareContractWriteConfig & {crossChain
     // succeed
     if (hash && transactionData?.status === 'success' && prev.status !== 'success') {
       console.log('notify success');
-			if (params.crossChain) {
-		    notify({
-           hash,
-           description: `Cross chain request will resolve in ~20 mins`,
-           txStatus: 'success',
-           chainId: config.request.chainId,
-					 crossChain: true,
-         });
-				 return
-			}
+      if (params.crossChain) {
+        notify({
+          hash,
+          functionName: params.functionName,
+          txStatus: 'success',
+          chainId: config.request.chainId,
+          crossChain: true,
+        });
+        return;
+      }
       notify({
         hash,
-        description: params.functionName,
+        functionName: params.functionName,
         txStatus: 'success',
         chainId: config.request.chainId,
       });
@@ -80,7 +80,7 @@ export const useEasyWrite = (params: UsePrepareContractWriteConfig & {crossChain
       console.log('notify fail');
       notify({
         hash,
-        description: params.functionName,
+        functionName: params.functionName,
         txStatus: 'reverted',
         chainId: config.request.chainId,
       });
@@ -89,7 +89,7 @@ export const useEasyWrite = (params: UsePrepareContractWriteConfig & {crossChain
       console.log('notify pending');
       notify({
         hash,
-        description: params.functionName,
+        functionName: params.functionName,
         txStatus: 'pending',
         chainId: config.request.chainId,
       });

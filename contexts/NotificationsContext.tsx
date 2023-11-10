@@ -4,10 +4,10 @@ import Notifications from '@/components/Notifications';
 export type TxNotification = {
   id: string;
   hash: `0x${string}`;
-  description: string;
+  functionName: string;
   txStatus: 'pending' | 'success' | 'reverted';
   chainId: number;
-	crossChain?: boolean;
+  crossChain?: boolean;
 };
 
 type NotificationsContextType = {

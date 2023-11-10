@@ -13,7 +13,8 @@ import { truncateHash, getChain, getBlockExplorerUrl } from '@/util';
 
 export default function Notifications() {
   const { notifications, dismiss } = useNotifications();
-	const [isCrossChainInfoModalOpen, setIsCrossChainInfoModalOpen] = useState(true)
+  const [isCrossChainInfoModalOpen, setIsCrossChainInfoModalOpen] = useState(false);
+  const [activeTxHash, setActiveTxHash] = useState('');
   const notificationsWithBlockExplorerLinks = notifications.map((notification) => {
     return {
       ...notification,
@@ -27,10 +28,14 @@ export default function Notifications() {
         aria-live="assertive"
         className="pointer-events-none fixed inset-0 flex items-end px-4 py-6 sm:items-start sm:p-6"
       >
-			  <CrossChainInfoModal isOpen={isCrossChainInfoModalOpen} onClose={() => setIsCrossChainInfoModalOpen(false)}/>
+        <CrossChainInfoModal
+          isOpen={isCrossChainInfoModalOpen}
+          onClose={() => setIsCrossChainInfoModalOpen(false)}
+          txHash={activeTxHash}
+        />
         <div className="flex w-full mt-10 flex-col items-center space-y-4 sm:items-end">
           {notificationsWithBlockExplorerLinks.map(
-            ({ id, hash, description, chainId, txStatus, blockExplorerHref, crossChain }) => {
+            ({ id, hash, functionName, chainId, txStatus, blockExplorerHref, crossChain }) => {
               return (
                 <Transition
                   key={id}
@@ -69,7 +74,23 @@ export default function Notifications() {
                               ? 'Transaction succeeded'
                               : 'Transaction pending'}
                             <span className="inline-block ml-2 text-indigo-500 text-xs">
-                              {crossChain ? <>{description}<div className="cursor-pointer font-bold" onClick={() => setIsCrossChainInfoModalOpen(true)}>(Show more)</div></> : description}
+                              {functionName}
+                            </span>
+                            <span className="inline-block ml-2 text-indigo-500 text-xs">
+                              {crossChain && (
+                                <>
+                                  <p>Cross chain request will resolve in ~20 mins</p>
+                                  <div
+                                    className="cursor-pointer font-bold"
+                                    onClick={() => {
+                                      setActiveTxHash(hash);
+                                      setIsCrossChainInfoModalOpen(true);
+                                    }}
+                                  >
+                                    (Show more)
+                                  </div>
+                                </>
+                              )}
                             </span>
                           </div>
                           <div className="mt-1 text-xs text-gray-500">
