@@ -37,9 +37,6 @@ const Delegate: NextPage = () => {
     isLoading,
     error: delegateError,
   } = useL2DelegateVote({ delegateAddress: delegateAddress || ZERO_ADDRESS });
-	console.log("IsLoading")
-	console.log(isLoading)
-	console.log(!((l2.token?.value || BigInt(0)) <= BigInt(0)) || isLoading)
   const {
     register,
     handleSubmit,
@@ -170,7 +167,7 @@ const Delegate: NextPage = () => {
                   <button
                     className="flex flex-row mt-5 items-center rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:bg-gray-300 disabled:cursor-not-allowed"
                     type="submit"
-                    disabled={!((l2.token?.value || BigInt(0)) <= BigInt(0)) || isLoading}
+                    disabled={(l2.token?.value || BigInt(0)) <= BigInt(0) || isLoading}
                   >
                     Delegate
                     {isLoading && (

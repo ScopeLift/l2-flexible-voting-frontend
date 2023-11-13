@@ -12,10 +12,7 @@ export const useEasyWrite = (
   params: UsePrepareContractWriteConfig & { isCrossChain?: boolean }
 ) => {
   const { notify } = useNotifications();
-  const {
-    config,
-    error: prepareError,
-  } = usePrepareContractWrite(params);
+  const { config, error: prepareError } = usePrepareContractWrite(params);
   const {
     data: writeData,
     error: writeError,
@@ -34,8 +31,6 @@ export const useEasyWrite = (
   });
   const error = prepareError || writeError;
   const isLoading = isTransactionDataLoading || writeIsLoading;
-	console.log(isTransactionDataLoading)
-	console.log(writeIsLoading)
   const prev = usePrevious({
     hash: writeData?.hash,
     status: transactionData?.status,
