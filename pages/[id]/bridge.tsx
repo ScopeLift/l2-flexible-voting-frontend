@@ -317,7 +317,7 @@ const Bridge = () => {
                     onClick={handleAllowance}
                     disabled={!approveL1 || approveL1IsLoading}
                   >
-                    Set allowance for {target.token?.symbol} on {target.chain.name}
+                    Set allowance for {source.token?.symbol} on {target.chain.name}
                     {approveL1IsLoading && (
                       <div className="ml-2">
                         <Spinner />
