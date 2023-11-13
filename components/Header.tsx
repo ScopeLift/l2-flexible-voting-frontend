@@ -8,10 +8,8 @@ import DaoMenu from '@/components/DaoMenu';
 import { DEFAULT_DAO_ID } from '@/util/constants';
 
 const options = [
-  { label: 'Example', value: 1, logo: '/pooltogetherLogo.svg' },
-  { label: 'ExampleComp', value: 2, logo: '/gitcoinLogo.svg' },
-  { label: 'PoolTogether', value: 3, logo: '/poolTogether.svg' },
-  { label: 'Gitcoin', value: 4, logo: '/gitcoinLogo.svg' },
+  { label: 'PoolTogether', value: 1, logo: '/poolTogether.svg' },
+  { label: 'Gitcoin', value: 2, logo: '/gitcoinLogo.svg' },
 ];
 
 export const Header = () => {
