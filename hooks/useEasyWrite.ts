@@ -15,7 +15,6 @@ export const useEasyWrite = (
   const {
     config,
     error: prepareError,
-    isLoading: prepareIsLoading,
   } = usePrepareContractWrite(params);
   const {
     data: writeData,
@@ -34,7 +33,7 @@ export const useEasyWrite = (
     chainId: config.request?.chainId,
   });
   const error = prepareError || writeError;
-  const isLoading = prepareIsLoading || writeIsLoading;
+  const isLoading = writeIsLoading;
   const prev = usePrevious({
     hash: writeData?.hash,
     status: transactionData?.status,

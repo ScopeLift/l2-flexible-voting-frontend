@@ -1,6 +1,6 @@
 import { parseAbi } from 'viem';
-import { usePrepareContractWrite, useContractWrite } from 'wagmi';
 import { useConfig } from '@/hooks/useConfig';
+import { useEasyWrite } from '@/hooks/useEasyWrite';
 
 type Props = {
   delegateAddress: `0x${string}`;
@@ -8,20 +8,19 @@ type Props = {
 
 export const useL2DelegateVote = ({ delegateAddress }: Props) => {
   const { l2 } = useConfig();
-  const { config, error: prepareError } = usePrepareContractWrite({
+
+  const { data, error, isLoading, write } = useEasyWrite({
     address: l2.tokenAddress,
     abi: parseAbi(['function delegate(address) public']),
     functionName: 'delegate',
     args: [delegateAddress],
     chainId: l2.chain.id,
   });
-  const { data, isLoading, isSuccess, error: writeError, write } = useContractWrite(config);
 
   return {
     data,
     isLoading,
-    isSuccess,
     write,
-    error: writeError || prepareError,
+    error,
   };
 };
