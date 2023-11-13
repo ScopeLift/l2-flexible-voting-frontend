@@ -33,7 +33,9 @@ export const useEasyWrite = (
     chainId: config.request?.chainId,
   });
   const error = prepareError || writeError;
-  const isLoading = writeIsLoading;
+  const isLoading = isTransactionDataLoading || writeIsLoading;
+	console.log(isTransactionDataLoading)
+	console.log(writeIsLoading)
   const prev = usePrevious({
     hash: writeData?.hash,
     status: transactionData?.status,
