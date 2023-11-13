@@ -46,7 +46,6 @@ const NavButtons = () => {
     { name: 'Bridge', href: `/${id}/bridge` },
     { name: 'Delegate', href: `/${id}/delegate` },
     { name: 'Vote', href: `/${id}/vote` },
-    { name: 'Stats', href: `/${id}/stats` },
   ];
 
   const current = tabs.find((tab) => tab.href === pathname);
