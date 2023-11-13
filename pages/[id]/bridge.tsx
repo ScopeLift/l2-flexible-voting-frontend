@@ -68,6 +68,7 @@ const Bridge = () => {
   });
 
   const needsAllowanceL1 = (allowanceL1 || 0) < rawAmount;
+  const isSufficientBalance = (source.token?.value || 0) >= rawAmount;
 
   const {
     write: approveL1,
@@ -192,8 +193,14 @@ const Bridge = () => {
     const foundError = errorTypes.find(({ errorSearchString }) =>
       e.message?.includes(errorSearchString)
     );
-    if (!foundError)
+    if (!isSufficientBalance) {
+      return {
+        errorType: ErrorType.ERC20AmountError,
+        errorReason: `Error: Not enough ${source.token?.symbol} in wallet.`,
+      };
+    } else if (!foundError) {
       return { errorType: ErrorType.Unknown, errorReason: `Can't parse error.\n\n${e.message}.` };
+    }
     return { errorType: foundError.errorType, errorReason: foundError.prettyReason };
   };
 
@@ -204,7 +211,7 @@ const Bridge = () => {
   // Define new variables that help control UI states and display pretty error strings
   const { errorType, errorReason } = formatError(error);
   // Helpers for different parts of UI state
-  const isAmountError = errorType === ErrorType.ERC20AmountError;
+  const isAmountError = errorType === ErrorType.ERC20AmountError || !isSufficientBalance;
   const isEthError = errorType === ErrorType.InsufficientNativeCurrencyError;
 
   return (
@@ -315,7 +322,7 @@ const Bridge = () => {
                     type="button"
                     className="flex mx-auto mt-5 rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:bg-gray-300 disabled:cursor-not-allowed"
                     onClick={handleAllowance}
-                    disabled={!approveL1 || approveL1IsLoading}
+                    disabled={!approveL1 || approveL1IsLoading || !isSufficientBalance}
                   >
                     Set allowance for {source.token?.symbol} on {target.chain.name}
                     {approveL1IsLoading && (
