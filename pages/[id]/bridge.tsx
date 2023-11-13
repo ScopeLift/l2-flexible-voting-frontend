@@ -73,6 +73,7 @@ const Bridge = () => {
   const {
     write: approveL1,
     isLoading: approveL1IsLoading,
+    isTransactionDataLoading: approvalL1TxIsLoading,
     error: approveL1Error,
   } = useEasyWrite({
     enabled: bridgeTarget === BridgeTarget.L2 && source.chain.id === chain?.id && needsAllowanceL1,
@@ -165,7 +166,7 @@ const Bridge = () => {
         errorType: ErrorType.ERC20AmountError,
         errorReason: `Error: Not enough ${source.token?.symbol} in wallet.`,
       };
-    } 
+    }
     if (e === null) return { errorType: undefined, errorReason: undefined };
     // Suppress ChainMismatchError as we have other checks in place to prevent
     if (e.name === 'ChainMismatchError') return { errorType: undefined, errorReason: undefined };
@@ -323,10 +324,15 @@ const Bridge = () => {
                     type="button"
                     className="flex mx-auto mt-5 rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:bg-gray-300 disabled:cursor-not-allowed"
                     onClick={handleAllowance}
-                    disabled={!approveL1 || approveL1IsLoading || !isSufficientBalance}
+                    disabled={
+                      !approveL1 ||
+                      approveL1IsLoading ||
+                      approvalL1TxIsLoading ||
+                      !isSufficientBalance
+                    }
                   >
                     Set allowance for {source.token?.symbol} on {target.chain.name}
-                    {approveL1IsLoading && (
+                    {(approveL1IsLoading || approvalL1TxIsLoading) && (
                       <div className="ml-2">
                         <Spinner />
                       </div>
