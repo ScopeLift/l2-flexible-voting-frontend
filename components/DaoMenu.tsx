@@ -78,5 +78,3 @@ const DaoMenu = <T,>(props: Props<T>) => {
 };
 
 export default DaoMenu;
-
-
