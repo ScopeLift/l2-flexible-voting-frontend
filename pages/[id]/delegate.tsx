@@ -37,9 +37,6 @@ const Delegate: NextPage = () => {
     isLoading,
     error: delegateError,
   } = useL2DelegateVote({ delegateAddress: delegateAddress || ZERO_ADDRESS });
-	console.log("IsLoading")
-	console.log(isLoading)
-	console.log(!((l2.token?.value || BigInt(0)) <= BigInt(0)) || isLoading)
   const {
     register,
     handleSubmit,
