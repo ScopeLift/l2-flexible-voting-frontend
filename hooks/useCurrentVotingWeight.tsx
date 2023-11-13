@@ -33,6 +33,7 @@ export const useCurrentVotingWeight = ({ voterAddress, target }: Props) => {
     abi: parseAbi(['function getVotes(address account) external view returns (uint256)']),
     functionName: 'getVotes',
     args: [address],
+    watch: true,
     chainId,
   });
   return { data, error, isLoading };
