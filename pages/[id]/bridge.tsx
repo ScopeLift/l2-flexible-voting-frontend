@@ -4,7 +4,14 @@ import { ExclamationCircleIcon } from '@heroicons/react/20/solid';
 import { useHasMounted } from '@/hooks/useHasMounted';
 import { useConfig } from '@/hooks/useConfig';
 import { useState } from 'react';
-import { formatUnits, maxUint256, parseAbi, parseUnits } from 'viem';
+import {
+  InternalRpcError,
+  SwitchChainError,
+  formatUnits,
+  maxUint256,
+  parseAbi,
+  parseUnits,
+} from 'viem';
 import { classNames } from '@/util';
 import { ZERO_ADDRESS } from '@/util/constants';
 import { ArrowLongDownIcon } from '@heroicons/react/20/solid';
@@ -299,12 +306,25 @@ const Bridge = () => {
               </div>
               <div className="text-center">
                 {mounted &&
-                /* ⚪️ First, if we are on the wrong network, prompt to switch networks. */
+                /* ⚪️ First, if we are on the wrong network, prompt to switch networks. Add new network to user wallet if needed. */
                 source.chain.id !== chain?.id ? (
                   <button
                     type="button"
                     className="mt-5 rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:bg-gray-300 disabled:cursor-not-allowed"
-                    onClick={() => walletClient?.switchChain({ id: source.chain.id })}
+                    onClick={async () => {
+                      try {
+                        await walletClient?.switchChain({ id: source.chain.id });
+                      } catch (e) {
+                        if (e instanceof SwitchChainError || e instanceof InternalRpcError) {
+                          console.error('Wallet does not have target chain, adding now... ', { e });
+                          try {
+                            await walletClient?.addChain({ chain: source.chain });
+                          } catch (e) {
+                            console.error(e);
+                          }
+                        }
+                      }
+                    }}
                     disabled={walletIsLoading}
                   >
                     Switch network to {source.chain.name}
