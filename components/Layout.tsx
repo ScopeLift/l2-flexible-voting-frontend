@@ -1,8 +1,14 @@
 import Head from 'next/head';
 import { Header } from '@/components/Header';
+import { useConfig } from '@/hooks/useConfig';
+import { useDebugPanel } from '@/contexts/DebugPanel';
+import { classNames } from '@/util';
 import { ReactNode } from 'react';
 
 const Layout = ({ children }: { children?: ReactNode }) => {
+  const { showDebug } = useConfig();
+  const { setIsOpen } = useDebugPanel();
+
   return (
     <div>
       <Head>
@@ -11,9 +17,20 @@ const Layout = ({ children }: { children?: ReactNode }) => {
         <link href="/favicon.ico" rel="icon" />
       </Head>
 
-      <main className="h-screen w-screen flex flex-col p-5">
+      <main className="h-screen flex flex-col p-5">
         <Header />
         {children}
+        <div
+          className={classNames('fixed mb-6', showDebug ? 'visible bottom-0 float-left' : 'hidden')}
+        >
+          <button
+            type="button"
+            className="rounded bg-white px-2 py-1 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 ml-2 self-center"
+            onClick={() => setIsOpen(true)}
+          >
+            Debug
+          </button>
+        </div>
       </main>
     </div>
   );
