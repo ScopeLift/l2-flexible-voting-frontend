@@ -1,4 +1,6 @@
 import * as chains from 'viem/chains';
+import { GetWalletClientResult } from '@wagmi/core';
+import { Chain, SwitchChainError } from 'viem';
 
 export const classNames = (...classes: string[]) => {
   return classes.filter(Boolean).join(' ');
@@ -32,4 +34,19 @@ export const getBlockExplorerUrl = (txHash: `0x${string}`, chainId: number) => {
   const networkPrefix = chain.blockExplorers?.default.url;
   if (!networkPrefix) return undefined;
   return `${networkPrefix}/tx/${txHash}`;
+};
+
+export const switchChain = async (walletClient: GetWalletClientResult, chain: Chain) => {
+  try {
+    await walletClient?.switchChain({ id: chain.id });
+  } catch (e) {
+    if (e instanceof SwitchChainError) {
+      console.error('Wallet does not have target chain, adding now... ', { e });
+      try {
+        await walletClient?.addChain({ chain: chain });
+      } catch (e) {
+        console.error(e);
+      }
+    }
+  }
 };

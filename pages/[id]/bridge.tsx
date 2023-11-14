@@ -5,14 +5,13 @@ import { useHasMounted } from '@/hooks/useHasMounted';
 import { useConfig } from '@/hooks/useConfig';
 import { useState } from 'react';
 import { formatUnits, maxUint256, parseAbi, parseUnits } from 'viem';
-import { classNames } from '@/util';
+import { classNames, switchChain } from '@/util';
 import { ZERO_ADDRESS } from '@/util/constants';
 import { ArrowLongDownIcon } from '@heroicons/react/20/solid';
 import { useBalances } from '@/hooks/useBalances';
 import { useFees } from '@/hooks/useFees';
 import { useAccount, useContractRead, useNetwork } from 'wagmi';
 import { useEasyWrite } from '@/hooks/useEasyWrite';
-import { useSwitchChain } from '@/hooks/useSwitchChain';
 import ErrorBox from '@/components/ErrorBox';
 import Spinner from '@/components/Spinner';
 import { useWalletClient } from 'wagmi';
@@ -306,7 +305,7 @@ const Bridge = () => {
                     type="button"
                     className="mt-5 rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:bg-gray-300 disabled:cursor-not-allowed"
                     onClick={async () => {
-                      if (walletClient) useSwitchChain(walletClient, source.chain);
+                      if (walletClient) switchChain(walletClient, source.chain);
                     }}
                     disabled={walletIsLoading}
                   >
