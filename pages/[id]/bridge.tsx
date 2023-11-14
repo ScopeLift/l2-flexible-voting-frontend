@@ -68,6 +68,7 @@ const Bridge = () => {
   });
 
   const needsAllowanceL1 = (allowanceL1 || 0) < rawAmount;
+  const isSufficientBalance = (source.token?.value || 0) >= rawAmount;
 
   const {
     write: approveL1,
@@ -159,6 +160,12 @@ const Bridge = () => {
   };
 
   const formatError = (e: Error | null): ErrorReturnType => {
+    if (!isSufficientBalance) {
+      return {
+        errorType: ErrorType.ERC20AmountError,
+        errorReason: `Error: Not enough ${source.token?.symbol} in wallet.`,
+      };
+    } 
     if (e === null) return { errorType: undefined, errorReason: undefined };
     // Suppress ChainMismatchError as we have other checks in place to prevent
     if (e.name === 'ChainMismatchError') return { errorType: undefined, errorReason: undefined };
@@ -192,8 +199,9 @@ const Bridge = () => {
     const foundError = errorTypes.find(({ errorSearchString }) =>
       e.message?.includes(errorSearchString)
     );
-    if (!foundError)
+    if (!foundError) {
       return { errorType: ErrorType.Unknown, errorReason: `Can't parse error.\n\n${e.message}.` };
+    }
     return { errorType: foundError.errorType, errorReason: foundError.prettyReason };
   };
 
@@ -315,9 +323,9 @@ const Bridge = () => {
                     type="button"
                     className="flex mx-auto mt-5 rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:bg-gray-300 disabled:cursor-not-allowed"
                     onClick={handleAllowance}
-                    disabled={!approveL1 || approveL1IsLoading}
+                    disabled={!approveL1 || approveL1IsLoading || !isSufficientBalance}
                   >
-                    Set allowance for {target.token?.symbol} on {target.chain.name}
+                    Set allowance for {source.token?.symbol} on {target.chain.name}
                     {approveL1IsLoading && (
                       <div className="ml-2">
                         <Spinner />
