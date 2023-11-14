@@ -2,6 +2,7 @@ import { Fragment, useState } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import { XMarkIcon } from '@heroicons/react/24/outline';
 import { InformationCircleIcon, ArrowTopRightOnSquareIcon } from '@heroicons/react/24/outline';
+import { WORMHOLE_NETWORK_TYPE } from '@/util/constants';
 
 type Props = {
   isOpen: boolean;
@@ -63,7 +64,7 @@ const BridgeTransactionModal = ({ isOpen, onClose, txHash }: Props) => {
                     <a
                       className="flex gap-1 items-center cursor-pointer font-bold text-gray-700 decoration-1 underline"
                       target="_blank"
-                      href={`https://wormholescan.io/#/tx/${txHash}`}
+                      href={`https://wormholescan.io/#/tx/${txHash}?network=${WORMHOLE_NETWORK_TYPE}`}
                     >
                       Wormholescan
                       <ArrowTopRightOnSquareIcon className="h-3" />
