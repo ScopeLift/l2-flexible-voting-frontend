@@ -6,14 +6,10 @@ export const useConfig = () => {
   if (Array.isArray(query.id)) {
     throw new Error('Too many ids have been specified');
   }
-  if (Number(query?.id) === DaoId.Example) {
-    return config[DaoId.Example];
-  } else if (Number(query?.id) === DaoId.ExampleComp) {
-    return config[DaoId.ExampleComp];
-  } else if (Number(query?.id) === DaoId.PoolTogether) {
+  if (Number(query?.id) === DaoId.PoolTogether) {
     return config[DaoId.PoolTogether];
   } else if (Number(query?.id) === DaoId.Gitcoin) {
     return config[DaoId.Gitcoin];
   }
-  return config[DaoId.Example];
+  return config[DaoId.PoolTogether];
 };
