@@ -160,6 +160,12 @@ const Bridge = () => {
   };
 
   const formatError = (e: Error | null): ErrorReturnType => {
+    if (!isSufficientBalance) {
+      return {
+        errorType: ErrorType.ERC20AmountError,
+        errorReason: `Error: Not enough ${source.token?.symbol} in wallet.`,
+      };
+    } 
     if (e === null) return { errorType: undefined, errorReason: undefined };
     // Suppress ChainMismatchError as we have other checks in place to prevent
     if (e.name === 'ChainMismatchError') return { errorType: undefined, errorReason: undefined };
@@ -193,12 +199,7 @@ const Bridge = () => {
     const foundError = errorTypes.find(({ errorSearchString }) =>
       e.message?.includes(errorSearchString)
     );
-    if (!isSufficientBalance) {
-      return {
-        errorType: ErrorType.ERC20AmountError,
-        errorReason: `Error: Not enough ${source.token?.symbol} in wallet.`,
-      };
-    } else if (!foundError) {
+    if (!foundError) {
       return { errorType: ErrorType.Unknown, errorReason: `Can't parse error.\n\n${e.message}.` };
     }
     return { errorType: foundError.errorType, errorReason: foundError.prettyReason };
@@ -211,7 +212,7 @@ const Bridge = () => {
   // Define new variables that help control UI states and display pretty error strings
   const { errorType, errorReason } = formatError(error);
   // Helpers for different parts of UI state
-  const isAmountError = errorType === ErrorType.ERC20AmountError || !isSufficientBalance;
+  const isAmountError = errorType === ErrorType.ERC20AmountError;
   const isEthError = errorType === ErrorType.InsufficientNativeCurrencyError;
 
   return (
