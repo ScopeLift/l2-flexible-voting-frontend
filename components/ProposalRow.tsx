@@ -252,8 +252,8 @@ export default function ProposalRow({
               </div>
             </div>
           ) : (
-            <div className="flex items-center justify-center p-5 bg-gray-100 h-32">
-              Proposal not bridged to L2
+            <div className="flex items-center justify-center p-5 ring-gray-200 rounded-lg h-32">
+              Proposal is not yet bridged to L2
             </div>
           )}
         </div>
