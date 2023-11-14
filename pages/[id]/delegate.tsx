@@ -41,7 +41,7 @@ const Delegate: NextPage = () => {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<FormData>();
+  } = useForm<FormData>({ mode: 'onChange' });
 
   const l2VotingWeightFormatted = formatUnits(
     l2VotingWeight || BigInt(0),
@@ -136,10 +136,10 @@ const Delegate: NextPage = () => {
                       },
                       validate: async (value) => {
                         const validAddress = isAddress(value);
-                        if (validAddress) {
-                          return true;
-                        }
-                        return 'Invalid address';
+                        const isBalanceNonzero = (l2.token?.value || BigInt(0)) > BigInt(0);
+                        if (validAddress && isBalanceNonzero) return true;
+                        if (!isBalanceNonzero) return 'Cannot delegate with 0 balance.';
+                        return 'Not a valid address.';
                       },
                     })}
                   />
@@ -151,7 +151,7 @@ const Delegate: NextPage = () => {
                 </div>
                 {mounted && errors?.delegateAddress && (
                   <p className="mt-2 text-sm text-red-600" id="email-error">
-                    Not a valid address.
+                    {errors.delegateAddress.message}
                   </p>
                 )}
                 {mounted && chain?.id !== config.l2.chain.id ? (
