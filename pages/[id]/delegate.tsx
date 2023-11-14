@@ -10,6 +10,7 @@ import { useForm } from 'react-hook-form';
 import { useBalances } from '@/hooks/useBalances';
 import { useConfig } from '@/hooks/useConfig';
 import { useHasMounted } from '@/hooks/useHasMounted';
+import { useSwitchChain } from '@/hooks/useSwitchChain';
 import { useL2CurrentVotingWeight } from '@/hooks/useCurrentVotingWeight';
 import { useL2DelegateVote } from '@/hooks/useL2DelegateVote';
 import { useL2Delegate } from '@/hooks/useL2Delegate';
@@ -161,7 +162,9 @@ const Delegate: NextPage = () => {
                   <button
                     type="button"
                     className="mt-5 rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:bg-gray-300 disabled:cursor-not-allowed"
-                    onClick={() => walletClient?.switchChain({ id: config.l2.chain.id })}
+                    onClick={async () => {
+                      if (walletClient) useSwitchChain(walletClient, config.l2.chain);
+                    }}
                     disabled={walletIsLoading}
                   >
                     Switch network to {config.l2.chain.name}
