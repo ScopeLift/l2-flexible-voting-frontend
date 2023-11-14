@@ -79,7 +79,7 @@ export default function Notifications() {
                             <span className="inline-block ml-2 text-indigo-500 text-xs">
                               {isCrossChain && (
                                 <>
-                                  <p>Cross chain request will resolve in ~20 mins</p>
+                                  <p>Bridge transaction will be relayed in ~20 min</p>
                                   <div
                                     className="cursor-pointer font-bold"
                                     onClick={() => {

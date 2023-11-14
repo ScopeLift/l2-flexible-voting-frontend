@@ -1,10 +1,8 @@
 import { Fragment, useState } from 'react';
-import { useTransaction } from 'wagmi';
-import Image from 'next/image';
 import { Dialog, Transition } from '@headlessui/react';
 import { XMarkIcon } from '@heroicons/react/24/outline';
-import Spinner from '@/components/Spinner';
-import { InformationCircleIcon } from '@heroicons/react/24/outline';
+import { InformationCircleIcon, ArrowTopRightOnSquareIcon } from '@heroicons/react/24/outline';
+import { WORMHOLE_NETWORK_TYPE } from '@/util/constants';
 
 type Props = {
   isOpen: boolean;
@@ -53,21 +51,23 @@ const BridgeTransactionModal = ({ isOpen, onClose, txHash }: Props) => {
                   as="h3"
                   className="flex items-center text-base font-semibold leading-6 text-gray-900"
                 >
-                  <InformationCircleIcon className="mr-1 h-5" /> Cross Chain Info
+                  <InformationCircleIcon className="mr-1 h-5" /> Bridge Status Details
                 </Dialog.Title>
                 <div className="flex flex-col items-center">
                   <p className="text-sm py-2 mt-4 w-3/4">
-                    We are currently waiting for the relayer to relay your transactions. Your tokens
-                    will arrive <strong>~20</strong> minutes after the transaction is confirmed.
+                    Your cross chain transaction is in the queue to be relayed. Your tokens will
+                    arrive on the destination network <strong>~20</strong> minutes after your
+                    transaction on the source network succeeds.
                   </p>
                   <p className="text-sm py-2 mt-4 w-3/4">
                     After the relaying is successful, details will appear on{' '}
                     <a
-                      className="cursor-pointer font-bold text-gray-700 decoration-1 underline"
+                      className="flex gap-1 items-center cursor-pointer font-bold text-gray-700 decoration-1 underline"
                       target="_blank"
-                      href={`https://wormholescan.io/#/tx/${txHash}`}
+                      href={`https://wormholescan.io/#/tx/${txHash}?network=${WORMHOLE_NETWORK_TYPE}`}
                     >
                       Wormholescan
+                      <ArrowTopRightOnSquareIcon className="h-3" />
                     </a>
                     .
                   </p>
