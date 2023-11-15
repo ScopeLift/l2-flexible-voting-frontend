@@ -105,7 +105,7 @@ const createFetcher =
   };
 
 export const useL1Proposals = () => {
-  const { l1 } = useConfig();
+  const { l1, id: daoId } = useConfig();
   const publicClient = usePublicClient({ chainId: l1.chain.id });
   const { address } = useAccount();
   const fetcher = createFetcher({
@@ -113,7 +113,7 @@ export const useL1Proposals = () => {
     deployBlock: BigInt(l1.deployBlock),
     address: l1.governor,
   });
-  const { data: proposalData, error, isLoading } = useSWR('fetchL1Proposals', fetcher);
+  const { data: proposalData, error, isLoading } = useSWR(`fetchL1Proposals-${daoId}`, fetcher);
   const { data: votingPower } = useContractReads({
     contracts: proposalData?.map((proposal) => {
       return {
@@ -146,7 +146,7 @@ export const useL1Proposals = () => {
 export const useL2Proposals = (
   l1Proposals: { proposalId: string; startBlock: string }[] | undefined
 ) => {
-  const { l2 } = useConfig();
+  const { l2, name: daoId } = useConfig();
   const publicClient = usePublicClient({ chainId: l2.chain.id });
   const { address } = useAccount();
   const fetcher = createFetcher({
@@ -154,7 +154,7 @@ export const useL2Proposals = (
     deployBlock: BigInt(l2.deployBlock),
     address: l2.voteAggregator,
   });
-  const { data: proposalData, error, isLoading } = useSWR('fetchL2Proposals', fetcher);
+  const { data: proposalData, error, isLoading } = useSWR(`fetchL2Proposals-${daoId}`, fetcher);
   const { data: votingPower } = useContractReads({
     contracts: proposalData?.map((proposal) => {
       return {
