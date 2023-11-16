@@ -5,6 +5,7 @@ import clsx from 'clsx';
 import { Menu, Transition } from '@headlessui/react';
 import { ChevronDownIcon } from '@heroicons/react/20/solid';
 import { useConfig } from '@/hooks/useConfig';
+import { usePathname } from 'next/navigation'
 
 type Option<T> = {
   value: T;
@@ -19,6 +20,8 @@ type Props<T> = {
 
 const DaoMenu = <T,>(props: Props<T>) => {
   const config = useConfig();
+  const pathName= usePathname();
+
   return (
     <Menu as="div" className={`relative inline-block text-left ${props.className}`}>
       <div>
@@ -51,7 +54,7 @@ const DaoMenu = <T,>(props: Props<T>) => {
                 {({ active }) => {
                   return (
                     <Link
-                      href={`/${option.value}/bridge`}
+                      href={`/${option.value}/${pathName.split("/").slice(-1)}`}
                       className={clsx(
                         active ? ' flex bg-gray-100 text-gray-900' : 'text-gray-700',
                         'flex block px-4 py-2 text-sm'
