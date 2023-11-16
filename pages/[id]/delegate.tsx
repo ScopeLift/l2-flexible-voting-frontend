@@ -70,7 +70,7 @@ const Delegate: NextPage = () => {
       </Head>
       <div className="flex justify-center align-center self-center h-full max-w-lg">
         <div className="flex flex-col m-4 w-full gap-5">
-          <CardWithHeader header={'Bridge tokens'} className="w-full">
+          <CardWithHeader header={`Delegate on ${mounted && config.l2.chain.name}`} className="w-full">
             <div className="flex items-center gap-1.5 text-gray-600 py-2 mb-2 ">
               <InformationCircleIcon className="h-4" />
               <p className="text-sm ">

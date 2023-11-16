@@ -12,6 +12,7 @@ import ProposalRow from '@/components/ProposalRow';
 
 // proposal information
 //
+
 // 1. Name of the proposal
 // 2. Start date
 // 3. L2 voting end date
