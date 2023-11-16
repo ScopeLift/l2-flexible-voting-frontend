@@ -70,7 +70,10 @@ const Delegate: NextPage = () => {
       </Head>
       <div className="flex justify-center align-center self-center h-full max-w-lg">
         <div className="flex flex-col m-4 w-full gap-5">
-          <CardWithHeader header={`Delegate on ${mounted && config.l2.chain.name}`} className="w-full">
+          <CardWithHeader
+            header={`Delegate on ${mounted && config.l2.chain.name}`}
+            className="w-full"
+          >
             <div className="flex items-center gap-1.5 text-gray-600 py-2 mb-2 ">
               <InformationCircleIcon className="h-4" />
               <p className="text-sm ">
@@ -171,7 +174,9 @@ const Delegate: NextPage = () => {
                     <button
                       type="button"
                       className="mt-5 rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:bg-gray-300 disabled:cursor-not-allowed"
-                      onClick={() => walletClient?.switchChain({ id: config.l2.chain.id })}
+                      onClick={async () => {
+                        if (walletClient) switchChain(walletClient, config.l2.chain);
+                      }}
                       disabled={walletIsLoading}
                     >
                       Switch network to {config.l2.chain.name}
