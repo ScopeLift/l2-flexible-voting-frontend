@@ -6,6 +6,7 @@ import { Proposal } from '@/hooks/useProposals';
 import { useConfig } from '@/hooks/useConfig';
 import { useFees } from '@/hooks/useFees';
 import Image from 'next/image';
+import { useTokenInfo } from '@/hooks/useTokenInfo';
 export default function ProposalRow({
   id,
   isBridged,
@@ -17,7 +18,7 @@ export default function ProposalRow({
   votingPower,
 }: Proposal) {
   const { l1, l2, daoLogo } = useConfig();
-  const { fees } = useFees();
+  const { data: tokenInfo } = useTokenInfo();
 
   const totalVotesL1 = votes.l1.forVotes + votes.l1.againstVotes + votes.l1.abstainVotes;
   const totalVotesNotBridged = votes.l2NotBridged
@@ -45,11 +46,11 @@ export default function ProposalRow({
       <>
         <div className={'flex w-full items-center text-' + color + '-500'}>
           <span className="font-bold text-xs">
-            {nFormatter(+formatUnits(votes, l1.tokenDecimals))}
+            {nFormatter(+formatUnits(votes, tokenInfo.l1.decimals))}
           </span>
           <span className={'ml-1 text-xs ' + 'text-' + color + '-300'}>
             {bridged > BigInt(0)
-              ? `(${nFormatter(+formatUnits(bridged, l1.tokenDecimals))} bridged from L2)`
+              ? `(${nFormatter(+formatUnits(bridged, tokenInfo.l2.decimals))} bridged from L2)`
               : ''}
           </span>
         </div>
@@ -111,11 +112,11 @@ export default function ProposalRow({
       <>
         <div className={'flex items-center text-' + color + '-500'}>
           <span className="font-bold text-xs">
-            {nFormatter(+formatUnits(bridged + notBridged, l2.tokenDecimals))}
+            {nFormatter(+formatUnits(bridged + notBridged, tokenInfo.l2.decimals))}
           </span>
           <span className={'ml-1 text-xs ' + 'text-' + color + '-300'}>
             {notBridged > BigInt(0)
-              ? `(${nFormatter(+formatUnits(notBridged, l2.tokenDecimals))} not bridged)`
+              ? `(${nFormatter(+formatUnits(notBridged, tokenInfo.l2.decimals))} not bridged)`
               : ''}
           </span>
         </div>
@@ -215,7 +216,7 @@ export default function ProposalRow({
                           'ml-1 ring-1 rounded-lg inline-block py-1 px-2'
                         )}
                       >
-                        {nFormatter(+formatUnits(votingPower.l2, l2.tokenDecimals))}
+                        {nFormatter(+formatUnits(votingPower.l2, tokenInfo.l2.decimals))}
                       </span>
                     </div>
                   )}
@@ -274,7 +275,7 @@ export default function ProposalRow({
                       'ml-1 ring-1 rounded-lg inline-block py-1 px-2'
                     )}
                   >
-                    {nFormatter(+formatUnits(votingPower.l1, l1.tokenDecimals))}
+                    {nFormatter(+formatUnits(votingPower.l1, tokenInfo.l1.decimals))}
                   </span>
                 </div>
               )}

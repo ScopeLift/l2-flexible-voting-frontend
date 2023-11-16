@@ -16,6 +16,7 @@ import ErrorBox from '@/components/ErrorBox';
 import Spinner from '@/components/Spinner';
 import { useWalletClient } from 'wagmi';
 import Image from 'next/image';
+import { useTokenInfo } from '@/hooks/useTokenInfo';
 
 enum BridgeTarget {
   L1,
@@ -36,6 +37,7 @@ const Bridge = () => {
   const mounted = useHasMounted();
   const { fees } = useFees();
   const { l1, l2 } = useBalances();
+  const { data: tokenInfo } = useTokenInfo();
   const { l1: l1Config, l2: l2Config } = useConfig();
   const [bridgeTarget, setBridgeTarget] = useState<BridgeTarget>(BridgeTarget.L2);
   const { address } = useAccount();
@@ -46,15 +48,30 @@ const Bridge = () => {
   const [amount, setAmount] = useState<string>('0');
   const rawAmount = parseUnits(amount, l1.token?.decimals || 18);
   const isNonZeroInput = rawAmount !== BigInt(0);
-
   const source =
     bridgeTarget === BridgeTarget.L2
-      ? { ...l1Config, ...l1, fee: fees?.l1 || BigInt(0) }
-      : { ...l2Config, ...l2, fee: fees?.l2 || BigInt(0) };
+      ? {
+          ...l1Config,
+          ...{ ...l1, token: { ...l1.token, ...tokenInfo.l1 } },
+          fee: fees?.l1 || BigInt(0),
+        }
+      : {
+          ...l2Config,
+          ...{ ...l2, token: { ...l2.token, ...tokenInfo.l2 } },
+          fee: fees?.l2 || BigInt(0),
+        };
   const target =
-    bridgeTarget === BridgeTarget.L2
-      ? { ...l2Config, ...l2, fee: fees?.l2 || BigInt(0) }
-      : { ...l1Config, ...l1, fee: fees?.l1 || BigInt(0) };
+    bridgeTarget !== BridgeTarget.L2
+      ? {
+          ...l1Config,
+          ...{ ...l1, token: { ...l1.token, ...tokenInfo.l1 } },
+          fee: fees?.l1 || BigInt(0),
+        }
+      : {
+          ...l2Config,
+          ...{ ...l2, token: { ...l2.token, ...tokenInfo.l2 } },
+          fee: fees?.l2 || BigInt(0),
+        };
 
   // l1 token allowance
   const { data: allowanceL1 } = useContractRead({
@@ -122,20 +139,6 @@ const Bridge = () => {
     value: fees?.l2 || BigInt(0),
     isCrossChain: true,
   });
-
-  console.log(
-    'bridge to L2 enabled:',
-    isNonZeroInput &&
-      bridgeTarget === BridgeTarget.L2 &&
-      !needsAllowanceL1 &&
-      !approveL1IsLoading &&
-      source.chain.id === chain?.id
-  );
-
-  console.log(
-    'bridge to L1 enabled: ',
-    isNonZeroInput && bridgeTarget === BridgeTarget.L1 && source.chain.id === chain?.id
-  );
 
   const handleSwitchDirection = () => {
     setBridgeTarget(bridgeTarget === BridgeTarget.L2 ? BridgeTarget.L1 : BridgeTarget.L2);
