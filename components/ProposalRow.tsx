@@ -196,7 +196,7 @@ export default function ProposalRow({
         {/* L2 Box */}
         <div className="ring-1 ring-inset ring-gray-200 rounded-lg inline-block bg-white">
           {isBridged ? (
-            <div className="px-10 pt-10">
+            <div className="p-10">
               <div className="flex justify-start items-center mb-5">
                 <h2 className="text-xl">L2</h2>
                 <div className="ml-2">
@@ -246,9 +246,6 @@ export default function ProposalRow({
                   <p className="text-xs text-gray-400 mb-2">Votes abstain</p>
                   <div>{l2AbstainVoteBar}</div>
                 </div>
-              </div>
-              <div className="text-xs text-gray-400 text-center mt-10 pb-5">
-                * L2 votes are not counted until votes are bridged to L1 *
               </div>
             </div>
           ) : (
