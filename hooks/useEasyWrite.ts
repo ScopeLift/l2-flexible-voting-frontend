@@ -110,6 +110,7 @@ export const useEasyWrite = (
     hash: writeData?.hash,
     chainId: config.request?.chainId,
     isLoading,
+    isTransactionDataLoading,
     error,
     write: contractWrite,
   };
