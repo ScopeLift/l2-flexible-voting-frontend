@@ -15,6 +15,7 @@ import { useL2DelegateVote } from '@/hooks/useL2DelegateVote';
 import { useL2Delegate } from '@/hooks/useL2Delegate';
 import { ZERO_ADDRESS } from '@/util/constants';
 import Spinner from '@/components/Spinner';
+import { switchChain } from '@/util';
 
 type FormData = {
   delegateAddress: string;
@@ -158,7 +159,9 @@ const Delegate: NextPage = () => {
                   <button
                     type="button"
                     className="mt-5 rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:bg-gray-300 disabled:cursor-not-allowed"
-                    onClick={() => walletClient?.switchChain({ id: config.l2.chain.id })}
+                    onClick={async () => {
+                      if (walletClient) switchChain(walletClient, config.l2.chain);
+                    }}
                     disabled={walletIsLoading}
                   >
                     Switch network to {config.l2.chain.name}
