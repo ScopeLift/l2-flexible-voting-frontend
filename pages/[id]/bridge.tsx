@@ -268,6 +268,7 @@ const Bridge = () => {
               <div className="relative mt-2 rounded-md shadow-sm">
                 <input
                   type="number"
+                  min="0"
                   name="amount"
                   id="amount"
                   className={classNames(
