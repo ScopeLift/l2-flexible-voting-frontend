@@ -41,7 +41,7 @@ const Delegate: NextPage = () => {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<FormData>();
+  } = useForm<FormData>({ mode: 'onChange' });
 
   const l2VotingWeightFormatted = formatUnits(
     l2VotingWeight || BigInt(0),
@@ -55,6 +55,9 @@ const Delegate: NextPage = () => {
   if (delegateError) {
     console.error(`Delegating failed ${delegateError}`);
   }
+  const onSubmit = handleSubmit(async () => {
+    write?.();
+  });
 
   return (
     <>
@@ -114,13 +117,7 @@ const Delegate: NextPage = () => {
                   has been proposed in order to be considered for that proposal.
                 </p>
               </div>
-              <form
-                className="py-3"
-                onSubmit={(event) => {
-                  event?.preventDefault();
-                  write!();
-                }}
-              >
+              <form className="py-3" onSubmit={onSubmit}>
                 <label className="block text-sm font-medium leading-6 text-gray-900">
                   Delegate Address
                 </label>
@@ -139,10 +136,10 @@ const Delegate: NextPage = () => {
                       },
                       validate: async (value) => {
                         const validAddress = isAddress(value);
-                        if (validAddress) {
-                          return true;
-                        }
-                        return 'Invalid address';
+                        const isBalanceNonzero = (l2.token?.value || BigInt(0)) > BigInt(0);
+                        if (validAddress && isBalanceNonzero) return true;
+                        if (!isBalanceNonzero) return 'Cannot delegate with 0 balance.';
+                        return 'Not a valid address.';
                       },
                     })}
                   />
@@ -154,7 +151,7 @@ const Delegate: NextPage = () => {
                 </div>
                 {mounted && errors?.delegateAddress && (
                   <p className="mt-2 text-sm text-red-600" id="email-error">
-                    Not a valid address.
+                    {errors.delegateAddress.message}
                   </p>
                 )}
                 {mounted && chain?.id !== config.l2.chain.id ? (
@@ -170,7 +167,7 @@ const Delegate: NextPage = () => {
                   <button
                     className="flex flex-row mt-5 items-center rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:bg-gray-300 disabled:cursor-not-allowed"
                     type="submit"
-                    disabled={(l2.token?.value || BigInt(0)) <= BigInt(0) || isLoading}
+                    disabled={Boolean(errors?.delegateAddress) || isLoading}
                   >
                     Delegate
                     {isLoading && (
