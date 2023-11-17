@@ -237,7 +237,7 @@ export const useProposals = () => {
   const { data: l1Proposals, isLoading: isL1Loading } = useL1Proposals();
   const { data: l2Proposals, isLoading: isL2Loading } = useL2Proposals(l1Proposals);
   const { data: l2ProposalsState, isLoading: isL2StateLoading } = useL2ProposalsState(l1Proposals);
-  const { l1, l2 } = useConfig();
+  const { l1 } = useConfig();
   const { data: l1Block } = useBlockNumber({ chainId: l1.chain.id });
 
   const data: Proposal[] | undefined = l1Proposals
@@ -298,5 +298,5 @@ export const useProposals = () => {
       };
     })
     .reverse();
-  return { data, isLoading: isL1Loading || isL2Loading };
+  return { data, isLoading: isL1Loading || isL2Loading || isL2StateLoading };
 };
