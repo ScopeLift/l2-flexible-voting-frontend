@@ -189,15 +189,59 @@ export const useL2Proposals = (
   };
 };
 
+const useL2ProposalsState = (l2Proposals?: { proposalId: string; startBlock: string }[]) => {
+  const { l2 } = useConfig();
+  const {
+    data: proposalState,
+    isLoading,
+    error,
+  } = useContractReads({
+    contracts: l2Proposals?.map((proposal) => {
+      return {
+        address: l2.voteAggregator,
+        abi: [parseAbiItem('function state(uint256 proposalId) external view returns (uint8)')],
+        functionName: 'state',
+        chainId: l2.chain.id,
+        args: [proposal.proposalId || '0'],
+      };
+    }),
+  });
+  const data = proposalState?.map((proposal, i) => {
+    return {
+      ...proposal,
+      i,
+    };
+  });
+  return {
+    data,
+    isLoading,
+    error,
+  };
+};
+
+const statusLabel = (contractStatus?: number) => {
+  if (contractStatus === 0) {
+    return 'open';
+  } else if (contractStatus === 1) {
+    return 'open';
+  } else if (contractStatus === 2) {
+    return 'closed';
+  } else if (contractStatus === 6) {
+    return 'closed';
+  } else {
+    return 'closed';
+  }
+};
+
 export const useProposals = () => {
   const { data: l1Proposals, isLoading: isL1Loading } = useL1Proposals();
   const { data: l2Proposals, isLoading: isL2Loading } = useL2Proposals(l1Proposals);
+  const { data: l2ProposalsState, isLoading: isL2StateLoading } = useL2ProposalsState(l1Proposals);
   const { l1, l2 } = useConfig();
   const { data: l1Block } = useBlockNumber({ chainId: l1.chain.id });
-  const { data: l2Block } = useBlockNumber({ chainId: l2.chain.id });
 
   const data: Proposal[] | undefined = l1Proposals
-    ?.map((proposal) => {
+    ?.map((proposal, i) => {
       const l2Proposal = l2Proposals?.find(
         (l2Proposal) => l2Proposal.proposalId === proposal.proposalId
       );
@@ -207,9 +251,9 @@ export const useProposals = () => {
         ? 'closed'
         : 'open';
       const l2ProposalStatus =
-        l2Proposal?.isCancelled || (l2Block && l2Block > BigInt(l2Proposal?.endBlock || 0))
-          ? 'closed'
-          : 'open';
+        !l2Proposal?.isCancelled && l2ProposalsState?.length && l2ProposalsState[i]
+          ? statusLabel(l2ProposalsState[i]?.result as number)
+          : 'closed';
       return {
         id: proposal.proposalId,
         description: proposal.description,
