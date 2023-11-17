@@ -206,14 +206,14 @@ const useL2ProposalsState = (l2Proposals?: { proposalId: string; startBlock: str
       };
     }),
   });
-  const data = proposalState?.map((proposal, i) => {
-    return {
-      ...proposal,
-      i,
-    };
-  });
+
   return {
-    data,
+    data: l2Proposals?.map((proposal, i) => {
+      return {
+        proposalId: proposal.proposalId,
+        state: proposalState?.[i].result,
+      };
+    }),
     isLoading,
     error,
   };
@@ -245,14 +245,17 @@ export const useProposals = () => {
       const l2Proposal = l2Proposals?.find(
         (l2Proposal) => l2Proposal.proposalId === proposal.proposalId
       );
+      const l2ProposalState = l2ProposalsState?.find(
+        (l2ProposalState) => proposal.proposalId === l2ProposalState.proposalId
+      )?.state;
       const l1ProposalStatus = proposal.isCancelled
         ? 'cancelled'
         : l1Block && l1Block > BigInt(proposal.endBlock)
         ? 'closed'
         : 'open';
       const l2ProposalStatus =
-        !l2Proposal?.isCancelled && l2ProposalsState?.length && l2ProposalsState[i]
-          ? statusLabel(l2ProposalsState[i]?.result as number)
+        !l2Proposal?.isCancelled && l2ProposalsState?.length && l2ProposalState
+          ? statusLabel(l2ProposalState as number)
           : 'closed';
       return {
         id: proposal.proposalId,
