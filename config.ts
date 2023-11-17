@@ -32,7 +32,7 @@ export const config = {
       deployBlock: 17089678n,
       tokenAddress: '0x8f536d795467F3f175CA60fa72c915D81A7DCCE0' as `0x${string}`,
       tokenLogo: '/pooltogetherLogo.svg',
-      voteAggregator: '0x1a3e5624769c3dc9106347a239523e4a08d85c38' as `0x${string}`,
+      voteAggregator: '0x4239c0D6d75217ec63Dee35C0eF9Fd239D9c3F7D' as `0x${string}`,
       tallyGovernorDomain: 'https://www.tally.xyz/gov/l2-flexible-voting-l2-comp-example-7',
     },
   },
