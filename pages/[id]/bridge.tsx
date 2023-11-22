@@ -18,6 +18,7 @@ import { useEasyWrite } from '@/hooks/useEasyWrite';
 import ErrorBox from '@/components/ErrorBox';
 import Spinner from '@/components/Spinner';
 import { useTokenInfo } from '@/hooks/useTokenInfo';
+import { ConnectButton } from '@rainbow-me/rainbowkit';
 
 enum BridgeTarget {
   L1,
@@ -335,10 +336,14 @@ const Bridge = () => {
                   {mounted ? formatUnits(source.fee, 18) : 0} ETH
                 </div>
               </div>
-              <div className="text-center">
-                {mounted &&
-                /* ⚪️ First, if we are on the wrong network, prompt to switch networks. Add new network to user wallet if needed. */
-                source.chain.id !== chain?.id ? (
+              <div className="flex text-center justify-center">
+                {mounted && !address ? (
+                  <div className="mt-5">
+                    <ConnectButton />
+                  </div>
+                ) : mounted &&
+                  /* ⚪️ First, if we are on the wrong network, prompt to switch networks. Add new network to user wallet if needed. */
+                  source.chain.id !== chain?.id ? (
                   <button
                     type="button"
                     className="mt-5 rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:bg-gray-300 disabled:cursor-not-allowed"

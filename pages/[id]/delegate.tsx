@@ -20,6 +20,7 @@ import Spinner from '@/components/Spinner';
 import { switchChain } from '@/util';
 import { Tooltip } from 'react-tooltip';
 import { useTokenInfo } from '@/hooks/useTokenInfo';
+import { ConnectButton } from '@rainbow-me/rainbowkit';
 
 type FormData = {
   delegateAddress: string;
@@ -180,7 +181,11 @@ const Delegate: NextPage = () => {
                       </p>
                     )}
                     <div className="flex justify-center">
-                      {mounted && chain?.id !== config.l2.chain.id ? (
+                      {mounted && !address ? (
+                        <div className="mt-5">
+                          <ConnectButton />
+                        </div>
+                      ) : mounted && chain?.id !== config.l2.chain.id ? (
                         <button
                           type="button"
                           className="mt-5 rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:bg-gray-300 disabled:cursor-not-allowed"
