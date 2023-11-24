@@ -314,10 +314,19 @@ export default function ProposalRow({
 }
 
 const ProposalState = ({ status }: { status: string }) => {
+	const green = ['bg-green-50', 'text-green-700', 'ring-green-600/20'] 
+	const red = ['bg-red-50', 'text-red-700', 'ring-red-600/20'] 
+	const gray = ['bg-gray-50', 'text-gray-700', 'ring-gray-600/20']
   const colors: Record<string, string[]> = {
-    cancelled: ['bg-gray-50', 'text-gray-700', 'ring-gray-600/20'],
-    open: ['bg-green-50', 'text-green-700', 'ring-green-600/20'],
-    closed: ['bg-red-50', 'text-red-700', 'ring-red-600/20'],
+    suceeded: green,
+    executed: green,
+    active: green,
+    closed: red,
+    defeated: red,
+    expired: red,
+    cancelled: gray,
+    pending: gray,
+    queued: gray,
   };
   return (
     <span

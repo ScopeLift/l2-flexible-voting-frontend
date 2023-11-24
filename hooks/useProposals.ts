@@ -104,7 +104,7 @@ const createFetcher =
     );
   };
 
-export const useL1Proposals = () => {
+export const useL1Proposals = ({fetchProposalState}: {fetchProposalState?: boolean}) => {
   const { l1, id: daoId } = useConfig();
   const publicClient = usePublicClient({ chainId: l1.chain.id });
   const { address } = useAccount();
@@ -129,17 +129,35 @@ export const useL1Proposals = () => {
       };
     }),
   });
+ const {
+    data: proposalState,
+    isLoading: proposalStateIsLoading,
+    error: proposalStateError,
+  } = useContractReads({
+    contracts: proposalData?.map((proposal) => {
+      return {
+        address: l1.governor,
+        abi: [parseAbiItem('function state(uint256 proposalId) external view returns (uint8)')],
+        functionName: 'state',
+        chainId: l1.chain.id,
+        args: [proposal.proposalId || '0'],
+      };
+    }),
+		enabled: Boolean(fetchProposalState),
+  });
+
   const data = proposalData?.map((proposal, i) => {
     return {
       tallyLink: `${l1.tallyGovernorDomain}/proposal/${proposal.proposalId}`,
       ...proposal,
       votingPower: (votingPower?.[i]?.result as bigint) || BigInt(0),
+      status: proposalState?.[i].result,
     };
   });
   return {
     data,
-    isLoading,
-    error,
+    isLoading: isLoading || proposalStateIsLoading,
+    error: error || proposalStateError,
   };
 };
 
@@ -211,7 +229,7 @@ const useL2ProposalsState = (l2Proposals?: { proposalId: string; startBlock: str
     data: l2Proposals?.map((proposal, i) => {
       return {
         proposalId: proposal.proposalId,
-        state: proposalState?.[i].result,
+        state: proposalState?.[i].result === 6 ? 'closed' : proposalState?.[i].result,
       };
     }),
     isLoading,
@@ -221,20 +239,28 @@ const useL2ProposalsState = (l2Proposals?: { proposalId: string; startBlock: str
 
 const statusLabel = (contractStatus?: number) => {
   if (contractStatus === 0) {
-    return 'open';
+    return 'pending';
   } else if (contractStatus === 1) {
-    return 'open';
+    return 'active';
   } else if (contractStatus === 2) {
-    return 'closed';
+    return 'cancelled';
+  } else if (contractStatus === 3) {
+    return 'defeated';
+  } else if (contractStatus === 4) {
+    return 'suceeded';
+  } else if (contractStatus === 5) {
+    return 'queued';
   } else if (contractStatus === 6) {
-    return 'closed';
+    return 'expired';
+  } else if (contractStatus === 7) {
+    return 'executed';
   } else {
     return 'closed';
   }
 };
 
 export const useProposals = () => {
-  const { data: l1Proposals, isLoading: isL1Loading } = useL1Proposals();
+  const { data: l1Proposals, isLoading: isL1Loading } = useL1Proposals({fetchProposalState: true});
   const { data: l2Proposals, isLoading: isL2Loading } = useL2Proposals(l1Proposals);
   const { data: l2ProposalsState, isLoading: isL2StateLoading } = useL2ProposalsState(l1Proposals);
   const { l1 } = useConfig();
@@ -250,9 +276,7 @@ export const useProposals = () => {
       )?.state;
       const l1ProposalStatus = proposal.isCancelled
         ? 'cancelled'
-        : l1Block && l1Block > BigInt(proposal.endBlock)
-        ? 'closed'
-        : 'open';
+        : statusLabel(proposal?.status);
       const l2ProposalStatus =
         !l2Proposal?.isCancelled && l2ProposalsState?.length && l2ProposalState
           ? statusLabel(l2ProposalState as number)
