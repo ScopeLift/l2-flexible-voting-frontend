@@ -52,7 +52,10 @@ export const useEasyWrite = (
       prev.isTransactionDataLoading: ${prev.isTransactionDataLoading}
       `
     );
-    if (!config.request) return;
+    if (!config.request?.chainId || !params.functionName) {
+      console.error('useEasyWrite must have a chainId or functionName');
+      return;
+    }
     // succeed
     if (hash && transactionData?.status === 'success' && prev.status !== 'success') {
       console.log('notify success');
@@ -102,6 +105,7 @@ export const useEasyWrite = (
     prev.waitError,
     params.functionName,
     config.request,
+    params.isCrossChain,
   ]);
 
   return {

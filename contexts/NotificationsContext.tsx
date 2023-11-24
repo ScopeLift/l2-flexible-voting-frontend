@@ -2,18 +2,20 @@ import { ReactNode, createContext, useContext, useState } from 'react';
 import Notifications from '@/components/Notifications';
 
 export type TxNotification = {
-  id: string;
   hash: `0x${string}`;
   functionName: string;
   txStatus: 'pending' | 'success' | 'reverted';
   chainId: number;
+  description?: string;
   isCrossChain?: boolean;
 };
 
+type TxNotificationWithId = TxNotification & { id: string };
+
 type NotificationsContextType = {
-  notifications: TxNotification[];
-  notify: Function;
-  dismiss: Function;
+  notifications: TxNotificationWithId[];
+  notify: (arg0: TxNotification) => void;
+  dismiss: (arg0: string) => void;
 };
 
 const NotificationsContext = createContext<NotificationsContextType>({
@@ -23,9 +25,15 @@ const NotificationsContext = createContext<NotificationsContextType>({
 });
 
 export const NotificationsProvider = ({ children }: { children: ReactNode }) => {
-  const [notifications, setNotifications] = useState<TxNotification[]>([]);
+  const [notifications, setNotifications] = useState<TxNotificationWithId[]>([]);
   const notify = (notification: TxNotification) => {
-    setNotifications([notification, ...notifications]);
+    setNotifications([
+      {
+        ...notification,
+        id: `${notification.hash}-${notification.txStatus}-${notification.chainId}`,
+      },
+      ...notifications,
+    ]);
   };
   const dismiss = (id: string) => {
     setNotifications(notifications.filter((n) => n.id !== id));
