@@ -4,7 +4,8 @@ import PillAction from '@/components/PillAction';
 import { formatUnits } from 'viem';
 import { Proposal } from '@/hooks/useProposals';
 import { useConfig } from '@/hooks/useConfig';
-import { useFees } from '@/hooks/useFees';
+import { Tooltip } from 'react-tooltip';
+import { InformationCircleIcon } from '@heroicons/react/24/outline';
 import Image from 'next/image';
 import { useTokenInfo } from '@/hooks/useTokenInfo';
 export default function ProposalRow({
@@ -48,11 +49,18 @@ export default function ProposalRow({
           <span className="font-bold text-xs">
             {nFormatter(+formatUnits(votes, tokenInfo.l1.decimals))}
           </span>
-          <span className={'ml-1 text-xs ' + 'text-' + color + '-300'}>
-            {bridged > BigInt(0)
-              ? `(${nFormatter(+formatUnits(bridged, tokenInfo.l2.decimals))} bridged from L2)`
-              : ''}
-          </span>
+
+          {bridged > BigInt(0) ? (
+            <div className="flex gap-1 justify-center items-center">
+              {' '}
+              <span className={'ml-1 text-xs ' + 'text-' + color + '-300'}>{`(${nFormatter(
+                +formatUnits(bridged, tokenInfo.l2.decimals)
+              )} bridged from L2)`}</span>{' '}
+              <InformationCircleIcon className="h-4 text-black" id="bridged-vote-explaination" />
+            </div> // Add tooltip
+          ) : (
+            ''
+          )}
         </div>
         <div className="mt-1 h-1 w-full bg-gray-100 relative rounded-md">
           <div
@@ -69,6 +77,10 @@ export default function ProposalRow({
             )}
           ></div>
         </div>
+        <Tooltip
+          anchorSelect="#bridged-vote-explaination"
+          content="Bridged votes will not be reflected until the cross chain message has been relayed to the L1's chain."
+        />
       </>
     );
   };
