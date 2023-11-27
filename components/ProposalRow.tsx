@@ -1,13 +1,15 @@
+import { InformationCircleIcon } from '@heroicons/react/24/outline';
 import clsx from 'clsx';
-import { nFormatter } from '@/util';
-import PillAction from '@/components/PillAction';
+import Image from 'next/image';
+import { Tooltip } from 'react-tooltip';
 import { formatUnits } from 'viem';
+
+import PillAction from '@/components/PillAction';
 import { Proposal } from '@/hooks/useProposals';
 import { useConfig } from '@/hooks/useConfig';
-import { Tooltip } from 'react-tooltip';
-import { InformationCircleIcon } from '@heroicons/react/24/outline';
-import Image from 'next/image';
 import { useTokenInfo } from '@/hooks/useTokenInfo';
+import { nFormatter } from '@/util';
+
 export default function ProposalRow({
   id,
   isBridged,
