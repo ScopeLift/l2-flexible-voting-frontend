@@ -80,7 +80,7 @@ export default function ProposalRow({
         </div>
         <Tooltip
           anchorSelect="#bridged-vote-explaination"
-          content="Bridged votes will not be reflected until the cross chain message has been relayed to the L1's chain."
+          content="Bridged votes will not be reflected until the cross chain message has been relayed to the L1's chain which may take up to 25 minutes."
         />
       </>
     );
