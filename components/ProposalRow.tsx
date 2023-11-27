@@ -52,12 +52,11 @@ export default function ProposalRow({
 
           {bridged > BigInt(0) ? (
             <div className="flex gap-1 justify-center items-center">
-              {' '}
               <span className={'ml-1 text-xs ' + 'text-' + color + '-300'}>{`(${nFormatter(
                 +formatUnits(bridged, tokenInfo.l2.decimals)
               )} bridged from L2)`}</span>{' '}
               <InformationCircleIcon className="h-4 text-black" id="bridged-vote-explaination" />
-            </div> // Add tooltip
+            </div>
           ) : (
             ''
           )}
