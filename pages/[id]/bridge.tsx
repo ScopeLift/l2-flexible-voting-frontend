@@ -234,6 +234,80 @@ const Bridge = () => {
   const { errorType, errorReason } = formatError(error);
   // Helpers for different parts of UI state
   const isAmountError = errorType === ErrorType.ERC20AmountError;
+  const isEthError = errorType === ErrorType.InsufficientNativeCurrencyError;
+
+  const connectButton = (
+    <div className="mt-5">
+      <ConnectButton />
+    </div>
+  );
+
+  const switchNetworkButton = (
+    <button
+      type="button"
+      className="mt-5 rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:bg-gray-300 disabled:cursor-not-allowed"
+      onClick={async () => {
+        if (walletClient) switchChain(walletClient, source.chain);
+      }}
+      disabled={walletIsLoading}
+    >
+      Switch network to {source.chain.name}
+    </button>
+  );
+
+  const setAllowanceButton = (
+    <button
+      type="button"
+      className="flex mx-auto mt-5 rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:bg-gray-300 disabled:cursor-not-allowed"
+      onClick={handleAllowance}
+      disabled={!approveL1 || approveL1IsLoading || approvalL1TxIsLoading || !isSufficientBalance}
+    >
+      Set allowance for {source.token?.symbol} on {target.chain.name}
+      {(approveL1IsLoading || approvalL1TxIsLoading) && (
+        <div className="ml-2">
+          <Spinner />
+        </div>
+      )}
+    </button>
+  );
+
+  const bridgeButton = (
+    /* ⚪️ Finally, we can show the bridge button. */
+    <button
+      type="submit"
+      className="mt-5 mx-auto flex flex-row items-center rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:bg-gray-300 disabled:cursor-not-allowed"
+      disabled={
+        bridgeTarget === BridgeTarget.L2
+          ? !bridgeToL2 || bridgeToL2IsLoading || !isNonZeroInput || !isValid
+          : !bridgeToL1 || bridgeToL1IsLoading || !isNonZeroInput || !isValid
+      }
+    >
+      Bridge to {target.chain.name}
+      {(bridgeToL2IsLoading || bridgeToL1IsLoading) && (
+        <span className="ml-2">
+          <Spinner />
+        </span>
+      )}
+    </button>
+  );
+
+  const actionButton = () => {
+    if (mounted) {
+      // If no wallet is connected, prompt to connect.
+      if (!address) {
+        return connectButton;
+        // If on the wrong network, prompt to switch networks.
+      } else if (source.chain.id !== chain?.id) {
+        return switchNetworkButton;
+        // If we're bridging to L2 and need an allowance first.
+      } else if (bridgeTarget === BridgeTarget.L2 && needsAllowanceL1) {
+        return setAllowanceButton;
+        // Default case
+      } else {
+        return bridgeButton;
+      }
+    }
+  };
 
   return (
     <>
@@ -336,66 +410,7 @@ const Bridge = () => {
                   {mounted ? formatUnits(source.fee, 18) : 0} ETH
                 </div>
               </div>
-              <div className="flex text-center justify-center">
-                {mounted && !address ? (
-                  <div className="mt-5">
-                    <ConnectButton />
-                  </div>
-                ) : mounted &&
-                  /* ⚪️ First, if we are on the wrong network, prompt to switch networks. Add new network to user wallet if needed. */
-                  source.chain.id !== chain?.id ? (
-                  <button
-                    type="button"
-                    className="mt-5 rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:bg-gray-300 disabled:cursor-not-allowed"
-                    onClick={async () => {
-                      if (walletClient) switchChain(walletClient, source.chain);
-                    }}
-                    disabled={walletIsLoading}
-                  >
-                    Switch network to {source.chain.name}
-                  </button>
-                ) : /* ⚪️ Otherwise, if we're bridging to L2 and need an allowance first, show allowance button. */
-                bridgeTarget === BridgeTarget.L2 && needsAllowanceL1 ? (
-                  <button
-                    type="button"
-                    className="flex mx-auto mt-5 rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:bg-gray-300 disabled:cursor-not-allowed"
-                    onClick={handleAllowance}
-                    disabled={
-                      !approveL1 ||
-                      approveL1IsLoading ||
-                      approvalL1TxIsLoading ||
-                      !isSufficientBalance
-                    }
-                  >
-                    Set allowance for {source.token?.symbol} on {target.chain.name}
-                    {(approveL1IsLoading || approvalL1TxIsLoading) && (
-                      <div className="ml-2">
-                        <Spinner />
-                      </div>
-                    )}
-                  </button>
-                ) : (
-                  mounted && (
-                    /* ⚪️ Finally, we can show the bridge button. */
-                    <button
-                      type="submit"
-                      className="mt-5 mx-auto flex flex-row items-center rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:bg-gray-300 disabled:cursor-not-allowed"
-                      disabled={
-                        bridgeTarget === BridgeTarget.L2
-                          ? !bridgeToL2 || bridgeToL2IsLoading || !isNonZeroInput || !isValid
-                          : !bridgeToL1 || bridgeToL1IsLoading || !isNonZeroInput || !isValid
-                      }
-                    >
-                      Bridge to {target.chain.name}
-                      {(bridgeToL2IsLoading || bridgeToL1IsLoading) && (
-                        <span className="ml-2">
-                          <Spinner />
-                        </span>
-                      )}
-                    </button>
-                  )
-                )}
-              </div>
+              <div className="flex text-center justify-center">{actionButton()}</div>
               <div className="mt-5">
                 {errorReason && !isAmountError && (
                   <ErrorBox heading="There's a problem simulating your bridge transaction:">
