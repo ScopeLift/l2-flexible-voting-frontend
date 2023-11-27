@@ -104,7 +104,7 @@ const createFetcher =
     );
   };
 
-export const useL1Proposals = ({fetchProposalState}: {fetchProposalState?: boolean}) => {
+export const useL1Proposals = ({ fetchProposalState }: { fetchProposalState?: boolean }) => {
   const { l1, id: daoId } = useConfig();
   const publicClient = usePublicClient({ chainId: l1.chain.id });
   const { address } = useAccount();
@@ -129,7 +129,7 @@ export const useL1Proposals = ({fetchProposalState}: {fetchProposalState?: boole
       };
     }),
   });
- const {
+  const {
     data: proposalState,
     isLoading: proposalStateIsLoading,
     error: proposalStateError,
@@ -143,7 +143,7 @@ export const useL1Proposals = ({fetchProposalState}: {fetchProposalState?: boole
         args: [proposal.proposalId || '0'],
       };
     }),
-		enabled: Boolean(fetchProposalState),
+    enabled: Boolean(fetchProposalState),
   });
 
   const data = proposalData?.map((proposal, i) => {
@@ -151,7 +151,7 @@ export const useL1Proposals = ({fetchProposalState}: {fetchProposalState?: boole
       tallyLink: `${l1.tallyGovernorDomain}/proposal/${proposal.proposalId}`,
       ...proposal,
       votingPower: (votingPower?.[i]?.result as bigint) || BigInt(0),
-      status: proposalState?.[i].result,
+      status: proposalState?.[i].result as number,
     };
   });
   return {
@@ -260,23 +260,23 @@ const statusLabel = (contractStatus?: number) => {
 };
 
 export const useProposals = () => {
-  const { data: l1Proposals, isLoading: isL1Loading } = useL1Proposals({fetchProposalState: true});
+  const { data: l1Proposals, isLoading: isL1Loading } = useL1Proposals({
+    fetchProposalState: true,
+  });
   const { data: l2Proposals, isLoading: isL2Loading } = useL2Proposals(l1Proposals);
   const { data: l2ProposalsState, isLoading: isL2StateLoading } = useL2ProposalsState(l1Proposals);
   const { l1 } = useConfig();
   const { data: l1Block } = useBlockNumber({ chainId: l1.chain.id });
 
   const data: Proposal[] | undefined = l1Proposals
-    ?.map((proposal, i) => {
+    ?.map((proposal) => {
       const l2Proposal = l2Proposals?.find(
         (l2Proposal) => l2Proposal.proposalId === proposal.proposalId
       );
       const l2ProposalState = l2ProposalsState?.find(
         (l2ProposalState) => proposal.proposalId === l2ProposalState.proposalId
       )?.state;
-      const l1ProposalStatus = proposal.isCancelled
-        ? 'cancelled'
-        : statusLabel(proposal?.status);
+      const l1ProposalStatus = proposal.isCancelled ? 'cancelled' : statusLabel(proposal?.status);
       const l2ProposalStatus =
         !l2Proposal?.isCancelled && l2ProposalsState?.length && l2ProposalState
           ? statusLabel(l2ProposalState as number)
