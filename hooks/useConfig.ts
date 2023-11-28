@@ -6,10 +6,8 @@ export const useConfig = () => {
   if (Array.isArray(query.id)) {
     throw new Error('Too many ids have been specified');
   }
-  if (Number(query?.id) === DaoId.PoolTogether) {
+  if (!query.id || !(query.id in config)) {
     return config[DaoId.PoolTogether];
-  } else if (Number(query?.id) === DaoId.Gitcoin) {
-    return config[DaoId.Gitcoin];
   }
-  return config[DaoId.PoolTogether];
+  return config[query.id as DaoId];
 };
