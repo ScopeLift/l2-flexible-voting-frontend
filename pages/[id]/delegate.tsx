@@ -5,7 +5,7 @@ import { InformationCircleIcon } from '@heroicons/react/24/outline';
 import type { NextPage } from 'next';
 import Head from 'next/head';
 import Image from 'next/image';
-import { useAccount, useNetwork, useWalletClient } from 'wagmi';
+import { useAccount, useEnsAvatar, useEnsName, useNetwork, useWalletClient } from 'wagmi';
 import { isAddress, formatUnits } from 'viem';
 import { useForm } from 'react-hook-form';
 import { useBalances } from '@/hooks/useBalances';
@@ -18,6 +18,7 @@ import { ZERO_ADDRESS } from '@/util/constants';
 import CardWithHeader from '@/components/CardWithHeader';
 import Spinner from '@/components/Spinner';
 import { switchChain } from '@/util';
+import { getEnsAddress } from '@/util/ens';
 import { Tooltip } from 'react-tooltip';
 import { useTokenInfo } from '@/hooks/useTokenInfo';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
@@ -35,7 +36,6 @@ const Delegate: NextPage = () => {
   const { data: walletClient, isLoading: walletIsLoading } = useWalletClient();
   const { chain } = useNetwork();
   const [delegateAddress, setDelegateAddress] = useState(address);
-  const { data: delegatee } = useL2Delegate({});
   const { data: l2VotingWeight } = useL2CurrentVotingWeight({
     voterAddress: address || ZERO_ADDRESS,
   });
@@ -47,8 +47,11 @@ const Delegate: NextPage = () => {
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isValid },
   } = useForm<FormData>({ mode: 'onChange' });
+  const { data: delegatee } = useL2Delegate({ enabled: isValid });
+  const { data: delegateEnsName } = useEnsName({ address: delegatee, chainId: 1 });
+  const { data: delegateEnsAvatar } = useEnsAvatar({ name: delegateEnsName, chainId: 1 });
 
   const l2VotingWeightFormatted = formatUnits(
     l2VotingWeight || BigInt(0),
@@ -147,7 +150,14 @@ const Delegate: NextPage = () => {
                     <div className="self-center font-mono">
                       {mounted && delegatee !== ZERO_ADDRESS ? (
                         <div className="flex items-start gap-1">
-                          {delegatee}{' '}
+												                            {delegateEnsAvatar && (
+                              <img
+                                className="inline-block h-6 w-6 rounded-full"
+                                src={delegateEnsAvatar}
+                                alt=""
+                              />
+                            )}
+                          {delegateEnsName || delegatee}{' '}
                           <InformationCircleIcon
                             id="delegate-address-information"
                             className="h-4"
@@ -179,10 +189,18 @@ const Delegate: NextPage = () => {
                       aria-invalid="true"
                       aria-describedby="address-error"
                       {...register('delegateAddress', {
-                        onChange: (e) => {
-                          setDelegateAddress(e.target.value);
+                        onChange: async (e) => {
+													const val = await getEnsAddress(e.target.value);
+                          setDelegateAddress(val || e.target.value);
                         },
                         validate: async (value) => {
+													  if (value?.includes('.eth')) {
+                              const val = await getEnsAddress(value);
+                              if (val !== null) {
+                                value = val;
+                              }
+                            }
+
                           const validAddress = isAddress(value);
                           const isBalanceNonzero = (l2.token?.value || BigInt(0)) > BigInt(0);
                           if (validAddress && isBalanceNonzero) return true;

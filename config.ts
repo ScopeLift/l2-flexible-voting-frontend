@@ -1,6 +1,6 @@
-import { goerli, optimismGoerli } from 'wagmi/chains';
+import { goerli, optimismGoerli, mainnet } from 'wagmi/chains';
 
-export const chains = [goerli, optimismGoerli];
+export const chains = [goerli, optimismGoerli, mainnet];
 
 export enum DaoId {
   PoolTogether = 'pool-together',
