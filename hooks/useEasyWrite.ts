@@ -17,9 +17,12 @@ export const useEasyWrite = (
     data: writeData,
     error: writeError,
     isLoading: writeIsLoading,
+    isSuccess: writeIsSuccess,
     write: contractWrite,
     status,
   } = useContractWrite(config);
+  console.log('In hook');
+  console.log(contractWrite);
   const {
     error: waitError,
     data: transactionData,
@@ -37,6 +40,7 @@ export const useEasyWrite = (
     isTransactionDataLoading,
     waitError,
   });
+  console.log('Waitint ended');
 
   useEffect(() => {
     // The different statuses that we intend to show are:
@@ -113,5 +117,7 @@ export const useEasyWrite = (
     isTransactionDataLoading,
     error,
     write: contractWrite,
+    isSuccess: writeIsSuccess,
+    status,
   };
 };

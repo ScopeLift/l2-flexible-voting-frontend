@@ -1,21 +1,22 @@
 import Head from 'next/head';
+import Image from 'next/image';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { formatUnits, maxUint256, parseAbi, parseUnits } from 'viem';
+import { useAccount, useContractRead, useNetwork, useWalletClient } from 'wagmi';
+
 import CardWithHeader from '@/components/CardWithHeader';
 import { ExclamationCircleIcon } from '@heroicons/react/20/solid';
 import { useHasMounted } from '@/hooks/useHasMounted';
 import { useConfig } from '@/hooks/useConfig';
-import { useState } from 'react';
-import { formatUnits, maxUint256, parseAbi, parseUnits } from 'viem';
 import { classNames, switchChain } from '@/util';
 import { ZERO_ADDRESS } from '@/util/constants';
 import { ArrowLongDownIcon } from '@heroicons/react/20/solid';
 import { useBalances } from '@/hooks/useBalances';
 import { useFees } from '@/hooks/useFees';
-import { useAccount, useContractRead, useNetwork } from 'wagmi';
 import { useEasyWrite } from '@/hooks/useEasyWrite';
 import ErrorBox from '@/components/ErrorBox';
 import Spinner from '@/components/Spinner';
-import { useWalletClient } from 'wagmi';
-import Image from 'next/image';
 import { useTokenInfo } from '@/hooks/useTokenInfo';
 
 enum BridgeTarget {
@@ -33,6 +34,10 @@ enum ErrorType {
 
 type ErrorReturnType = { errorType?: ErrorType; errorReason?: string };
 
+type FormData = {
+  amount: string;
+};
+
 const Bridge = () => {
   const mounted = useHasMounted();
   const { fees } = useFees();
@@ -44,9 +49,19 @@ const Bridge = () => {
   const { chain } = useNetwork();
   const { data: walletClient, isLoading: walletIsLoading } = useWalletClient();
 
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isValid },
+    watch,
+  } = useForm<FormData>({ mode: 'onChange' });
+
   // State for amount input
-  const [amount, setAmount] = useState<string>('0');
-  const rawAmount = parseUnits(amount, l1.token?.decimals || 18);
+  const amount = watch('amount', '0');
+  const rawAmount = parseUnits(
+    Boolean(errors.amount?.message) || isNaN(amount) ? '0' : amount,
+    l1.token?.decimals || 18
+  );
   const isNonZeroInput = rawAmount !== BigInt(0);
   const source =
     bridgeTarget === BridgeTarget.L2
@@ -105,10 +120,10 @@ const Bridge = () => {
   const {
     write: bridgeToL2,
     isLoading: bridgeToL2IsLoading,
+    isSuccess,
     error: bridgeToL2Error,
   } = useEasyWrite({
     enabled:
-      isNonZeroInput &&
       bridgeTarget === BridgeTarget.L2 &&
       !needsAllowanceL1 &&
       !approveL1IsLoading &&
@@ -123,6 +138,12 @@ const Bridge = () => {
     value: fees?.l1 || BigInt(0),
     isCrossChain: true,
   });
+  console.log('Nrp');
+  console.log(bridgeToL2);
+  console.log(bridgeToL2IsLoading);
+  console.log(isSuccess);
+  console.log(amount);
+  console.log(isValid);
 
   // 2️⃣ l2 bridge to l1
   const {
@@ -130,7 +151,7 @@ const Bridge = () => {
     isLoading: bridgeToL1IsLoading,
     error: bridgeToL1Error,
   } = useEasyWrite({
-    enabled: isNonZeroInput && bridgeTarget === BridgeTarget.L1 && source.chain.id === chain?.id,
+    enabled: bridgeTarget === BridgeTarget.L1 && source.chain.id === chain?.id,
     address: l2Config.tokenAddress,
     chainId: l2Config.chain.id,
     abi: parseAbi(['function l1Unlock(address to, uint256 amount) public payable']),
@@ -144,10 +165,6 @@ const Bridge = () => {
     setBridgeTarget(bridgeTarget === BridgeTarget.L2 ? BridgeTarget.L1 : BridgeTarget.L2);
   };
 
-  const handleInputChange = (e: React.FormEvent<HTMLInputElement>) => {
-    setAmount(e.currentTarget.value);
-  };
-
   const handleAllowance = () => {
     if (!approveL1) return;
     approveL1();
@@ -155,6 +172,8 @@ const Bridge = () => {
 
   const handleBridge = () => {
     if (bridgeTarget === BridgeTarget.L2) {
+      console.log('Handle');
+      console.log(bridgeToL2);
       if (!bridgeToL2) throw new Error('bridgeToL2 is not defined');
       bridgeToL2();
     } else {
@@ -162,6 +181,10 @@ const Bridge = () => {
       bridgeToL1();
     }
   };
+
+  const onSubmit = handleSubmit(async () => {
+    handleBridge();
+  });
 
   const formatError = (e: Error | null): ErrorReturnType => {
     if (!isSufficientBalance) {
@@ -204,7 +227,8 @@ const Bridge = () => {
       e.message?.includes(errorSearchString)
     );
     if (!foundError) {
-      return { errorType: ErrorType.Unknown, errorReason: `Can't parse error.\n\n${e.message}.` };
+      console.error(e.message);
+      return { errorType: ErrorType.Unknown, errorReason: `Error cannot be parsed` };
     }
     return { errorType: foundError.errorType, errorReason: foundError.prettyReason };
   };
@@ -217,7 +241,6 @@ const Bridge = () => {
   const { errorType, errorReason } = formatError(error);
   // Helpers for different parts of UI state
   const isAmountError = errorType === ErrorType.ERC20AmountError;
-  const isEthError = errorType === ErrorType.InsufficientNativeCurrencyError;
 
   return (
     <>
@@ -261,37 +284,48 @@ const Bridge = () => {
               />
             </div>
             {/* Bottom row: Input form */}
-            <div className="mt-7 mx-2">
+            <form onSubmit={onSubmit} className="mt-7 mx-2">
               <label htmlFor="amount" className="block text-sm font-medium leading-6 text-gray-900">
                 Amount
               </label>
               <div className="relative mt-2 rounded-md shadow-sm">
                 <input
-                  type="number"
-                  min="0"
-                  name="amount"
-                  id="amount"
                   className={classNames(
-                    errorType === ErrorType.ERC20AmountError
+                    errorType === ErrorType.ERC20AmountError || !isValid
                       ? 'text-red-900 ring-red-300 placeholder:text-red-300 focus:ring-red-500'
                       : 'text-gray-900',
                     'block w-full rounded-md border-0 py-1.5 pr-10 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6'
                   )}
                   placeholder="0.00"
                   defaultValue=""
-                  aria-invalid={errorType === ErrorType.ERC20AmountError}
+                  aria-invalid={errorType === ErrorType.ERC20AmountError || !isValid}
                   aria-describedby="amount"
-                  onChange={handleInputChange}
+                  {...register('amount', {
+                    validate: async (value) => {
+                      // isNan coerces to a number
+                      if (isNaN(value)) {
+                        return 'Amount needs to be a number';
+                      }
+                      if (parseFloat(value) <= 0) {
+                        return 'Amount must be positive';
+                      }
+                      return true;
+                    },
+                  })}
                 />
                 <div
                   className={classNames(
                     'pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3',
-                    isAmountError ? '' : 'invisible'
+                    isAmountError || !isValid ? '' : 'invisible'
                   )}
                 >
                   <ExclamationCircleIcon className="h-5 w-5 text-red-500" aria-hidden="true" />
                 </div>
               </div>
+              {mounted && errors?.amount && (
+                <p className="text-sm text-red-600">{errors.amount.message}</p>
+              )}
+
               <p
                 className={classNames(
                   'mt-2 text-sm text-red-600',
@@ -348,14 +382,12 @@ const Bridge = () => {
                   mounted && (
                     /* ⚪️ Finally, we can show the bridge button. */
                     <button
-                      type="button"
+                      type="submit"
                       className="mt-5 mx-auto flex flex-row items-center rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:bg-gray-300 disabled:cursor-not-allowed"
-                      onClick={handleBridge}
                       disabled={
-                        rawAmount === BigInt(0) ||
-                        (bridgeTarget === BridgeTarget.L2
-                          ? !bridgeToL2 || bridgeToL2IsLoading || isEthError
-                          : !bridgeToL1 || bridgeToL1IsLoading || isEthError)
+                        bridgeTarget === BridgeTarget.L2
+                          ? !bridgeToL2 || bridgeToL2IsLoading || !isNonZeroInput || !isValid
+                          : bridgeToL1IsLoading || !isValid
                       }
                     >
                       Bridge to {target.chain.name}
@@ -375,7 +407,7 @@ const Bridge = () => {
                   </ErrorBox>
                 )}
               </div>
-            </div>
+            </form>
           </div>
         </CardWithHeader>
       </div>
