@@ -318,7 +318,7 @@ const ProposalState = ({ status }: { status: string }) => {
   const red = ['bg-red-50', 'text-red-700', 'ring-red-600/20'];
   const gray = ['bg-gray-50', 'text-gray-700', 'ring-gray-600/20'];
   const colors: Record<string, string[]> = {
-    suceeded: green,
+    succeeded: green,
     executed: green,
     active: green,
     closed: red,

@@ -104,7 +104,7 @@ const createFetcher =
     );
   };
 
-export const useL1Proposals = ({ fetchProposalState }: { fetchProposalState?: boolean }) => {
+export const useL1Proposals = () => {
   const { l1, id: daoId } = useConfig();
   const publicClient = usePublicClient({ chainId: l1.chain.id });
   const { address } = useAccount();
@@ -143,7 +143,6 @@ export const useL1Proposals = ({ fetchProposalState }: { fetchProposalState?: bo
         args: [proposal.proposalId || '0'],
       };
     }),
-    enabled: Boolean(fetchProposalState),
   });
 
   const data = proposalData?.map((proposal, i) => {
@@ -229,7 +228,7 @@ const useL2ProposalsState = (l2Proposals?: { proposalId: string; startBlock: str
     data: l2Proposals?.map((proposal, i) => {
       return {
         proposalId: proposal.proposalId,
-        state: proposalState?.[i].result === 6 ? 'closed' : proposalState?.[i].result,
+        state: proposalState?.[i].result === 6 ? 'closed' : proposalState?.[i].result // 6 represents the Expired proposal state
       };
     }),
     isLoading,
@@ -247,7 +246,7 @@ const statusLabel = (contractStatus?: number) => {
   } else if (contractStatus === 3) {
     return 'defeated';
   } else if (contractStatus === 4) {
-    return 'suceeded';
+    return 'succeeded';
   } else if (contractStatus === 5) {
     return 'queued';
   } else if (contractStatus === 6) {
@@ -260,9 +259,7 @@ const statusLabel = (contractStatus?: number) => {
 };
 
 export const useProposals = () => {
-  const { data: l1Proposals, isLoading: isL1Loading } = useL1Proposals({
-    fetchProposalState: true,
-  });
+  const { data: l1Proposals, isLoading: isL1Loading } = useL1Proposals();
   const { data: l2Proposals, isLoading: isL2Loading } = useL2Proposals(l1Proposals);
   const { data: l2ProposalsState, isLoading: isL2StateLoading } = useL2ProposalsState(l1Proposals);
   const { l1 } = useConfig();
