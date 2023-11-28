@@ -236,16 +236,12 @@ const Bridge = () => {
   const isAmountError = errorType === ErrorType.ERC20AmountError;
   const isEthError = errorType === ErrorType.InsufficientNativeCurrencyError;
 
-  const connectButton = (
-    <div className="mt-5">
-      <ConnectButton />
-    </div>
-  );
+  const connectButton = <ConnectButton />;
 
   const switchNetworkButton = (
     <button
       type="button"
-      className="mt-5 rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:bg-gray-300 disabled:cursor-not-allowed"
+      className="rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:bg-gray-300 disabled:cursor-not-allowed"
       onClick={async () => {
         if (walletClient) switchChain(walletClient, source.chain);
       }}
@@ -258,7 +254,7 @@ const Bridge = () => {
   const setAllowanceButton = (
     <button
       type="button"
-      className="flex mx-auto mt-5 rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:bg-gray-300 disabled:cursor-not-allowed"
+      className="flex mx-auto rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:bg-gray-300 disabled:cursor-not-allowed"
       onClick={handleAllowance}
       disabled={!approveL1 || approveL1IsLoading || approvalL1TxIsLoading || !isSufficientBalance}
     >
@@ -275,7 +271,7 @@ const Bridge = () => {
     /* ⚪️ Finally, we can show the bridge button. */
     <button
       type="submit"
-      className="mt-5 mx-auto flex flex-row items-center rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:bg-gray-300 disabled:cursor-not-allowed"
+      className="mx-auto flex flex-row items-center rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:bg-gray-300 disabled:cursor-not-allowed"
       disabled={
         bridgeTarget === BridgeTarget.L2
           ? !bridgeToL2 || bridgeToL2IsLoading || !isNonZeroInput || !isValid
@@ -410,7 +406,7 @@ const Bridge = () => {
                   {mounted ? formatUnits(source.fee, 18) : 0} ETH
                 </div>
               </div>
-              <div className="flex text-center justify-center">{actionButton()}</div>
+              <div className="flex text-center justify-center mt-5">{actionButton()}</div>
               <div className="mt-5">
                 {errorReason && !isAmountError && (
                   <ErrorBox heading="There's a problem simulating your bridge transaction:">
