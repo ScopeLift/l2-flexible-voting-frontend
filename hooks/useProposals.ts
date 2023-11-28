@@ -129,17 +129,34 @@ export const useL1Proposals = () => {
       };
     }),
   });
+  const {
+    data: proposalState,
+    isLoading: proposalStateIsLoading,
+    error: proposalStateError,
+  } = useContractReads({
+    contracts: proposalData?.map((proposal) => {
+      return {
+        address: l1.governor,
+        abi: [parseAbiItem('function state(uint256 proposalId) external view returns (uint8)')],
+        functionName: 'state',
+        chainId: l1.chain.id,
+        args: [proposal.proposalId || '0'],
+      };
+    }),
+  });
+
   const data = proposalData?.map((proposal, i) => {
     return {
       tallyLink: `${l1.tallyGovernorDomain}/proposal/${proposal.proposalId}`,
       ...proposal,
       votingPower: (votingPower?.[i]?.result as bigint) || BigInt(0),
+      status: proposalState?.[i].result as number,
     };
   });
   return {
     data,
-    isLoading,
-    error,
+    isLoading: isLoading || proposalStateIsLoading,
+    error: error || proposalStateError,
   };
 };
 
@@ -211,7 +228,7 @@ const useL2ProposalsState = (l2Proposals?: { proposalId: string; startBlock: str
     data: l2Proposals?.map((proposal, i) => {
       return {
         proposalId: proposal.proposalId,
-        state: proposalState?.[i].result,
+        state: proposalState?.[i].result === 6 ? 'closed' : proposalState?.[i].result // 6 represents the Expired proposal state
       };
     }),
     isLoading,
@@ -221,13 +238,21 @@ const useL2ProposalsState = (l2Proposals?: { proposalId: string; startBlock: str
 
 const statusLabel = (contractStatus?: number) => {
   if (contractStatus === 0) {
-    return 'open';
+    return 'pending';
   } else if (contractStatus === 1) {
-    return 'open';
+    return 'active';
   } else if (contractStatus === 2) {
-    return 'closed';
+    return 'cancelled';
+  } else if (contractStatus === 3) {
+    return 'defeated';
+  } else if (contractStatus === 4) {
+    return 'succeeded';
+  } else if (contractStatus === 5) {
+    return 'queued';
   } else if (contractStatus === 6) {
-    return 'closed';
+    return 'expired';
+  } else if (contractStatus === 7) {
+    return 'executed';
   } else {
     return 'closed';
   }
@@ -241,18 +266,14 @@ export const useProposals = () => {
   const { data: l1Block } = useBlockNumber({ chainId: l1.chain.id });
 
   const data: Proposal[] | undefined = l1Proposals
-    ?.map((proposal, i) => {
+    ?.map((proposal) => {
       const l2Proposal = l2Proposals?.find(
         (l2Proposal) => l2Proposal.proposalId === proposal.proposalId
       );
       const l2ProposalState = l2ProposalsState?.find(
         (l2ProposalState) => proposal.proposalId === l2ProposalState.proposalId
       )?.state;
-      const l1ProposalStatus = proposal.isCancelled
-        ? 'cancelled'
-        : l1Block && l1Block > BigInt(proposal.endBlock)
-        ? 'closed'
-        : 'open';
+      const l1ProposalStatus = proposal.isCancelled ? 'cancelled' : statusLabel(proposal?.status);
       const l2ProposalStatus =
         !l2Proposal?.isCancelled && l2ProposalsState?.length && l2ProposalState
           ? statusLabel(l2ProposalState as number)
