@@ -120,7 +120,6 @@ const Bridge = () => {
   const {
     write: bridgeToL2,
     isLoading: bridgeToL2IsLoading,
-    isSuccess,
     error: bridgeToL2Error,
   } = useEasyWrite({
     enabled:
@@ -138,12 +137,6 @@ const Bridge = () => {
     value: fees?.l1 || BigInt(0),
     isCrossChain: true,
   });
-  console.log('Nrp');
-  console.log(bridgeToL2);
-  console.log(bridgeToL2IsLoading);
-  console.log(isSuccess);
-  console.log(amount);
-  console.log(isValid);
 
   // 2️⃣ l2 bridge to l1
   const {
@@ -172,8 +165,6 @@ const Bridge = () => {
 
   const handleBridge = () => {
     if (bridgeTarget === BridgeTarget.L2) {
-      console.log('Handle');
-      console.log(bridgeToL2);
       if (!bridgeToL2) throw new Error('bridgeToL2 is not defined');
       bridgeToL2();
     } else {
@@ -387,7 +378,7 @@ const Bridge = () => {
                       disabled={
                         bridgeTarget === BridgeTarget.L2
                           ? !bridgeToL2 || bridgeToL2IsLoading || !isNonZeroInput || !isValid
-                          : bridgeToL1IsLoading || !isValid
+                          : !bridgeToL1 || bridgeToL1IsLoading || !isNonZeroInput || !isValid
                       }
                     >
                       Bridge to {target.chain.name}
