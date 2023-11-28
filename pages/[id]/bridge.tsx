@@ -59,7 +59,7 @@ const Bridge = () => {
   // State for amount input
   const amount = watch('amount', '0');
   const rawAmount = parseUnits(
-    Boolean(errors.amount?.message) || isNaN(amount) ? '0' : amount,
+    Boolean(errors.amount?.message) || isNaN(+amount) ? '0' : amount,
     l1.token?.decimals || 18
   );
   const isNonZeroInput = rawAmount !== BigInt(0);
@@ -126,7 +126,8 @@ const Bridge = () => {
       bridgeTarget === BridgeTarget.L2 &&
       !needsAllowanceL1 &&
       !approveL1IsLoading &&
-      source.chain.id === chain?.id,
+      source.chain.id === chain?.id &&
+      isNonZeroInput,
     address: l1Config.erc20Bridge,
     chainId: l1Config.chain.id,
     abi: parseAbi([
@@ -144,7 +145,7 @@ const Bridge = () => {
     isLoading: bridgeToL1IsLoading,
     error: bridgeToL1Error,
   } = useEasyWrite({
-    enabled: bridgeTarget === BridgeTarget.L1 && source.chain.id === chain?.id,
+    enabled: bridgeTarget === BridgeTarget.L1 && source.chain.id === chain?.id && isNonZeroInput,
     address: l2Config.tokenAddress,
     chainId: l2Config.chain.id,
     abi: parseAbi(['function l1Unlock(address to, uint256 amount) public payable']),
@@ -293,8 +294,7 @@ const Bridge = () => {
                   aria-describedby="amount"
                   {...register('amount', {
                     validate: async (value) => {
-                      // isNan coerces to a number
-                      if (isNaN(value)) {
+                      if (isNaN(+value)) {
                         return 'Amount needs to be a number';
                       }
                       if (parseFloat(value) <= 0) {

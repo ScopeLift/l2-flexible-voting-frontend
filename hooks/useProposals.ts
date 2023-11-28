@@ -228,7 +228,7 @@ const useL2ProposalsState = (l2Proposals?: { proposalId: string; startBlock: str
     data: l2Proposals?.map((proposal, i) => {
       return {
         proposalId: proposal.proposalId,
-        state: proposalState?.[i].result === 6 ? 'closed' : proposalState?.[i].result // 6 represents the Expired proposal state
+        state: proposalState?.[i].result === 6 ? 'closed' : proposalState?.[i].result, // 6 represents the Expired proposal state
       };
     }),
     isLoading,

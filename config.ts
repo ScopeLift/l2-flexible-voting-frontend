@@ -2,10 +2,6 @@ import { goerli, optimismGoerli } from 'wagmi/chains';
 
 export const chains = [goerli, optimismGoerli];
 
-declare global {
-  function isNaN(number: number | string): boolean;
-}
-
 export enum DaoId {
   PoolTogether = 'pool-together',
   Gitcoin = 'gitcoin',
