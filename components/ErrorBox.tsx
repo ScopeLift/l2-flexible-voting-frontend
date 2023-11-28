@@ -8,7 +8,7 @@ export default function ErrorBox({ heading, children }: { heading: string; child
         <div className="flex-shrink-0">
           <XCircleIcon className="h-5 w-5 text-red-400" aria-hidden="true" />
         </div>
-        <div className="ml-3 w-full overflow-scroll">
+        <div className="ml-3 w-full overflow-auto">
           <h3 className="text-sm font-medium text-red-800">{heading}</h3>
           <div className="mt-2 text-sm text-red-700">{children}</div>
         </div>

@@ -18,7 +18,6 @@ export const useEasyWrite = (
     error: writeError,
     isLoading: writeIsLoading,
     write: contractWrite,
-    status,
   } = useContractWrite(config);
   const {
     error: waitError,
