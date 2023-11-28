@@ -234,7 +234,6 @@ const Bridge = () => {
   const { errorType, errorReason } = formatError(error);
   // Helpers for different parts of UI state
   const isAmountError = errorType === ErrorType.ERC20AmountError;
-  const isEthError = errorType === ErrorType.InsufficientNativeCurrencyError;
 
   const connectButton = <ConnectButton />;
 
