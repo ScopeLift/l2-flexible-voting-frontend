@@ -58,6 +58,8 @@ export const useEasyWrite = (
       console.error('useEasyWrite must have a chainId or functionName');
       return;
     }
+    // reset if new hash
+    if (hash !== prev.hash) setIsNotificationShownAlready(false);
     // succeed
     if (
       hash &&
