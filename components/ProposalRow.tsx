@@ -1,12 +1,15 @@
+import { InformationCircleIcon } from '@heroicons/react/24/outline';
 import clsx from 'clsx';
-import { nFormatter } from '@/util';
-import PillAction from '@/components/PillAction';
+import Image from 'next/image';
+import { Tooltip } from 'react-tooltip';
 import { formatUnits } from 'viem';
+
+import PillAction from '@/components/PillAction';
 import { Proposal } from '@/hooks/useProposals';
 import { useConfig } from '@/hooks/useConfig';
-import { useFees } from '@/hooks/useFees';
-import Image from 'next/image';
 import { useTokenInfo } from '@/hooks/useTokenInfo';
+import { nFormatter } from '@/util';
+
 export default function ProposalRow({
   id,
   isBridged,
@@ -48,11 +51,17 @@ export default function ProposalRow({
           <span className="font-bold text-xs">
             {nFormatter(+formatUnits(votes, tokenInfo.l1.decimals))}
           </span>
-          <span className={'ml-1 text-xs ' + 'text-' + color + '-300'}>
-            {bridged > BigInt(0)
-              ? `(${nFormatter(+formatUnits(bridged, tokenInfo.l2.decimals))} bridged from L2)`
-              : ''}
-          </span>
+
+          {bridged > BigInt(0) ? (
+            <div className="flex gap-1 justify-center items-center">
+              <span className={'ml-1 text-xs ' + 'text-' + color + '-300'}>{`(${nFormatter(
+                +formatUnits(bridged, tokenInfo.l2.decimals)
+              )} bridged from L2)`}</span>{' '}
+              <InformationCircleIcon className="h-4 text-black" id="bridged-vote-explanation" />
+            </div>
+          ) : (
+            ''
+          )}
         </div>
         <div className="mt-1 h-1 w-full bg-gray-100 relative rounded-md">
           <div
@@ -69,6 +78,13 @@ export default function ProposalRow({
             )}
           ></div>
         </div>
+        <Tooltip anchorSelect="#bridged-vote-explanation">
+          <div className="w-60">
+            Bridged votes will not be reflected until <span className="font-mono">bridgeVote</span>{' '}
+            is called on {l2.chain.name}. Once triggered it will be relayed from the L1 chain which
+            may take up to 25 minutes.
+          </div>
+        </Tooltip>
       </>
     );
   };
