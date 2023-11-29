@@ -20,7 +20,7 @@ export default function ProposalRow({
   tallyLink,
   votingPower,
 }: Proposal) {
-  const { l1, l2, daoLogo } = useConfig();
+  const { l2, daoLogo } = useConfig();
   const { data: tokenInfo } = useTokenInfo();
 
   const totalVotesL1 = votes.l1.forVotes + votes.l1.againstVotes + votes.l1.abstainVotes;
@@ -51,10 +51,9 @@ export default function ProposalRow({
           <span className="font-bold text-xs">
             {nFormatter(+formatUnits(votes, tokenInfo.l1.decimals))}
           </span>
-
           {bridged > BigInt(0) ? (
             <div className="flex gap-1 justify-center items-center">
-              <span className={'ml-1 text-xs ' + 'text-' + color + '-300'}>{`(${nFormatter(
+              <span className={'ml-1 text-xs text-gray-800'}>{`(${nFormatter(
                 +formatUnits(bridged, tokenInfo.l2.decimals)
               )} bridged from L2)`}</span>{' '}
               <InformationCircleIcon className="h-4 text-black" id="bridged-vote-explanation" />
@@ -175,9 +174,12 @@ export default function ProposalRow({
   });
 
   return (
-    <li key={id} className="flex justify-start p-5 ring-1 ring-gray-200 mb-3 rounded">
+    <li
+      key={id}
+      className="flex justify-start p-5 ring-1 ring-gray-200 bg-gray-50 bg-opacity-90 mb-3 rounded-md flex-col md:flex-row"
+    >
       {/* Proposal info / description */}
-      <div className="w-1/3 flex flex-col">
+      <div className="w-full md:w-1/3 flex flex-col">
         <div className="flex flex-row mb-2">
           <Image
             width={24}
@@ -188,19 +190,20 @@ export default function ProposalRow({
           />
           <span>{description}</span>
         </div>
-        <div className="my-4">
+        <div>
           <ProposalState status={status.l1} />
         </div>
         <div className="grow flex flex-col justify-end">
           <p className="ml-1 mt-1 flex text-xs leading-5 text-gray-500">
             Created at L1 block {startBlock.l1}
           </p>
-          <div className="mt-1">
+          <div className="mt-1 mb-3 md:mb-0">
             <PillAction
               icon="copy-to-clipboard"
               onClick={() => {
                 navigator.clipboard.writeText(id);
               }}
+              className="bg-white"
             >
               Copy Proposal ID
             </PillAction>
@@ -214,22 +217,25 @@ export default function ProposalRow({
         <div className="ring-1 ring-inset ring-gray-200 rounded-lg inline-block bg-white">
           {isBridged ? (
             <div className="p-10">
-              <div className="flex justify-start items-center mb-5">
+              <div className="flex gap-1 justify-start items-center mb-5 flex-col md:flex-row">
                 <h2 className="text-xl">L2</h2>
                 <div className="ml-2">
                   <ProposalState status={status.l2 || ''} />
                 </div>
                 <div className="grow"></div>
-                <div className="flex items-center">
+                <div className="flex items-center flex-col md:flex-row">
                   {votingPower.l2 !== undefined && (
-                    <div className="text-xs mr-5 text-gray-500">
-                      Your L2 voting power{status.l2 !== 'open' && ' was'}:
+                    <div className="text-xs">
+                      <div className="inline-block">
+                        Your L2 voting power
+                        {status.l2 !== 'pending' && status.l2 !== 'active' && ' was'}:
+                      </div>
                       <span
                         className={clsx(
-                          votingPower.l2 > BigInt(0) && status.l2 === 'open'
+                          votingPower.l2 > BigInt(0) && status.l2 === 'active'
                             ? 'ring-indigo-700 text-black'
-                            : 'ring-gray-400',
-                          'ml-1 ring-1 rounded-lg inline-block py-1 px-2'
+                            : 'ring-gray-100',
+                          'bg-gray-50 text-gray-500 ml-2 ring-1 rounded-lg inline-block py-1 px-2 md:mr-5'
                         )}
                       >
                         {nFormatter(+formatUnits(votingPower.l2, tokenInfo.l2.decimals))}
@@ -250,7 +256,7 @@ export default function ProposalRow({
                   </a>
                 </div>
               </div>
-              <div className="flex">
+              <div className="flex flex-col md:flex-row">
                 <div className="m-2 w-full">
                   <p className="text-xs text-gray-400 mb-2">Votes for</p>
                   <div>{l2ForVoteBar}</div>
@@ -272,23 +278,23 @@ export default function ProposalRow({
           )}
         </div>
         {/* L1 Box */}
-        <div className="p-10 mt-2 ring-1 ring-inset ring-gray-200 rounded-lg flex flex-col">
-          <div className="flex justify-start items-center mb-5">
+        <div className="p-10 mt-2 ring-1 ring-inset ring-gray-200 bg-white rounded-lg flex flex-col">
+          <div className="flex justify-start items-center mb-5 flex-col md:flex-row">
             <h2 className="text-xl">L1</h2>
             <div className="ml-2">
               <ProposalState status={status.l1 || ''} />
             </div>
             <div className="grow"></div>
-            <div className="flex items-center">
+            <div className="flex items-center flex-col md:flex-row">
               {votingPower.l1 !== undefined && (
                 <div className="text-xs mr-5 text-gray-500">
-                  Your L1 voting power{status.l1 !== 'open' && ' was'}:
+                  Your L1 voting power{status.l1 !== 'pending' && status.l1 !== 'active' && ' was'}:
                   <span
                     className={clsx(
                       votingPower.l1 > BigInt(0) && status.l1 === 'open'
                         ? 'ring-indigo-700 text-black'
-                        : 'ring-gray-400',
-                      'ml-1 ring-1 rounded-lg inline-block py-1 px-2'
+                        : 'ring-gray-100',
+                      'bg-gray-50 text-gray-500 ml-2 ring-1 rounded-lg inline-block py-1 px-2 '
                     )}
                   >
                     {nFormatter(+formatUnits(votingPower.l1, tokenInfo.l1.decimals))}
@@ -309,7 +315,7 @@ export default function ProposalRow({
               </a>
             </div>
           </div>
-          <div className="flex flex-row">
+          <div className="flex flex-col md:flex-row">
             <div className="m-2 w-full">
               <p className="text-xs text-gray-400 mb-2">Votes for</p>
               <div>{l1ForVoteBar}</div>
