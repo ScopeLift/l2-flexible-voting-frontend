@@ -119,7 +119,7 @@ export default function DebugPanel() {
                             txStatus: 'success',
                             description: 'mint',
                             chainId: 5,
-                            id: '0x1305b0d3be7ea022b6e72f9ae6dd3b601264da1bd5939d124cff2f5f23dc46ce',
+                            functionName: 'aMillionDollars',
                           })
                         }
                       >
