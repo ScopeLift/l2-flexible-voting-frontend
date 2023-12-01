@@ -5,14 +5,13 @@ import {
   UsePrepareContractWriteConfig,
 } from 'wagmi';
 import { useNotifications } from '@/contexts/NotificationsContext';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import usePrevious from '@/hooks/usePrevious';
 
 export const useEasyWrite = (
   params: UsePrepareContractWriteConfig & { isCrossChain?: boolean }
 ) => {
   const { notify } = useNotifications();
-  const [isNotificationShownAlready, setIsNotificationShownAlready] = useState(false);
   const { config, error: prepareError } = usePrepareContractWrite(params);
   const {
     data: writeData,
@@ -36,7 +35,6 @@ export const useEasyWrite = (
     status: transactionData?.status,
     isTransactionDataLoading,
     waitError,
-    isNotificationShownAlready,
   });
 
   useEffect(() => {
@@ -58,17 +56,9 @@ export const useEasyWrite = (
       console.error('useEasyWrite must have a chainId or functionName');
       return;
     }
-    // reset if new hash
-    if (hash !== prev.hash) setIsNotificationShownAlready(false);
     // succeed
-    if (
-      hash &&
-      transactionData?.status === 'success' &&
-      prev.status !== 'success' &&
-      !prev.isNotificationShownAlready
-    ) {
+    if (hash && transactionData?.status === 'success' && prev.status !== 'success') {
       console.log('notify success');
-      setIsNotificationShownAlready(true);
       if (params.isCrossChain) {
         notify({
           hash,
