@@ -12,9 +12,12 @@ const options = Object.values(config).map((configEntry) => {
 
 export const Header = () => {
   return (
-    <header className="flex flex-row w-full items-center justify-between mx-auto">
-      <div className="font-bold flex-1 flex">
-        <h1>L2 Flex Voting</h1> <DaoMenu className="ml-3 " options={options} />
+    <header className="flex flex-col gap-3 flex-wrap w-full items-center justify-between mx-auto sm:flex-row">
+      <div className="font-bold flex-1 flex items-center">
+        <h1 className="text-xl bg-gradient-to-br from-teal-900 to-indigo-900 inline-block text-transparent bg-clip-text">
+          L2 Flexible Voting
+        </h1>{' '}
+        <DaoMenu className="ml-3 " options={options} />
       </div>
       <NavButtons />
       <WalletButtons />
@@ -36,7 +39,10 @@ const NavButtons = () => {
   return (
     <div>
       <div>
-        <nav className="flex space-x-4" aria-label="Tabs">
+        <nav
+          className="flex space-x-4 my-3 bg-white p-4 bg-opacity-10 rounded-xl sm:my-0"
+          aria-label="Tabs"
+        >
           {tabs.map((tab) => {
             const isCurrent = tab.name === current?.name;
             return (
@@ -44,8 +50,10 @@ const NavButtons = () => {
                 key={tab.name}
                 href={tab.href}
                 className={classNames(
-                  isCurrent ? 'bg-indigo-100 text-indigo-700' : 'text-gray-500 hover:text-gray-700',
-                  'rounded-md px-3 py-2 text-sm font-medium'
+                  isCurrent
+                    ? 'bg-white bg-opacity-80 text-indigo-600 ring-indigo-500 ring-inset'
+                    : 'text-indigo-900 bg-opacity-90  hover:text-indigo-600',
+                  'rounded-md px-4 py-2 text-md font-medium hover:bg-gray-200'
                 )}
                 aria-current={isCurrent ? 'page' : undefined}
               >

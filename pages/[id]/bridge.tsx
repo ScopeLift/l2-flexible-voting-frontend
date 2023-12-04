@@ -221,7 +221,10 @@ const Bridge = () => {
     );
     if (!foundError) {
       console.error(e.message);
-      return { errorType: ErrorType.Unknown, errorReason: `Error cannot be parsed` };
+      return {
+        errorType: ErrorType.Unknown,
+        errorReason: `Unexpected error: see console for details`,
+      };
     }
     return { errorType: foundError.errorType, errorReason: foundError.prettyReason };
   };
@@ -233,7 +236,7 @@ const Bridge = () => {
   // Define new variables that help control UI states and display pretty error strings
   const { errorType, errorReason } = formatError(error);
   // Helpers for different parts of UI state
-  const isAmountError = errorType === ErrorType.ERC20AmountError;
+  const isAmountError = errorType === ErrorType.ERC20AmountError || !isValid;
 
   const connectButton = <ConnectButton />;
 
@@ -309,8 +312,8 @@ const Bridge = () => {
       <Head>
         <title>Cross Chain Voting: Bridge</title>
       </Head>
-      <div className="flex flex-row max-w-lg w-full justify-center align-center items-top content-center mx-auto">
-        <CardWithHeader header={'Bridge tokens'} className="w-full m-5">
+      <div className="flex flex-col max-w-xl w-full justify-center align-center items-center content-center grow">
+        <CardWithHeader header={'Bridge tokens'} className="w-full mt-5  bg-opacity-90 sm:m-5">
           <div className="flex flex-col">
             {/* Top row */}
             <div className="flex flex-col justify-between items-center">
@@ -377,16 +380,12 @@ const Bridge = () => {
                 <div
                   className={classNames(
                     'pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3',
-                    isAmountError || !isValid ? '' : 'invisible'
+                    isAmountError ? '' : 'invisible'
                   )}
                 >
                   <ExclamationCircleIcon className="h-5 w-5 text-red-500" aria-hidden="true" />
                 </div>
               </div>
-              {mounted && errors?.amount && (
-                <p className="text-sm text-red-600">{errors.amount.message}</p>
-              )}
-
               <p
                 className={classNames(
                   'mt-2 text-sm text-red-600',
@@ -394,10 +393,10 @@ const Bridge = () => {
                 )}
                 id="amount-error"
               >
-                {errorReason}&nbsp;
+                {errors.amount?.message || errorReason}&nbsp;
               </p>
 
-              <div className="my-6">
+              <div className="mt-2 mb-6">
                 <span className="block text-sm font-medium leading-6 text-gray-900">
                   Wormhole relayer fee
                 </span>
@@ -440,13 +439,15 @@ export const BalanceBox = ({
 }) => {
   const mounted = useHasMounted();
   return !mounted ? undefined : (
-    <div className="flex flex-row items-center px-5 justify-between w-full rounded-lg bg-gray-50 py-9 shadow-md h-32">
+    <div className="flex flex-row items-center px-5 justify-between w-full rounded-lg bg-white bg-opacity-50 py-9 shadow-md h-32 md:px-12">
       <div className="flex flex-col justify-between h-full">
-        <label className="gray-600 font-bold text-sm">{label}</label>
-        <div>{chainName}</div>
+        <label className="text-gray-500 font-semibold text-sm mb-2">{label}</label>
+        <div className="">
+          <div>{chainName}</div>
+        </div>
       </div>
       <div className="flex flex-col justify-between h-full">
-        <label className="gray-600 font-bold text-sm">Balance</label>
+        <label className="text-gray-500 font-semibold text-sm mb-2">Balance</label>
         <div className="items-center flex ml-2">
           <div className="relative mr-3">
             <Image src={tokenLogo} width={24} height={24} alt={`${tokenSymbol} logo`} />
