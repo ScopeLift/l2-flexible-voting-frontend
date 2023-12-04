@@ -6,9 +6,10 @@ import { parseAbi } from 'viem';
 
 type Props = {
   delegatorAddress?: `0x${string}`;
+  enabled?: boolean;
 };
 
-export const useL2Delegate = ({ delegatorAddress }: Props) => {
+export const useL2Delegate = ({ delegatorAddress, enabled }: Props) => {
   let { address } = useAccount();
   if (delegatorAddress !== undefined) {
     address = delegatorAddress;
@@ -23,6 +24,8 @@ export const useL2Delegate = ({ delegatorAddress }: Props) => {
     functionName: 'delegates',
     args: [address],
     chainId: l2.chain.id,
+    watch: true,
+    enabled: enabled,
   });
   return { data, error, isLoading };
 };
