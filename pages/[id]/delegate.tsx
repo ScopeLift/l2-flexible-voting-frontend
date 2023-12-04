@@ -150,13 +150,13 @@ const Delegate: NextPage = () => {
                     <div className="self-center font-mono">
                       {mounted && delegatee !== ZERO_ADDRESS ? (
                         <div className="flex items-start gap-1">
-												                            {delegateEnsAvatar && (
-                              <img
-                                className="inline-block h-6 w-6 rounded-full"
-                                src={delegateEnsAvatar}
-                                alt=""
-                              />
-                            )}
+                          {delegateEnsAvatar && (
+                            <img
+                              className="inline-block h-6 w-6 rounded-full"
+                              src={delegateEnsAvatar}
+                              alt=""
+                            />
+                          )}
                           {delegateEnsName || delegatee}{' '}
                           <InformationCircleIcon
                             id="delegate-address-information"
@@ -190,16 +190,16 @@ const Delegate: NextPage = () => {
                       aria-describedby="address-error"
                       {...register('delegateAddress', {
                         onChange: async (e) => {
-													const val = await getEnsAddress(e.target.value);
+                          const val = await getEnsAddress(e.target.value);
                           setDelegateAddress(val || e.target.value);
                         },
                         validate: async (value) => {
-													  if (value?.includes('.eth')) {
-                              const val = await getEnsAddress(value);
-                              if (val !== null) {
-                                value = val;
-                              }
+                          if (value?.includes('.eth')) {
+                            const val = await getEnsAddress(value);
+                            if (val !== null) {
+                              value = val;
                             }
+                          }
 
                           const validAddress = isAddress(value);
                           const isBalanceNonzero = (l2.token?.value || BigInt(0)) > BigInt(0);
