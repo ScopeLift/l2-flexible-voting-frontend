@@ -72,7 +72,7 @@ export default function ProposalRow({
           <div
             style={{ width: `${Math.floor((100 * Number(bridged)) / Number(totalVotes))}%` }}
             className={clsx(
-              `rounded-r-md float-left ring-1 ring-inset ring-black h-full w-0`,
+              `rounded-r-md float-left h-full w-0`,
               `bg-${color}-500`
             )}
           ></div>
@@ -141,7 +141,6 @@ export default function ProposalRow({
             className={clsx(
               `rounded-l-md float-left h-full w-0`,
               `bg-${color}-500`,
-              `ring-1 ring-inset ring-black`
             )}
           ></div>
           <div
@@ -226,7 +225,7 @@ export default function ProposalRow({
                 <div className="flex items-center flex-col md:flex-row">
                   {votingPower.l2 !== undefined && (
                     <div className="text-xs">
-                      <div className="inline-block">
+                      <div className="inline-block text-gray-800">
                         Your L2 voting power
                         {status.l2 !== 'pending' && status.l2 !== 'active' && ' was'}:
                       </div>
@@ -235,7 +234,7 @@ export default function ProposalRow({
                           votingPower.l2 > BigInt(0) && status.l2 === 'active'
                             ? 'ring-indigo-700 text-black'
                             : 'ring-gray-100',
-                          'bg-gray-50 text-gray-500 ml-2 ring-1 rounded-lg inline-block py-1 px-2 md:mr-5'
+                          'bg-gray-50 text-gray-700 ml-2 ring-1 rounded-lg inline-block py-1 px-2 md:mr-5'
                         )}
                       >
                         {nFormatter(+formatUnits(votingPower.l2, tokenInfo.l2.decimals))}
@@ -258,15 +257,15 @@ export default function ProposalRow({
               </div>
               <div className="flex flex-col md:flex-row">
                 <div className="m-2 w-full">
-                  <p className="text-xs text-gray-400 mb-2">Votes for</p>
+                  <p className="text-xs text-gray-700 mb-2">Votes for</p>
                   <div>{l2ForVoteBar}</div>
                 </div>
                 <div className="m-2 w-full">
-                  <p className="text-xs text-gray-400 mb-2">Votes against</p>
+                  <p className="text-xs text-gray-700 mb-2">Votes against</p>
                   <div>{l2AgainstVoteBar}</div>
                 </div>
                 <div className="m-2 w-full">
-                  <p className="text-xs text-gray-400 mb-2">Votes abstain</p>
+                  <p className="text-xs text-gray-700 mb-2">Votes abstain</p>
                   <div>{l2AbstainVoteBar}</div>
                 </div>
               </div>
@@ -287,14 +286,14 @@ export default function ProposalRow({
             <div className="grow"></div>
             <div className="flex items-center flex-col md:flex-row">
               {votingPower.l1 !== undefined && (
-                <div className="text-xs mr-5 text-gray-500">
+                <div className="text-xs mr-5 text-gray-800">
                   Your L1 voting power{status.l1 !== 'pending' && status.l1 !== 'active' && ' was'}:
                   <span
                     className={clsx(
                       votingPower.l1 > BigInt(0) && status.l1 === 'open'
                         ? 'ring-indigo-700 text-black'
                         : 'ring-gray-100',
-                      'bg-gray-50 text-gray-500 ml-2 ring-1 rounded-lg inline-block py-1 px-2 '
+                      'bg-gray-50 text-gray-700 ml-2 ring-1 rounded-lg inline-block py-1 px-2 '
                     )}
                   >
                     {nFormatter(+formatUnits(votingPower.l1, tokenInfo.l1.decimals))}
@@ -317,15 +316,15 @@ export default function ProposalRow({
           </div>
           <div className="flex flex-col md:flex-row">
             <div className="m-2 w-full">
-              <p className="text-xs text-gray-400 mb-2">Votes for</p>
+              <p className="text-xs text-gray-700 mb-2">Votes for</p>
               <div>{l1ForVoteBar}</div>
             </div>
             <div className="m-2 w-full">
-              <p className="text-xs text-gray-400 mb-2">Votes against</p>
+              <p className="text-xs text-gray-700 mb-2">Votes against</p>
               <div>{l1AgainstVoteBar}</div>
             </div>
             <div className="m-2 w-full">
-              <p className="text-xs text-gray-400 mb-2">Votes abstain</p>
+              <p className="text-xs text-gray-700 mb-2">Votes abstain</p>
               <div>{l1AbstainVoteBar}</div>
             </div>
           </div>

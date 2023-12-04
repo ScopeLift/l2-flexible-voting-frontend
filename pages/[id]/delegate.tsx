@@ -83,7 +83,7 @@ const Delegate: NextPage = () => {
         >
           {mounted && (
             <>
-              <div className="flex items-center gap-1.5 text-gray-500 py-4 mb-5">
+              <div className="flex items-center gap-1.5 text-gray-700 py-4 mb-5">
                 <InformationCircleIcon className="h-4" />
                 <p className="text-sm">
                   {(mounted && tokenInfo.l2.symbol) || 'Token'} determines {config.name} voting
@@ -94,7 +94,7 @@ const Delegate: NextPage = () => {
               <div className="flex flex-col gap-2 w-full bg-white bg-opacity-50 py-6 shadow-md px-5 rounded-lg md:px-10">
                 <div className="flex justify-between mt-5">
                   <div className="flex flex-col">
-                    <div className="text-sm font-semibold text-gray-500">Token Balance</div>
+                    <div className="text-sm font-semibold text-gray-600">Token Balance</div>
                     <div className="flex align-center p-4 gap-1">
                       <div className="relative">
                         <Image
@@ -119,7 +119,7 @@ const Delegate: NextPage = () => {
                     </div>
                   </div>
                   <div className="flex flex-col">
-                    <div className="text-sm font-semibold text-gray-500">Voting Power</div>
+                    <div className="text-sm font-semibold text-gray-600">Voting Power</div>
                     <div className="flex align-center p-4 gap-1">
                       <div className="relative mr-3">
                         <Image
@@ -145,7 +145,7 @@ const Delegate: NextPage = () => {
                   </div>
                 </div>
                 <div className="flex flex-col mt-4">
-                  <div className="text-sm font-semibold text-gray-500">Delegated To</div>
+                  <div className="text-sm font-semibold text-gray-600">Delegated To</div>
                   <div className="flex align-center p-4 gap-1">
                     <div className="self-center font-mono">
                       {mounted && delegatee !== ZERO_ADDRESS ? (
