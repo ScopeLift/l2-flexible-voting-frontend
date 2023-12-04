@@ -27,10 +27,14 @@ const NotificationsContext = createContext<NotificationsContextType>({
 export const NotificationsProvider = ({ children }: { children: ReactNode }) => {
   const [notifications, setNotifications] = useState<TxNotificationWithId[]>([]);
   const notify = (notification: TxNotification) => {
+    //if notification id already exists, don't add it again
+    const txId = `${notification.hash}-${notification.txStatus}-${notification.chainId}`;
+    if (notifications.some((n) => n.id === txId)) return;
+
     setNotifications([
       {
         ...notification,
-        id: `${notification.hash}-${notification.txStatus}-${notification.chainId}`,
+        id: txId,
       },
       ...notifications,
     ]);
