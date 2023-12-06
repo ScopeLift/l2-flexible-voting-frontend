@@ -1,7 +1,7 @@
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-
+import Image from 'next/image';
 import DaoMenu from '@/components/DaoMenu';
 import { classNames } from '@/util';
 import { config } from '@/config';
@@ -14,6 +14,13 @@ export const Header = () => {
   return (
     <header className="flex flex-col gap-3 flex-wrap w-full items-center justify-between mx-auto sm:flex-row">
       <div className="font-bold flex-1 flex items-center">
+        <Image
+          className="h-10 mx-2 w-auto"
+          src={'/flexibleVotingLogo.png'}
+          height={100}
+          width={100}
+          alt="Flexible Voting Logo"
+        />
         <h1 className="text-xl bg-gradient-to-br from-teal-900 to-indigo-900 inline-block text-transparent bg-clip-text">
           L2 Flexible Voting
         </h1>{' '}
