@@ -91,7 +91,7 @@ const createFetcher =
         const bridgedVotes = voteBridgedLogs?.find(
           (event) => event.args.proposalId?.toString() === proposalId
         )?.args;
-        const proposalVotePromise = await getProposalVotes(BigInt(proposalId));
+        const proposalVotePromise = getProposalVotes(BigInt(proposalId));
         const blockPromise = publicClient.getBlock({ blockNumber: event.blockNumber });
         const [[againstVotes, forVotes, abstainVotes], eventBlock] = await Promise.all([
           proposalVotePromise,
