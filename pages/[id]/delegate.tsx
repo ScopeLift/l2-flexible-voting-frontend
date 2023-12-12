@@ -8,6 +8,8 @@ import Image from 'next/image';
 import { useAccount, useEnsAvatar, useEnsName, useNetwork, useWalletClient } from 'wagmi';
 import { isAddress, formatUnits } from 'viem';
 import { useForm } from 'react-hook-form';
+import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
+
 import { useBalances } from '@/hooks/useBalances';
 import { useConfig } from '@/hooks/useConfig';
 import { useHasMounted } from '@/hooks/useHasMounted';
@@ -149,18 +151,20 @@ const Delegate: NextPage = () => {
                   <div className="flex align-center p-4 gap-1">
                     <div className="self-center font-mono">
                       {mounted && delegatee !== ZERO_ADDRESS ? (
-                        <div className="flex items-start gap-1">
-                          {delegateEnsAvatar && (
+                        <div className="flex items-center gap-1">
+                          {delegateEnsAvatar ? (
                             <img
                               className="inline-block h-6 w-6 rounded-full"
                               src={delegateEnsAvatar}
                               alt=""
                             />
+                          ) : (
+                            <Jazzicon diameter={24} seed={jsNumberForAddress(delegatee || '')} />
                           )}
-                          {delegateEnsName || delegatee}{' '}
+                          <p className="text-sm self-end">{delegateEnsName || delegatee}</p>
                           <InformationCircleIcon
                             id="delegate-address-information"
-                            className="h-4"
+                            className="h-4 self-start"
                           />
                         </div>
                       ) : (
