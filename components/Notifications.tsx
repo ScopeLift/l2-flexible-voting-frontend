@@ -33,7 +33,7 @@ export default function Notifications() {
           onClose={() => setIsCrossChainInfoModalOpen(false)}
           txHash={activeTxHash}
         />
-        <div className="flex w-full mt-10 flex-col items-center space-y-4 sm:items-end">
+        <div className="flex w-full mt-14 flex-col items-center space-y-4 sm:items-end">
           {notificationsWithBlockExplorerLinks.map(
             ({ id, hash, functionName, chainId, txStatus, blockExplorerHref, isCrossChain }) => {
               return (

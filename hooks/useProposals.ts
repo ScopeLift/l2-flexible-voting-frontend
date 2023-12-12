@@ -7,6 +7,8 @@ export type Proposal = {
   id: string;
   description: string;
   isBridged: boolean;
+  createdTimestamp: bigint;
+  createdBlock: bigint;
   status: { l1: string; l2?: string };
   tallyLink: { l1: string; l2?: string };
   startBlock: {
@@ -89,13 +91,20 @@ const createFetcher =
         const bridgedVotes = voteBridgedLogs?.find(
           (event) => event.args.proposalId?.toString() === proposalId
         )?.args;
-        const [againstVotes, forVotes, abstainVotes] = await getProposalVotes(BigInt(proposalId));
+        const proposalVotePromise = getProposalVotes(BigInt(proposalId));
+        const blockPromise = publicClient.getBlock({ blockNumber: event.blockNumber });
+        const [[againstVotes, forVotes, abstainVotes], eventBlock] = await Promise.all([
+          proposalVotePromise,
+          blockPromise,
+        ]);
         return {
           proposalId,
           startBlock: args[6]?.toString() || '0',
           endBlock: args[7]?.toString() || '0',
           description: args[8]?.toString() || '',
           isCancelled: Boolean(canceledProposals.get(args[0])),
+          createdBlock: event.blockNumber,
+          createdTimestamp: eventBlock.timestamp,
           votingPower: 0,
           votes: { againstVotes, forVotes, abstainVotes },
           bridgedVotes,
@@ -262,8 +271,6 @@ export const useProposals = () => {
   const { data: l1Proposals, isLoading: isL1Loading } = useL1Proposals();
   const { data: l2Proposals, isLoading: isL2Loading } = useL2Proposals(l1Proposals);
   const { data: l2ProposalsState, isLoading: isL2StateLoading } = useL2ProposalsState(l1Proposals);
-  const { l1 } = useConfig();
-  const { data: l1Block } = useBlockNumber({ chainId: l1.chain.id });
 
   const data: Proposal[] | undefined = l1Proposals
     ?.map((proposal) => {
@@ -282,6 +289,8 @@ export const useProposals = () => {
         id: proposal.proposalId,
         description: proposal.description,
         isBridged: Boolean(l2Proposal),
+        createdBlock: proposal.createdBlock,
+        createdTimestamp: proposal.createdTimestamp,
         status: {
           l1: l1ProposalStatus,
           l2: l2ProposalStatus,

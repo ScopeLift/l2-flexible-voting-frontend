@@ -14,7 +14,8 @@ export default function ProposalRow({
   id,
   isBridged,
   description,
-  startBlock,
+  createdBlock,
+  createdTimestamp,
   status,
   votes,
   tallyLink,
@@ -194,8 +195,12 @@ export default function ProposalRow({
           <ProposalState status={status.l1} />
         </div>
         <div className="grow flex flex-col justify-end">
-          <p className="ml-1 mt-1 flex text-xs leading-5 text-gray-500">
-            Created at L1 block {startBlock.l1}
+          <p className="ml-1 flex text-xs leading-5 text-gray-500">Created at:</p>
+          <p className="ml-1 flex text-xs leading-5 text-gray-500">
+            L1 Block {createdBlock.toString()}
+          </p>
+          <p className="ml-1 flex text-xs leading-5 text-gray-500">
+            {new Date(Number(createdTimestamp) * 1000).toLocaleString()}
           </p>
           <div className="mt-1 mb-3 md:mb-0">
             <PillAction
