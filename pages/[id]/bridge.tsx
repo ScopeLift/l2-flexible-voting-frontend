@@ -313,7 +313,7 @@ const Bridge = () => {
         <title>Cross Chain Voting: Bridge</title>
       </Head>
       <div className="flex flex-col max-w-xl w-full justify-center align-center items-center content-center grow">
-        <CardWithHeader header={'Bridge tokens'} className="w-full mt-5  bg-opacity-90 sm:m-5">
+        <CardWithHeader header={'Bridge tokens'} className="w-full mt-5 bg-opacity-90 sm:m-5">
           <div className="flex flex-col">
             {/* Top row */}
             <div className="flex flex-col justify-between items-center">
@@ -400,7 +400,7 @@ const Bridge = () => {
                 <span className="block text-sm font-medium leading-6 text-gray-900">
                   Wormhole relayer fee
                 </span>
-                <div className="text-gray-500 text-sm ml-2">
+                <div className="text-gray-700 text-sm ml-2">
                   {mounted ? formatUnits(source.fee, 18) : 0} ETH
                 </div>
               </div>
