@@ -40,7 +40,7 @@ const NavButtons = () => {
     <div>
       <div>
         <nav
-          className="flex space-x-4 my-3 bg-white p-4 bg-opacity-60 rounded-xl sm:my-0"
+          className="flex space-x-4 my-3 bg-white p-4 bg-opacity-30 rounded-xl sm:my-0"
           aria-label="Tabs"
         >
           {tabs.map((tab) => {
@@ -53,7 +53,7 @@ const NavButtons = () => {
                   isCurrent
                     ? 'bg-white bg-opacity-80 text-indigo-600 ring-indigo-500 ring-inset'
                     : 'text-indigo-900 bg-opacity-90  hover:text-indigo-600',
-                  'rounded-md px-4 py-2 text-md font-medium hover:bg-gray-200'
+                  'rounded-md px-4 py-2 text-base font-bold hover:bg-gray-20'
                 )}
                 aria-current={isCurrent ? 'page' : undefined}
               >
