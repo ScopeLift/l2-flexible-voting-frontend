@@ -40,7 +40,7 @@ const NavButtons = () => {
     <div>
       <div>
         <nav
-          className="flex space-x-4 my-3 bg-white p-4 bg-opacity-30 rounded-xl sm:my-0"
+          className="flex space-x-4 my-3 bg-white p-4 bg-opacity-10 rounded-xl sm:my-0"
           aria-label="Tabs"
         >
           {tabs.map((tab) => {
