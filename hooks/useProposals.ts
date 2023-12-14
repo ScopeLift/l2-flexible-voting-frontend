@@ -222,6 +222,7 @@ const useL2ProposalsState = (l2Proposals?: { proposalId: string; startBlock: str
     isLoading,
     error,
   } = useContractReads({
+    watch: true,
     contracts: l2Proposals?.map((proposal) => {
       return {
         address: l2.voteAggregator,
