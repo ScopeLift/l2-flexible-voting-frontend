@@ -3,8 +3,8 @@ import { parseAbiItem } from 'viem';
 import { useConfig } from '@/hooks/useConfig';
 import useSWR from 'swr';
 
-import {useProposalsQuery} from "@/graphql/generated/graphql"
-import {GOVERNOR_SUBGRAPH_URL} from "@/util/constants"
+import {useProposalsQuery, useL2ProposalsQuery} from "@/graphql/generated/graphql"
+import {AGGREGATOR_SUBGRAPH_URL, GOVERNOR_SUBGRAPH_URL} from "@/util/constants"
 
 export type Proposal = {
   id: string;
@@ -205,17 +205,28 @@ export const useL1Proposals = () => {
 export const useL2Proposals = (
   l1Proposals: { proposalId: string; startBlock: string }[] | undefined
 ) => {
-  const { l2, name: daoId } = useConfig();
-  const publicClient = usePublicClient({ chainId: l2.chain.id });
+  const { l2, l1 } = useConfig();
   const { address } = useAccount();
-  const fetcher = createFetcher({
-    publicClient,
-    deployBlock: BigInt(l2.deployBlock),
-    address: l2.voteAggregator,
-  });
-  const { data: proposalData, error, isLoading } = useSWR(`fetchL2Proposals-${daoId}`, fetcher);
+	const {data: queryData, isLoading,  error} = useL2ProposalsQuery({endpoint: AGGREGATOR_SUBGRAPH_URL}, {pageSize: 1000, governor: l2.voteAggregator, offset: 0})
+
+    const {data: proposalVoteData, isLoading: proposalVoteIsLoading, error: proposalVoteError} = useContractReads({
+    contracts: queryData?.proposals.map((proposal) => {
+      return {
+        address: l1.governor,
+        abi: [
+          parseAbiItem(
+            'function proposalVotes(uint256) view returns (uint256 againstVotes, uint256 forVotes, uint256 abstainVotes)'
+          ),
+        ],
+        functionName: 'proposalVotes',
+        args: [proposal.proposalId],
+        chainId: l1.chain.id,
+      };
+    }),
+  })
+
   const { data: votingPower } = useContractReads({
-    contracts: proposalData?.map((proposal) => {
+    contracts: queryData?.proposals?.map((proposal) => {
       return {
         address: l2.tokenAddress,
         abi: [
@@ -234,10 +245,12 @@ export const useL2Proposals = (
     }),
   });
 
-  const data = proposalData?.map((proposal, i) => {
+  const data = queryData?.proposals?.map((proposal, i) => {
+	  const vote = proposalVoteData?.[i]?.result as [bigint, bigint, bigint] | undefined
     return {
       tallyLink: `${l2.tallyGovernorDomain}/proposal/${proposal.proposalId}`,
       ...proposal,
+      votes: { againstVotes: vote?.[0] as bigint || BigInt(0), forVotes: vote?.[1] || BigInt(0), abstainVotes: vote?.[2] || BigInt(0)},
       votingPower: (votingPower?.[i]?.result as bigint) || BigInt(0),
     };
   });
@@ -316,15 +329,15 @@ export const useProposals = () => {
       )?.state;
       const l1ProposalStatus = proposal.canceled ? 'cancelled' : statusLabel(proposal?.status);
       const l2ProposalStatus =
-        !l2Proposal?.isCancelled && l2ProposalsState?.length && l2ProposalState
+        !l2Proposal?.canceled && l2ProposalsState?.length && l2ProposalState
           ? statusLabel(l2ProposalState as number)
           : 'closed';
       return {
         id: proposal.proposalId,
         description: proposal.description,
         isBridged: Boolean(l2Proposal),
-        createdBlock: proposal.blockNumber,
-        createdTimestamp: proposal.blockTimestamp,
+        createdBlock: proposal.blockNumber as bigint,
+        createdTimestamp: proposal.blockTimestamp as bigint,
         status: {
           l1: l1ProposalStatus,
           l2: l2ProposalStatus,
@@ -344,17 +357,17 @@ export const useProposals = () => {
         votes: {
           l1: proposal.votes,
           l2: l2Proposal?.votes,
-          l2Bridged: l2Proposal?.bridgedVotes,
+          l2Bridged: l2Proposal?.bridgedVote ? {againstVotes: l2Proposal.bridgedVote.voteAgainst, forVotes: l2Proposal.bridgedVote.voteFor, abstainVotes: l2Proposal.bridgedVote.voteAbstain} : undefined,
           l2NotBridged: l2Proposal
             ? {
                 forVotes:
-                  l2Proposal.votes.forVotes - (l2Proposal.bridgedVotes?.forVotes || BigInt(0)),
+                  l2Proposal.votes.forVotes - (l2Proposal.bridgedVote?.voteFor || BigInt(0)),
                 againstVotes:
                   l2Proposal.votes.againstVotes -
-                  (l2Proposal.bridgedVotes?.againstVotes || BigInt(0)),
+                  (l2Proposal.bridgedVote?.voteAgainst || BigInt(0)),
                 abstainVotes:
                   l2Proposal.votes.abstainVotes -
-                  (l2Proposal.bridgedVotes?.abstainVotes || BigInt(0)),
+                  (l2Proposal.bridgedVote?.voteAbstain || BigInt(0)),
               }
             : undefined,
         },

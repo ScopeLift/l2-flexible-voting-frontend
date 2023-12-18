@@ -59,7 +59,7 @@ export type BridgedVote = {
   blockNumber: Scalars['BigInt']['output'];
   blockTimestamp: Scalars['BigInt']['output'];
   id: Scalars['String']['output'];
-  proposalId: Scalars['BigInt']['output'];
+  proposal?: Maybe<Proposal>;
   transactionHash: Scalars['Bytes']['output'];
   voteAbstain: Scalars['BigInt']['output'];
   voteAgainst: Scalars['BigInt']['output'];
@@ -117,14 +117,27 @@ export type BridgedVote_Filter = {
   id_starts_with?: InputMaybe<Scalars['String']['input']>;
   id_starts_with_nocase?: InputMaybe<Scalars['String']['input']>;
   or?: InputMaybe<Array<InputMaybe<BridgedVote_Filter>>>;
-  proposalId?: InputMaybe<Scalars['BigInt']['input']>;
-  proposalId_gt?: InputMaybe<Scalars['BigInt']['input']>;
-  proposalId_gte?: InputMaybe<Scalars['BigInt']['input']>;
-  proposalId_in?: InputMaybe<Array<Scalars['BigInt']['input']>>;
-  proposalId_lt?: InputMaybe<Scalars['BigInt']['input']>;
-  proposalId_lte?: InputMaybe<Scalars['BigInt']['input']>;
-  proposalId_not?: InputMaybe<Scalars['BigInt']['input']>;
-  proposalId_not_in?: InputMaybe<Array<Scalars['BigInt']['input']>>;
+  proposal?: InputMaybe<Scalars['String']['input']>;
+  proposal_?: InputMaybe<Proposal_Filter>;
+  proposal_contains?: InputMaybe<Scalars['String']['input']>;
+  proposal_contains_nocase?: InputMaybe<Scalars['String']['input']>;
+  proposal_ends_with?: InputMaybe<Scalars['String']['input']>;
+  proposal_ends_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  proposal_gt?: InputMaybe<Scalars['String']['input']>;
+  proposal_gte?: InputMaybe<Scalars['String']['input']>;
+  proposal_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  proposal_lt?: InputMaybe<Scalars['String']['input']>;
+  proposal_lte?: InputMaybe<Scalars['String']['input']>;
+  proposal_not?: InputMaybe<Scalars['String']['input']>;
+  proposal_not_contains?: InputMaybe<Scalars['String']['input']>;
+  proposal_not_contains_nocase?: InputMaybe<Scalars['String']['input']>;
+  proposal_not_ends_with?: InputMaybe<Scalars['String']['input']>;
+  proposal_not_ends_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  proposal_not_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  proposal_not_starts_with?: InputMaybe<Scalars['String']['input']>;
+  proposal_not_starts_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  proposal_starts_with?: InputMaybe<Scalars['String']['input']>;
+  proposal_starts_with_nocase?: InputMaybe<Scalars['String']['input']>;
   transactionHash?: InputMaybe<Scalars['Bytes']['input']>;
   transactionHash_contains?: InputMaybe<Scalars['Bytes']['input']>;
   transactionHash_gt?: InputMaybe<Scalars['Bytes']['input']>;
@@ -166,7 +179,18 @@ export enum BridgedVote_OrderBy {
   BlockNumber = 'blockNumber',
   BlockTimestamp = 'blockTimestamp',
   Id = 'id',
-  ProposalId = 'proposalId',
+  Proposal = 'proposal',
+  ProposalBlockNumber = 'proposal__blockNumber',
+  ProposalBlockTimestamp = 'proposal__blockTimestamp',
+  ProposalCanceled = 'proposal__canceled',
+  ProposalDescription = 'proposal__description',
+  ProposalEndBlock = 'proposal__endBlock',
+  ProposalGovernorAddress = 'proposal__governorAddress',
+  ProposalId = 'proposal__id',
+  ProposalProposalId = 'proposal__proposalId',
+  ProposalProposer = 'proposal__proposer',
+  ProposalStartBlock = 'proposal__startBlock',
+  ProposalTransactionHash = 'proposal__transactionHash',
   TransactionHash = 'transactionHash',
   VoteAbstain = 'voteAbstain',
   VoteAgainst = 'voteAgainst',
@@ -183,6 +207,7 @@ export type Proposal = {
   __typename?: 'Proposal';
   blockNumber: Scalars['BigInt']['output'];
   blockTimestamp: Scalars['BigInt']['output'];
+  bridgedVote?: Maybe<BridgedVote>;
   calldatas: Array<Scalars['Bytes']['output']>;
   canceled: Scalars['Boolean']['output'];
   description: Scalars['String']['output'];
@@ -217,6 +242,27 @@ export type Proposal_Filter = {
   blockTimestamp_lte?: InputMaybe<Scalars['BigInt']['input']>;
   blockTimestamp_not?: InputMaybe<Scalars['BigInt']['input']>;
   blockTimestamp_not_in?: InputMaybe<Array<Scalars['BigInt']['input']>>;
+  bridgedVote?: InputMaybe<Scalars['String']['input']>;
+  bridgedVote_?: InputMaybe<BridgedVote_Filter>;
+  bridgedVote_contains?: InputMaybe<Scalars['String']['input']>;
+  bridgedVote_contains_nocase?: InputMaybe<Scalars['String']['input']>;
+  bridgedVote_ends_with?: InputMaybe<Scalars['String']['input']>;
+  bridgedVote_ends_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  bridgedVote_gt?: InputMaybe<Scalars['String']['input']>;
+  bridgedVote_gte?: InputMaybe<Scalars['String']['input']>;
+  bridgedVote_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  bridgedVote_lt?: InputMaybe<Scalars['String']['input']>;
+  bridgedVote_lte?: InputMaybe<Scalars['String']['input']>;
+  bridgedVote_not?: InputMaybe<Scalars['String']['input']>;
+  bridgedVote_not_contains?: InputMaybe<Scalars['String']['input']>;
+  bridgedVote_not_contains_nocase?: InputMaybe<Scalars['String']['input']>;
+  bridgedVote_not_ends_with?: InputMaybe<Scalars['String']['input']>;
+  bridgedVote_not_ends_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  bridgedVote_not_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  bridgedVote_not_starts_with?: InputMaybe<Scalars['String']['input']>;
+  bridgedVote_not_starts_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  bridgedVote_starts_with?: InputMaybe<Scalars['String']['input']>;
+  bridgedVote_starts_with_nocase?: InputMaybe<Scalars['String']['input']>;
   calldatas?: InputMaybe<Array<Scalars['Bytes']['input']>>;
   calldatas_contains?: InputMaybe<Array<Scalars['Bytes']['input']>>;
   calldatas_contains_nocase?: InputMaybe<Array<Scalars['Bytes']['input']>>;
@@ -327,6 +373,15 @@ export type Proposal_Filter = {
 export enum Proposal_OrderBy {
   BlockNumber = 'blockNumber',
   BlockTimestamp = 'blockTimestamp',
+  BridgedVote = 'bridgedVote',
+  BridgedVoteAggregatorAddress = 'bridgedVote__aggregatorAddress',
+  BridgedVoteBlockNumber = 'bridgedVote__blockNumber',
+  BridgedVoteBlockTimestamp = 'bridgedVote__blockTimestamp',
+  BridgedVoteId = 'bridgedVote__id',
+  BridgedVoteTransactionHash = 'bridgedVote__transactionHash',
+  BridgedVoteVoteAbstain = 'bridgedVote__voteAbstain',
+  BridgedVoteVoteAgainst = 'bridgedVote__voteAgainst',
+  BridgedVoteVoteFor = 'bridgedVote__voteFor',
   Calldatas = 'calldatas',
   Canceled = 'canceled',
   Description = 'description',
@@ -477,14 +532,14 @@ export enum _SubgraphErrorPolicy_ {
   Deny = 'deny'
 }
 
-export type BridgedVotesQueryVariables = Exact<{
-  aggregator: Scalars['Bytes']['input'];
+export type L2ProposalsQueryVariables = Exact<{
+  governor: Scalars['Bytes']['input'];
   pageSize: Scalars['Int']['input'];
   offset: Scalars['Int']['input'];
 }>;
 
 
-export type BridgedVotesQuery = { __typename?: 'Query', bridgedVotes: Array<{ __typename?: 'BridgedVote', id: string, proposalId: any, voteAgainst: any, voteFor: any, voteAbstain: any, blockNumber: any, blockTimestamp: any, transactionHash: any, aggregatorAddress: any }> };
+export type L2ProposalsQuery = { __typename?: 'Query', proposals: Array<{ __typename?: 'Proposal', id: string, proposalId: any, proposer: any, startBlock: any, endBlock: any, description: string, governorAddress: any, canceled: boolean, transactionHash: any, blockNumber: any, blockTimestamp: any, bridgedVote?: { __typename?: 'BridgedVote', voteAgainst: any, voteFor: any, voteAbstain: any, blockNumber: any, blockTimestamp: any } | null }> };
 
 export type ProposalsQueryVariables = Exact<{
   governor: Scalars['Bytes']['input'];
@@ -497,40 +552,49 @@ export type ProposalsQuery = { __typename?: 'Query', proposals: Array<{ __typena
 
 
 
-export const BridgedVotesDocument = `
-    query BridgedVotes($aggregator: Bytes!, $pageSize: Int!, $offset: Int!) {
-  bridgedVotes(
+export const L2ProposalsDocument = `
+    query L2Proposals($governor: Bytes!, $pageSize: Int!, $offset: Int!) {
+  proposals(
     first: $pageSize
     orderBy: blockTimestamp
     orderDirection: desc
-    where: {aggregatorAddress: $aggregator}
+    where: {governorAddress: $governor}
     skip: $offset
   ) {
     id
     proposalId
-    voteAgainst
-    voteFor
-    voteAbstain
+    proposer
+    startBlock
+    endBlock
+    description
+    governorAddress
+    canceled
+    transactionHash
     blockNumber
     blockTimestamp
-    transactionHash
-    aggregatorAddress
+    bridgedVote {
+      voteAgainst
+      voteFor
+      voteAbstain
+      blockNumber
+      blockTimestamp
+    }
   }
 }
     `;
 
-export const useBridgedVotesQuery = <
-      TData = BridgedVotesQuery,
+export const useL2ProposalsQuery = <
+      TData = L2ProposalsQuery,
       TError = unknown
     >(
       dataSource: { endpoint: string, fetchParams?: RequestInit },
-      variables: BridgedVotesQueryVariables,
-      options?: UseQueryOptions<BridgedVotesQuery, TError, TData>
+      variables: L2ProposalsQueryVariables,
+      options?: UseQueryOptions<L2ProposalsQuery, TError, TData>
     ) => {
     
-    return useQuery<BridgedVotesQuery, TError, TData>(
-      ['BridgedVotes', variables],
-      fetcher<BridgedVotesQuery, BridgedVotesQueryVariables>(dataSource.endpoint, dataSource.fetchParams || {}, BridgedVotesDocument, variables),
+    return useQuery<L2ProposalsQuery, TError, TData>(
+      ['L2Proposals', variables],
+      fetcher<L2ProposalsQuery, L2ProposalsQueryVariables>(dataSource.endpoint, dataSource.fetchParams || {}, L2ProposalsDocument, variables),
       options
     )};
 

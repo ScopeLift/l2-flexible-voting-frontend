@@ -1,13 +1,22 @@
-query BridgedVotes($aggregator: Bytes!, $pageSize: Int!, $offset: Int!) {
-  bridgedVotes(first: $pageSize, orderBy: blockTimestamp, orderDirection: desc, where: {aggregatorAddress: $aggregator}, skip: $offset) {
+query L2Proposals($governor: Bytes!, $pageSize: Int!, $offset: Int!) {
+  proposals(first: $pageSize, orderBy: blockTimestamp, orderDirection: desc, where: {governorAddress: $governor}, skip: $offset) {
     id
     proposalId
-    voteAgainst
-    voteFor
-    voteAbstain
+    proposer
+    startBlock
+    endBlock
+    description
+    governorAddress
+    canceled
+    transactionHash
     blockNumber
     blockTimestamp
-    transactionHash
-    aggregatorAddress
+    bridgedVote {
+      voteAgainst
+      voteFor
+      voteAbstain
+      blockNumber
+      blockTimestamp
+    }
   }
 }
