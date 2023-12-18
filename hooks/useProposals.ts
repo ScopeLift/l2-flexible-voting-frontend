@@ -256,8 +256,8 @@ export const useL2Proposals = (
   });
   return {
     data,
-    isLoading,
-    error,
+    isLoading: isLoading || proposalVoteIsLoading,
+    error: error || proposalVoteError,
   };
 };
 
