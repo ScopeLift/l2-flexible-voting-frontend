@@ -3,6 +3,9 @@ import { parseAbiItem } from 'viem';
 import { useConfig } from '@/hooks/useConfig';
 import useSWR from 'swr';
 
+import {useProposalsQuery} from "@/graphql/generated/graphql"
+import {GOVERNOR_SUBGRAPH_URL} from "@/util/constants"
+
 export type Proposal = {
   id: string;
   description: string;
@@ -46,6 +49,7 @@ const createFetcher =
     // 2. Get voting weight
     // 3. Calculate opened or closed
     // TODO: Make these concurrent
+
     const createdLogs = await publicClient.getLogs({
       address,
       event: parseAbiItem(
@@ -53,12 +57,14 @@ const createFetcher =
       ),
       fromBlock: deployBlock,
     });
+		// Remove this call
     const canceledLogs = await publicClient.getLogs({
       address,
       event: parseAbiItem('event ProposalCanceled(uint256 proposalId)'),
       fromBlock: deployBlock,
     });
     // TODO: ensure sorting is indeed time desc
+		// Get the latest bridged vote
     const voteBridgedLogs = await publicClient.getLogs({
       address,
       event: parseAbiItem(
@@ -114,17 +120,24 @@ const createFetcher =
   };
 
 export const useL1Proposals = () => {
-  const { l1, id: daoId } = useConfig();
-  const publicClient = usePublicClient({ chainId: l1.chain.id });
+  const { l1 } = useConfig();
+  // const publicClient = usePublicClient({ chainId: l1.chain.id });
   const { address } = useAccount();
-  const fetcher = createFetcher({
-    publicClient,
-    deployBlock: BigInt(l1.deployBlock),
-    address: l1.governor,
-  });
-  const { data: proposalData, error, isLoading } = useSWR(`fetchL1Proposals-${daoId}`, fetcher);
+
+  // const fetcher = createFetcher({
+  //   publicClient,
+  //   deployBlock: BigInt(l1.deployBlock),
+  //   address: l1.governor,
+  // });
+	// Page size should be dynamic
+	const {data: queryData, isLoading,  error} = useProposalsQuery({endpoint: GOVERNOR_SUBGRAPH_URL}, {pageSize: 1000, governor: l1.governor, offset: 0})
+	// Add voting data, but sort of working
+	console.log(queryData)
+	console.log(isLoading)
+	
+  // const { data: proposalData, error, isLoading } = useSWR(`fetchL1Proposals-${daoId}`, fetcher);
   const { data: votingPower } = useContractReads({
-    contracts: proposalData?.map((proposal) => {
+    contracts: queryData?.proposals.map((proposal) => {
       return {
         address: l1.tokenAddress,
         abi: [
@@ -138,12 +151,29 @@ export const useL1Proposals = () => {
       };
     }),
   });
+    const {data: proposalVoteData, isLoading: proposalVoteIsLoading, error: proposalVoteError} = useContractReads({
+    contracts: queryData?.proposals.map((proposal) => {
+      return {
+        address: l1.governor,
+        abi: [
+          parseAbiItem(
+            'function proposalVotes(uint256) view returns (uint256 againstVotes, uint256 forVotes, uint256 abstainVotes)'
+          ),
+        ],
+        functionName: 'proposalVotes',
+        args: [proposal.proposalId],
+        chainId: l1.chain.id,
+      };
+    }),
+  })
+	console.log(queryData?.proposals)
+
   const {
     data: proposalState,
     isLoading: proposalStateIsLoading,
     error: proposalStateError,
   } = useContractReads({
-    contracts: proposalData?.map((proposal) => {
+    contracts: queryData?.proposals?.map((proposal) => {
       return {
         address: l1.governor,
         abi: [parseAbiItem('function state(uint256 proposalId) external view returns (uint8)')],
@@ -154,14 +184,17 @@ export const useL1Proposals = () => {
     }),
   });
 
-  const data = proposalData?.map((proposal, i) => {
+  const data = queryData?.proposals?.map((proposal, i) => {
+	  const vote = proposalVoteData?.[i]?.result as [bigint, bigint, bigint] | undefined
     return {
-      tallyLink: `${l1.tallyGovernorDomain}/proposal/${proposal.proposalId}`,
-      ...proposal,
-      votingPower: (votingPower?.[i]?.result as bigint) || BigInt(0),
       status: proposalState?.[i].result as number,
+      votes: { againstVotes: vote?.[0] as bigint || BigInt(0), forVotes: vote?.[1] || BigInt(0), abstainVotes: vote?.[2] || BigInt(0)},
+      tallyLink: `${l1.tallyGovernorDomain}/proposal/${proposal.proposalId}`,
+			...proposal,
+      votingPower: (votingPower?.[i]?.result as bigint) || BigInt(0),
     };
   });
+	console.log(data)
   return {
     data,
     isLoading: isLoading || proposalStateIsLoading,
@@ -281,7 +314,7 @@ export const useProposals = () => {
       const l2ProposalState = l2ProposalsState?.find(
         (l2ProposalState) => proposal.proposalId === l2ProposalState.proposalId
       )?.state;
-      const l1ProposalStatus = proposal.isCancelled ? 'cancelled' : statusLabel(proposal?.status);
+      const l1ProposalStatus = proposal.canceled ? 'cancelled' : statusLabel(proposal?.status);
       const l2ProposalStatus =
         !l2Proposal?.isCancelled && l2ProposalsState?.length && l2ProposalState
           ? statusLabel(l2ProposalState as number)
@@ -290,8 +323,8 @@ export const useProposals = () => {
         id: proposal.proposalId,
         description: proposal.description,
         isBridged: Boolean(l2Proposal),
-        createdBlock: proposal.createdBlock,
-        createdTimestamp: proposal.createdTimestamp,
+        createdBlock: proposal.blockNumber,
+        createdTimestamp: proposal.blockTimestamp,
         status: {
           l1: l1ProposalStatus,
           l2: l2ProposalStatus,

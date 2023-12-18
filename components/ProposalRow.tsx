@@ -24,7 +24,9 @@ export default function ProposalRow({
   const { l2, daoLogo } = useConfig();
   const { data: tokenInfo } = useTokenInfo();
 
-  const totalVotesL1 = votes.l1.forVotes + votes.l1.againstVotes + votes.l1.abstainVotes;
+	console.log(votes.l1)
+  // const totalVotesL1 = votes.l1.forVotes + votes.l1.againstVotes + votes.l1.abstainVotes;
+  const totalVotesL1 = BigInt(0)
   const totalVotesNotBridged = votes.l2NotBridged
     ? votes.l2NotBridged.forVotes +
       votes.l2NotBridged.againstVotes +
@@ -91,21 +93,21 @@ export default function ProposalRow({
 
   const l1ForVoteBar = makeL1VoteBar({
     totalVotes,
-    votes: votes.l1.forVotes || BigInt(0),
+    votes: votes.l1?.forVotes || BigInt(0),
     bridged: votes.l2Bridged?.forVotes || BigInt(0),
     color: 'green',
   });
 
   const l1AgainstVoteBar = makeL1VoteBar({
     totalVotes,
-    votes: votes.l1.againstVotes || BigInt(0),
+    votes: votes.l1?.againstVotes || BigInt(0),
     bridged: votes.l2Bridged?.againstVotes || BigInt(0),
     color: 'red',
   });
 
   const l1AbstainVoteBar = makeL1VoteBar({
     totalVotes,
-    votes: votes.l1.abstainVotes || BigInt(0),
+    votes: votes.l1?.abstainVotes || BigInt(0),
     bridged: votes.l2Bridged?.abstainVotes || BigInt(0),
     color: 'gray',
   });
