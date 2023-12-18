@@ -2,7 +2,7 @@ import '@/styles/globals.css';
 import '@rainbow-me/rainbowkit/styles.css';
 import { getDefaultWallets, RainbowKitProvider, lightTheme } from '@rainbow-me/rainbowkit';
 import type { AppProps } from 'next/app';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { configureChains, createConfig, WagmiConfig } from 'wagmi';
 import { publicProvider } from 'wagmi/providers/public';
 import { alchemyProvider } from 'wagmi/providers/alchemy';
@@ -31,28 +31,28 @@ const wagmiConfig = createConfig({
 });
 
 function MyApp({ Component, pageProps }: AppProps) {
-	const queryClient = new QueryClient()
+  const queryClient = new QueryClient();
   return (
     <WagmiConfig config={wagmiConfig}>
-		  <QueryClientProvider client={queryClient}>
-      <RainbowKitProvider
-        chains={chains}
-        theme={lightTheme({
-          accentColor: colors.indigo[200],
-          accentColorForeground: colors.gray[600],
-          borderRadius: 'medium',
-          overlayBlur: 'small',
-        })}
-      >
-        <NotificationsProvider>
-          <DebugPanelProvider>
-            <Layout>
-              <Component {...pageProps} />
-            </Layout>
-          </DebugPanelProvider>
-        </NotificationsProvider>
-      </RainbowKitProvider>
-</QueryClientProvider>
+      <QueryClientProvider client={queryClient}>
+        <RainbowKitProvider
+          chains={chains}
+          theme={lightTheme({
+            accentColor: colors.indigo[200],
+            accentColorForeground: colors.gray[600],
+            borderRadius: 'medium',
+            overlayBlur: 'small',
+          })}
+        >
+          <NotificationsProvider>
+            <DebugPanelProvider>
+              <Layout>
+                <Component {...pageProps} />
+              </Layout>
+            </DebugPanelProvider>
+          </NotificationsProvider>
+        </RainbowKitProvider>
+      </QueryClientProvider>
     </WagmiConfig>
   );
 }

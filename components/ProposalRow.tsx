@@ -24,9 +24,8 @@ export default function ProposalRow({
   const { l2, daoLogo } = useConfig();
   const { data: tokenInfo } = useTokenInfo();
 
-	console.log(votes.l1)
-  // const totalVotesL1 = votes.l1.forVotes + votes.l1.againstVotes + votes.l1.abstainVotes;
-  const totalVotesL1 = BigInt(0)
+  console.log(votes.l1);
+  const totalVotesL1 = votes.l1.forVotes + votes.l1.againstVotes + votes.l1.abstainVotes;
   const totalVotesNotBridged = votes.l2NotBridged
     ? votes.l2NotBridged.forVotes +
       votes.l2NotBridged.againstVotes +
@@ -74,10 +73,7 @@ export default function ProposalRow({
           ></div>
           <div
             style={{ width: `${Math.floor((100 * Number(bridged)) / Number(totalVotes))}%` }}
-            className={clsx(
-              `rounded-r-md float-left h-full w-0`,
-              `bg-${color}-500`
-            )}
+            className={clsx(`rounded-r-md float-left h-full w-0`, `bg-${color}-500`)}
           ></div>
         </div>
         <Tooltip anchorSelect="#bridged-vote-explanation">
@@ -141,10 +137,7 @@ export default function ProposalRow({
         <div className="mt-1 h-1 bg-gray-100 relative rounded-md">
           <div
             style={{ width: `${Math.floor((100 * Number(bridged)) / Number(totalVotes))}%` }}
-            className={clsx(
-              `rounded-l-md float-left h-full w-0`,
-              `bg-${color}-500`,
-            )}
+            className={clsx(`rounded-l-md float-left h-full w-0`, `bg-${color}-500`)}
           ></div>
           <div
             style={{ width: `${Math.floor((100 * Number(notBridged)) / Number(totalVotes))}%` }}
