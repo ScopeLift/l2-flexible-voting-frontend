@@ -72,9 +72,6 @@ function Table({
   proposalsPerPage: number;
   proposalCount: number;
 }) {
-  // Move some of this up a level
-  // prefetch next page
-  // mayber prefetch last page
   const pageCount = Math.ceil((proposalCount || data.length) / proposalsPerPage);
   const nextPage = () => {
     setCurrentPage(currentPage + 1);

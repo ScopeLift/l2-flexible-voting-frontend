@@ -13,7 +13,7 @@ query L2Proposals($governor: Bytes!, $pageSize: Int!, $offset: Int!, $proposalId
     endBlock
     description
     governorAddress
-    canceled
+    isCancelled
     transactionHash
     blockNumber
     blockTimestamp

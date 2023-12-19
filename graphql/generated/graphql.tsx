@@ -225,11 +225,11 @@ export enum BridgedVote_OrderBy {
   Proposal = 'proposal',
   ProposalBlockNumber = 'proposal__blockNumber',
   ProposalBlockTimestamp = 'proposal__blockTimestamp',
-  ProposalCanceled = 'proposal__canceled',
   ProposalDescription = 'proposal__description',
   ProposalEndBlock = 'proposal__endBlock',
   ProposalGovernorAddress = 'proposal__governorAddress',
   ProposalId = 'proposal__id',
+  ProposalIsCancelled = 'proposal__isCancelled',
   ProposalProposalId = 'proposal__proposalId',
   ProposalProposer = 'proposal__proposer',
   ProposalStartBlock = 'proposal__startBlock',
@@ -252,11 +252,11 @@ export type Proposal = {
   blockTimestamp: Scalars['BigInt']['output'];
   bridgedVote?: Maybe<BridgedVote>;
   calldatas: Array<Scalars['Bytes']['output']>;
-  canceled: Scalars['Boolean']['output'];
   description: Scalars['String']['output'];
   endBlock: Scalars['BigInt']['output'];
   governorAddress: Scalars['Bytes']['output'];
   id: Scalars['ID']['output'];
+  isCancelled: Scalars['Boolean']['output'];
   proposalId: Scalars['BigInt']['output'];
   proposer: Scalars['Bytes']['output'];
   signatures: Array<Scalars['String']['output']>;
@@ -312,10 +312,6 @@ export type Proposal_Filter = {
   calldatas_not?: InputMaybe<Array<Scalars['Bytes']['input']>>;
   calldatas_not_contains?: InputMaybe<Array<Scalars['Bytes']['input']>>;
   calldatas_not_contains_nocase?: InputMaybe<Array<Scalars['Bytes']['input']>>;
-  canceled?: InputMaybe<Scalars['Boolean']['input']>;
-  canceled_in?: InputMaybe<Array<Scalars['Boolean']['input']>>;
-  canceled_not?: InputMaybe<Scalars['Boolean']['input']>;
-  canceled_not_in?: InputMaybe<Array<Scalars['Boolean']['input']>>;
   description?: InputMaybe<Scalars['String']['input']>;
   description_contains?: InputMaybe<Scalars['String']['input']>;
   description_contains_nocase?: InputMaybe<Scalars['String']['input']>;
@@ -362,6 +358,10 @@ export type Proposal_Filter = {
   id_lte?: InputMaybe<Scalars['ID']['input']>;
   id_not?: InputMaybe<Scalars['ID']['input']>;
   id_not_in?: InputMaybe<Array<Scalars['ID']['input']>>;
+  isCancelled?: InputMaybe<Scalars['Boolean']['input']>;
+  isCancelled_in?: InputMaybe<Array<Scalars['Boolean']['input']>>;
+  isCancelled_not?: InputMaybe<Scalars['Boolean']['input']>;
+  isCancelled_not_in?: InputMaybe<Array<Scalars['Boolean']['input']>>;
   or?: InputMaybe<Array<InputMaybe<Proposal_Filter>>>;
   proposalId?: InputMaybe<Scalars['BigInt']['input']>;
   proposalId_gt?: InputMaybe<Scalars['BigInt']['input']>;
@@ -426,11 +426,11 @@ export enum Proposal_OrderBy {
   BridgedVoteVoteAgainst = 'bridgedVote__voteAgainst',
   BridgedVoteVoteFor = 'bridgedVote__voteFor',
   Calldatas = 'calldatas',
-  Canceled = 'canceled',
   Description = 'description',
   EndBlock = 'endBlock',
   GovernorAddress = 'governorAddress',
   Id = 'id',
+  IsCancelled = 'isCancelled',
   ProposalId = 'proposalId',
   Proposer = 'proposer',
   Signatures = 'signatures',
@@ -619,7 +619,7 @@ export type L2ProposalsQuery = {
     endBlock: any;
     description: string;
     governorAddress: any;
-    canceled: boolean;
+    isCancelled: boolean;
     transactionHash: any;
     blockNumber: any;
     blockTimestamp: any;
@@ -651,7 +651,7 @@ export type ProposalsQuery = {
     endBlock: any;
     description: string;
     governorAddress: any;
-    canceled: boolean;
+    isCancelled: boolean;
     transactionHash: any;
     blockNumber: any;
     blockTimestamp: any;
@@ -687,7 +687,7 @@ export const L2ProposalsDocument = `
     endBlock
     description
     governorAddress
-    canceled
+    isCancelled
     transactionHash
     blockNumber
     blockTimestamp
@@ -735,7 +735,7 @@ export const ProposalsDocument = `
     endBlock
     description
     governorAddress
-    canceled
+    isCancelled
     transactionHash
     blockNumber
     blockTimestamp

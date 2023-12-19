@@ -38,7 +38,6 @@ export const useL1Proposals = ({ fetchSize, offset }: { fetchSize: number; offse
   const { l1 } = useConfig();
   const { address } = useAccount();
 
-  // Page size should be dynamic
   const {
     data: queryData,
     isLoading,
@@ -265,9 +264,9 @@ export const useProposals = ({ fetchSize, offset }: { fetchSize: number; offset:
       const l2ProposalState = l2ProposalsState?.find(
         (l2ProposalState) => proposal.proposalId === l2ProposalState.proposalId
       )?.state;
-      const l1ProposalStatus = proposal.canceled ? 'cancelled' : statusLabel(proposal?.status);
+      const l1ProposalStatus = proposal.isCancelled ? 'cancelled' : statusLabel(proposal?.status);
       const l2ProposalStatus =
-        !l2Proposal?.canceled && l2ProposalsState?.length && l2ProposalState
+        !l2Proposal?.isCancelled && l2ProposalsState?.length && l2ProposalState
           ? statusLabel(l2ProposalState as number)
           : 'closed';
       return {

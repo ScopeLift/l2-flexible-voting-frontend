@@ -13,7 +13,7 @@ query Proposals($governor: Bytes!, $pageSize: Int!, $offset: Int!) {
     endBlock
     description
     governorAddress
-    canceled
+    isCancelled
     transactionHash
     blockNumber
     blockTimestamp
