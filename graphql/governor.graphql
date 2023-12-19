@@ -23,6 +23,6 @@ query Proposals($governor: Bytes!, $pageSize: Int!, $offset: Int!) {
 query ProposalTotal($id: ID!) {
   aggregationEntity(id: $id) {
     id
-    proposalCount
+    count
   }
 }

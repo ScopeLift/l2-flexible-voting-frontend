@@ -54,14 +54,22 @@ export type Scalars = {
 
 export type AggregationEntity = {
   __typename?: 'AggregationEntity';
+  count: Scalars['Int']['output'];
   id: Scalars['ID']['output'];
-  proposalCount: Scalars['Int']['output'];
 };
 
 export type AggregationEntity_Filter = {
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
   and?: InputMaybe<Array<InputMaybe<AggregationEntity_Filter>>>;
+  count?: InputMaybe<Scalars['Int']['input']>;
+  count_gt?: InputMaybe<Scalars['Int']['input']>;
+  count_gte?: InputMaybe<Scalars['Int']['input']>;
+  count_in?: InputMaybe<Array<Scalars['Int']['input']>>;
+  count_lt?: InputMaybe<Scalars['Int']['input']>;
+  count_lte?: InputMaybe<Scalars['Int']['input']>;
+  count_not?: InputMaybe<Scalars['Int']['input']>;
+  count_not_in?: InputMaybe<Array<Scalars['Int']['input']>>;
   id?: InputMaybe<Scalars['ID']['input']>;
   id_gt?: InputMaybe<Scalars['ID']['input']>;
   id_gte?: InputMaybe<Scalars['ID']['input']>;
@@ -71,19 +79,11 @@ export type AggregationEntity_Filter = {
   id_not?: InputMaybe<Scalars['ID']['input']>;
   id_not_in?: InputMaybe<Array<Scalars['ID']['input']>>;
   or?: InputMaybe<Array<InputMaybe<AggregationEntity_Filter>>>;
-  proposalCount?: InputMaybe<Scalars['Int']['input']>;
-  proposalCount_gt?: InputMaybe<Scalars['Int']['input']>;
-  proposalCount_gte?: InputMaybe<Scalars['Int']['input']>;
-  proposalCount_in?: InputMaybe<Array<Scalars['Int']['input']>>;
-  proposalCount_lt?: InputMaybe<Scalars['Int']['input']>;
-  proposalCount_lte?: InputMaybe<Scalars['Int']['input']>;
-  proposalCount_not?: InputMaybe<Scalars['Int']['input']>;
-  proposalCount_not_in?: InputMaybe<Array<Scalars['Int']['input']>>;
 };
 
 export enum AggregationEntity_OrderBy {
+  Count = 'count',
   Id = 'id',
-  ProposalCount = 'proposalCount',
 }
 
 export type BlockChangedFilter = {
@@ -664,11 +664,7 @@ export type ProposalTotalQueryVariables = Exact<{
 
 export type ProposalTotalQuery = {
   __typename?: 'Query';
-  aggregationEntity?: {
-    __typename?: 'AggregationEntity';
-    id: string;
-    proposalCount: number;
-  } | null;
+  aggregationEntity?: { __typename?: 'AggregationEntity'; id: string; count: number } | null;
 };
 
 export const L2ProposalsDocument = `
@@ -764,7 +760,7 @@ export const ProposalTotalDocument = `
     query ProposalTotal($id: ID!) {
   aggregationEntity(id: $id) {
     id
-    proposalCount
+    count
   }
 }
     `;

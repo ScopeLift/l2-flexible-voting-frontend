@@ -44,7 +44,7 @@ const Vote: NextPage = () => {
             <Table
               {...{
                 data: data || [],
-                proposalCount: proposalCountResult?.aggregationEntity?.proposalCount || 0,
+                proposalCount: proposalCountResult?.aggregationEntity?.count || 0,
                 currentPage,
                 setCurrentPage,
                 proposalsPerPage,
