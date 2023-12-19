@@ -52,6 +52,40 @@ export type Scalars = {
   Int8: { input: any; output: any };
 };
 
+export type AggregationEntity = {
+  __typename?: 'AggregationEntity';
+  id: Scalars['ID']['output'];
+  proposalCount: Scalars['Int']['output'];
+};
+
+export type AggregationEntity_Filter = {
+  /** Filter for the block changed event. */
+  _change_block?: InputMaybe<BlockChangedFilter>;
+  and?: InputMaybe<Array<InputMaybe<AggregationEntity_Filter>>>;
+  id?: InputMaybe<Scalars['ID']['input']>;
+  id_gt?: InputMaybe<Scalars['ID']['input']>;
+  id_gte?: InputMaybe<Scalars['ID']['input']>;
+  id_in?: InputMaybe<Array<Scalars['ID']['input']>>;
+  id_lt?: InputMaybe<Scalars['ID']['input']>;
+  id_lte?: InputMaybe<Scalars['ID']['input']>;
+  id_not?: InputMaybe<Scalars['ID']['input']>;
+  id_not_in?: InputMaybe<Array<Scalars['ID']['input']>>;
+  or?: InputMaybe<Array<InputMaybe<AggregationEntity_Filter>>>;
+  proposalCount?: InputMaybe<Scalars['Int']['input']>;
+  proposalCount_gt?: InputMaybe<Scalars['Int']['input']>;
+  proposalCount_gte?: InputMaybe<Scalars['Int']['input']>;
+  proposalCount_in?: InputMaybe<Array<Scalars['Int']['input']>>;
+  proposalCount_lt?: InputMaybe<Scalars['Int']['input']>;
+  proposalCount_lte?: InputMaybe<Scalars['Int']['input']>;
+  proposalCount_not?: InputMaybe<Scalars['Int']['input']>;
+  proposalCount_not_in?: InputMaybe<Array<Scalars['Int']['input']>>;
+};
+
+export enum AggregationEntity_OrderBy {
+  Id = 'id',
+  ProposalCount = 'proposalCount',
+}
+
 export type BlockChangedFilter = {
   number_gte: Scalars['Int']['input'];
 };
@@ -409,6 +443,8 @@ export type Query = {
   __typename?: 'Query';
   /** Access to subgraph metadata */
   _meta?: Maybe<_Meta_>;
+  aggregationEntities: Array<AggregationEntity>;
+  aggregationEntity?: Maybe<AggregationEntity>;
   bridgedVote?: Maybe<BridgedVote>;
   bridgedVotes: Array<BridgedVote>;
   proposal?: Maybe<Proposal>;
@@ -417,6 +453,22 @@ export type Query = {
 
 export type Query_MetaArgs = {
   block?: InputMaybe<Block_Height>;
+};
+
+export type QueryAggregationEntitiesArgs = {
+  block?: InputMaybe<Block_Height>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<AggregationEntity_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  subgraphError?: _SubgraphErrorPolicy_;
+  where?: InputMaybe<AggregationEntity_Filter>;
+};
+
+export type QueryAggregationEntityArgs = {
+  block?: InputMaybe<Block_Height>;
+  id: Scalars['ID']['input'];
+  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 export type QueryBridgedVoteArgs = {
@@ -455,6 +507,8 @@ export type Subscription = {
   __typename?: 'Subscription';
   /** Access to subgraph metadata */
   _meta?: Maybe<_Meta_>;
+  aggregationEntities: Array<AggregationEntity>;
+  aggregationEntity?: Maybe<AggregationEntity>;
   bridgedVote?: Maybe<BridgedVote>;
   bridgedVotes: Array<BridgedVote>;
   proposal?: Maybe<Proposal>;
@@ -463,6 +517,22 @@ export type Subscription = {
 
 export type Subscription_MetaArgs = {
   block?: InputMaybe<Block_Height>;
+};
+
+export type SubscriptionAggregationEntitiesArgs = {
+  block?: InputMaybe<Block_Height>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<AggregationEntity_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  subgraphError?: _SubgraphErrorPolicy_;
+  where?: InputMaybe<AggregationEntity_Filter>;
+};
+
+export type SubscriptionAggregationEntityArgs = {
+  block?: InputMaybe<Block_Height>;
+  id: Scalars['ID']['input'];
+  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 export type SubscriptionBridgedVoteArgs = {
@@ -535,6 +605,7 @@ export type L2ProposalsQueryVariables = Exact<{
   governor: Scalars['Bytes']['input'];
   pageSize: Scalars['Int']['input'];
   offset: Scalars['Int']['input'];
+  proposalIds?: InputMaybe<Array<Scalars['BigInt']['input']> | Scalars['BigInt']['input']>;
 }>;
 
 export type L2ProposalsQuery = {
@@ -587,13 +658,26 @@ export type ProposalsQuery = {
   }>;
 };
 
+export type ProposalTotalQueryVariables = Exact<{
+  id: Scalars['ID']['input'];
+}>;
+
+export type ProposalTotalQuery = {
+  __typename?: 'Query';
+  aggregationEntity?: {
+    __typename?: 'AggregationEntity';
+    id: string;
+    proposalCount: number;
+  } | null;
+};
+
 export const L2ProposalsDocument = `
-    query L2Proposals($governor: Bytes!, $pageSize: Int!, $offset: Int!) {
+    query L2Proposals($governor: Bytes!, $pageSize: Int!, $offset: Int!, $proposalIds: [BigInt!]) {
   proposals(
     first: $pageSize
     orderBy: blockTimestamp
     orderDirection: desc
-    where: {governorAddress: $governor}
+    where: {governorAddress: $governor, proposalId_in: $proposalIds}
     skip: $offset
   ) {
     id
@@ -670,6 +754,32 @@ export const useProposalsQuery = <TData = ProposalsQuery, TError = unknown>(
       dataSource.endpoint,
       dataSource.fetchParams || {},
       ProposalsDocument,
+      variables
+    ),
+    options
+  );
+};
+
+export const ProposalTotalDocument = `
+    query ProposalTotal($id: ID!) {
+  aggregationEntity(id: $id) {
+    id
+    proposalCount
+  }
+}
+    `;
+
+export const useProposalTotalQuery = <TData = ProposalTotalQuery, TError = unknown>(
+  dataSource: { endpoint: string; fetchParams?: RequestInit },
+  variables: ProposalTotalQueryVariables,
+  options?: UseQueryOptions<ProposalTotalQuery, TError, TData>
+) => {
+  return useQuery<ProposalTotalQuery, TError, TData>(
+    ['ProposalTotal', variables],
+    fetcher<ProposalTotalQuery, ProposalTotalQueryVariables>(
+      dataSource.endpoint,
+      dataSource.fetchParams || {},
+      ProposalTotalDocument,
       variables
     ),
     options

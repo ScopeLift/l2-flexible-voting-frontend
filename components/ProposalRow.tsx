@@ -24,7 +24,6 @@ export default function ProposalRow({
   const { l2, daoLogo } = useConfig();
   const { data: tokenInfo } = useTokenInfo();
 
-  console.log(votes.l1);
   const totalVotesL1 = votes.l1.forVotes + votes.l1.againstVotes + votes.l1.abstainVotes;
   const totalVotesNotBridged = votes.l2NotBridged
     ? votes.l2NotBridged.forVotes +

@@ -34,7 +34,7 @@ export type Proposal = {
   };
 };
 
-export const useL1Proposals = () => {
+export const useL1Proposals = ({ fetchSize, offset }: { fetchSize: number; offset: number }) => {
   const { l1 } = useConfig();
   const { address } = useAccount();
 
@@ -45,7 +45,7 @@ export const useL1Proposals = () => {
     error,
   } = useProposalsQuery(
     { endpoint: GOVERNOR_SUBGRAPH_URL },
-    { pageSize: 1000, governor: l1.governor, offset: 0 }
+    { pageSize: fetchSize, governor: l1.governor, offset: offset }
   );
 
   const { data: votingPower } = useContractReads({
@@ -131,7 +131,12 @@ export const useL2Proposals = (
     error,
   } = useL2ProposalsQuery(
     { endpoint: AGGREGATOR_SUBGRAPH_URL },
-    { pageSize: 1000, governor: l2.voteAggregator, offset: 0 }
+    {
+      pageSize: l1Proposals?.length || 0,
+      governor: l2.voteAggregator,
+      offset: 0,
+      proposalIds: l1Proposals?.map((proposal) => proposal.proposalId) || [],
+    }
   );
 
   const {
@@ -247,8 +252,8 @@ const statusLabel = (contractStatus?: number) => {
   }
 };
 
-export const useProposals = () => {
-  const { data: l1Proposals, isLoading: isL1Loading } = useL1Proposals();
+export const useProposals = ({ fetchSize, offset }: { fetchSize: number; offset: number }) => {
+  const { data: l1Proposals, isLoading: isL1Loading } = useL1Proposals({ fetchSize, offset });
   const { data: l2Proposals, isLoading: isL2Loading } = useL2Proposals(l1Proposals);
   const { data: l2ProposalsState, isLoading: isL2StateLoading } = useL2ProposalsState(l1Proposals);
 
