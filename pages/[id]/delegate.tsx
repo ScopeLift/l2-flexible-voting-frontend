@@ -164,7 +164,7 @@ const Delegate: NextPage = () => {
                           <p className="text-sm self-end">{delegateEnsName || delegatee}</p>
                           <InformationCircleIcon
                             id="delegate-address-information"
-                            className="h-4 self-start"
+                            className="h-4"
                           />
                         </div>
                       ) : (
