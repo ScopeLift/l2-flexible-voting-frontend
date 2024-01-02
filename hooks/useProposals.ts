@@ -1,8 +1,6 @@
-import { useBlockNumber, PublicClient, useAccount, useContractReads, usePublicClient } from 'wagmi';
+import { useAccount, useContractReads } from 'wagmi';
 import { parseAbiItem } from 'viem';
 import { useConfig } from '@/hooks/useConfig';
-import useSWR from 'swr';
-
 import { useProposalsQuery, useL2ProposalsQuery } from '@/graphql/generated/graphql';
 import { AGGREGATOR_SUBGRAPH_URL, GOVERNOR_SUBGRAPH_URL } from '@/util/constants';
 
@@ -34,19 +32,22 @@ export type Proposal = {
   };
 };
 
+// This hook retrieves all L1 governor proposal data and L1 voting power for `address`, bounded by fetchSize and offset.
 export const useL1Proposals = ({ fetchSize, offset }: { fetchSize: number; offset: number }) => {
   const { l1 } = useConfig();
   const { address } = useAccount();
 
+  // get all L1 proposal data
   const {
     data: queryData,
     isLoading,
     error,
   } = useProposalsQuery(
     { endpoint: GOVERNOR_SUBGRAPH_URL },
-    { pageSize: fetchSize, governor: l1.governor, offset: offset }
+    { pageSize: fetchSize, governor: l1.governor, offset }
   );
 
+  // get `address` voting power for each L1 proposal
   const { data: votingPower } = useContractReads({
     contracts: queryData?.proposals.map((proposal) => {
       return {
@@ -62,6 +63,8 @@ export const useL1Proposals = ({ fetchSize, offset }: { fetchSize: number; offse
       };
     }),
   });
+
+  // gets all vote counts for all L1 proposals
   const {
     data: proposalVoteData,
     isLoading: proposalVoteIsLoading,
@@ -82,6 +85,7 @@ export const useL1Proposals = ({ fetchSize, offset }: { fetchSize: number; offse
     }),
   });
 
+  // get the current state of each L1 proposal
   const {
     data: proposalState,
     isLoading: proposalStateIsLoading,
@@ -98,6 +102,7 @@ export const useL1Proposals = ({ fetchSize, offset }: { fetchSize: number; offse
     }),
   });
 
+  // iterate through each proposal, returning composite of prior queries
   const data = queryData?.proposals?.map((proposal, i) => {
     const vote = proposalVoteData?.[i]?.result as [bigint, bigint, bigint] | undefined;
     return {
@@ -119,11 +124,14 @@ export const useL1Proposals = ({ fetchSize, offset }: { fetchSize: number; offse
   };
 };
 
+// This hook retrieves all L2 aggregator proposal data and L2 voting power for `address`, bounded by fetchSize and offset.
 export const useL2Proposals = (
   l1Proposals: { proposalId: string; startBlock: string }[] | undefined
 ) => {
   const { l2, l1 } = useConfig();
   const { address } = useAccount();
+
+  // get all L2 proposals from L2 aggregator
   const {
     data: queryData,
     isLoading,
@@ -138,6 +146,7 @@ export const useL2Proposals = (
     }
   );
 
+  // gets all vote counts for all proposals
   const {
     data: proposalVoteData,
     isLoading: proposalVoteIsLoading,
@@ -198,6 +207,7 @@ export const useL2Proposals = (
   };
 };
 
+//
 const useL2ProposalsState = (l2Proposals?: { proposalId: string; startBlock: string }[]) => {
   const { l2 } = useConfig();
   const {
@@ -256,19 +266,24 @@ export const useProposals = ({ fetchSize, offset }: { fetchSize: number; offset:
   const { data: l2Proposals, isLoading: isL2Loading } = useL2Proposals(l1Proposals);
   const { data: l2ProposalsState, isLoading: isL2StateLoading } = useL2ProposalsState(l1Proposals);
 
+  // Marry L1 and L2 Proposal data together
   const data: Proposal[] | undefined = l1Proposals
     ?.map((proposal) => {
+      // For each l1 proposal, find the corresponding l2 proposal...
       const l2Proposal = l2Proposals?.find(
         (l2Proposal) => l2Proposal.proposalId === proposal.proposalId
       );
+      // and the current state of the proposal on l2
       const l2ProposalState = l2ProposalsState?.find(
         (l2ProposalState) => proposal.proposalId === l2ProposalState.proposalId
       )?.state;
+      // Tweak the l1 and l2 statuses
       const l1ProposalStatus = proposal.isCancelled ? 'cancelled' : statusLabel(proposal?.status);
       const l2ProposalStatus =
         !l2Proposal?.isCancelled && l2ProposalsState?.length && l2ProposalState
           ? statusLabel(l2ProposalState as number)
           : 'closed';
+      // return a giant merged object
       return {
         id: proposal.proposalId,
         description: proposal.description,

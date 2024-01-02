@@ -341,7 +341,7 @@ const ProposalState = ({ status }: { status: string }) => {
     succeeded: green,
     executed: green,
     active: green,
-    closed: red,
+    closed: gray,
     defeated: red,
     expired: red,
     cancelled: gray,
