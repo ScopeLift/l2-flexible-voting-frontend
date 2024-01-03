@@ -89,6 +89,10 @@ function Table({
     (proposal, i) => i >= (currentPage - 1) * proposalsPerPage && i < currentPage * proposalsPerPage
   );
 
+	if (pageCount < currentPage) {
+		setCurrentPage(pageCount)
+	}
+
   return (
     <div className="sm:p-2">
       <div className="h-2" />

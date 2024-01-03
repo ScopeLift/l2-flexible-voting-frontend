@@ -151,7 +151,7 @@ export const useL2Proposals = (
   } = useContractReads({
     contracts: queryData?.proposals.map((proposal) => {
       return {
-        address: l1.governor,
+        address: l2.voteAggregator,
         abi: [
           parseAbiItem(
             'function proposalVotes(uint256) view returns (uint256 againstVotes, uint256 forVotes, uint256 abstainVotes)'
@@ -159,7 +159,7 @@ export const useL2Proposals = (
         ],
         functionName: 'proposalVotes',
         args: [proposal.proposalId],
-        chainId: l1.chain.id,
+        chainId: l2.chain.id,
       };
     }),
   });
