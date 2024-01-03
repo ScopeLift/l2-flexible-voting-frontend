@@ -9,6 +9,9 @@ import {
 import { useState } from 'react';
 import { Proposal, useProposals } from '@/hooks/useProposals';
 import ProposalRow from '@/components/ProposalRow';
+import { useProposalTotalQuery } from '@/graphql/generated/graphql';
+import { GOVERNOR_SUBGRAPH_URL } from '@/util/constants';
+import { useConfig } from '@/hooks/useConfig';
 
 // proposal information
 //
@@ -19,7 +22,17 @@ import ProposalRow from '@/components/ProposalRow';
 // 5. has the proposal been cancelled (the l2 state of the proposal more generally)
 // 6 link to the tally page for a user to vote
 const Vote: NextPage = () => {
+  const { l1 } = useConfig();
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const { data: proposalCountResult } = useProposalTotalQuery(
+    { endpoint: GOVERNOR_SUBGRAPH_URL },
+    { id: `${l1.governor.toLowerCase()}-proposal` }
+  );
+  const proposalsPerPage = 5;
+  // A current limitation is that we will only fetch the first 1000 proposals.
+  // This seems like a reasonable limit.
   const { data, isLoading: isProposalLoading } = useProposals();
+
   return (
     <>
       <Head>
@@ -31,6 +44,10 @@ const Vote: NextPage = () => {
             <Table
               {...{
                 data: data || [],
+                proposalCount: proposalCountResult?.aggregationEntity?.count || 0,
+                currentPage,
+                setCurrentPage,
+                proposalsPerPage,
               }}
             />
           ) : (
@@ -42,10 +59,20 @@ const Vote: NextPage = () => {
   );
 };
 
-function Table({ data }: { data: Proposal[] }) {
-  const [currentPage, setCurrentPage] = useState<number>(1);
-  const proposalsPerPage = 5;
-  const pageCount = Math.ceil(data.length / proposalsPerPage);
+function Table({
+  data,
+  currentPage,
+  setCurrentPage,
+  proposalsPerPage,
+  proposalCount,
+}: {
+  data: Proposal[];
+  currentPage: number;
+  setCurrentPage: (page: number) => void;
+  proposalsPerPage: number;
+  proposalCount: number;
+}) {
+  const pageCount = Math.ceil((proposalCount || data.length) / proposalsPerPage);
   const nextPage = () => {
     setCurrentPage(currentPage + 1);
   };
@@ -61,6 +88,10 @@ function Table({ data }: { data: Proposal[] }) {
   const visibleProposals = data.filter(
     (proposal, i) => i >= (currentPage - 1) * proposalsPerPage && i < currentPage * proposalsPerPage
   );
+
+  if (pageCount < currentPage) {
+    setCurrentPage(pageCount);
+  }
 
   return (
     <div className="sm:p-2">

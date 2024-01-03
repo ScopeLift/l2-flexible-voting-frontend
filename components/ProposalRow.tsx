@@ -72,10 +72,7 @@ export default function ProposalRow({
           ></div>
           <div
             style={{ width: `${Math.floor((100 * Number(bridged)) / Number(totalVotes))}%` }}
-            className={clsx(
-              `rounded-r-md float-left h-full w-0`,
-              `bg-${color}-500`
-            )}
+            className={clsx(`rounded-r-md float-left h-full w-0`, `bg-${color}-500`)}
           ></div>
         </div>
         <Tooltip anchorSelect="#bridged-vote-explanation">
@@ -91,21 +88,21 @@ export default function ProposalRow({
 
   const l1ForVoteBar = makeL1VoteBar({
     totalVotes,
-    votes: votes.l1.forVotes || BigInt(0),
+    votes: votes.l1?.forVotes || BigInt(0),
     bridged: votes.l2Bridged?.forVotes || BigInt(0),
     color: 'green',
   });
 
   const l1AgainstVoteBar = makeL1VoteBar({
     totalVotes,
-    votes: votes.l1.againstVotes || BigInt(0),
+    votes: votes.l1?.againstVotes || BigInt(0),
     bridged: votes.l2Bridged?.againstVotes || BigInt(0),
     color: 'red',
   });
 
   const l1AbstainVoteBar = makeL1VoteBar({
     totalVotes,
-    votes: votes.l1.abstainVotes || BigInt(0),
+    votes: votes.l1?.abstainVotes || BigInt(0),
     bridged: votes.l2Bridged?.abstainVotes || BigInt(0),
     color: 'gray',
   });
@@ -139,10 +136,7 @@ export default function ProposalRow({
         <div className="mt-1 h-1 bg-gray-100 relative rounded-md">
           <div
             style={{ width: `${Math.floor((100 * Number(bridged)) / Number(totalVotes))}%` }}
-            className={clsx(
-              `rounded-l-md float-left h-full w-0`,
-              `bg-${color}-500`,
-            )}
+            className={clsx(`rounded-l-md float-left h-full w-0`, `bg-${color}-500`)}
           ></div>
           <div
             style={{ width: `${Math.floor((100 * Number(notBridged)) / Number(totalVotes))}%` }}
@@ -347,7 +341,7 @@ const ProposalState = ({ status }: { status: string }) => {
     succeeded: green,
     executed: green,
     active: green,
-    closed: red,
+    closed: gray,
     defeated: red,
     expired: red,
     cancelled: gray,

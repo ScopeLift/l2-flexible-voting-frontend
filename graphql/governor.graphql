@@ -1,0 +1,27 @@
+query Proposals($governor: Bytes!) {
+  proposals(
+    first: 1000
+    orderBy: blockNumber
+    orderDirection: desc
+    where: { governorAddress: $governor }
+  ) {
+    id
+    proposalId
+    proposer
+    startBlock
+    endBlock
+    description
+    governorAddress
+    isCancelled
+    transactionHash
+    blockNumber
+    blockTimestamp
+  }
+}
+
+query ProposalTotal($id: ID!) {
+  aggregationEntity(id: $id) {
+    id
+    count
+  }
+}
