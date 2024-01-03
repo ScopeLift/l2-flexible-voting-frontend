@@ -9,6 +9,23 @@ const config: CodegenConfig = {
   documents: './graphql/**/(!(*.d)).graphql',
   generates: {
     './graphql/generated/graphql.tsx': {
+      config: {
+        reactQueryVersion: 5,
+        scalars: {
+          ID: {
+            input: 'string',
+            output: 'string | number',
+          },
+          addrress: {
+            input: 'string',
+            output: 'string',
+          },
+          BigInt: {
+            input: 'bigint',
+            output: 'string',
+          },
+        },
+      },
       plugins: ['typescript', 'typescript-operations', 'typescript-react-query'],
     },
   },

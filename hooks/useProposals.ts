@@ -33,7 +33,7 @@ export type Proposal = {
 };
 
 // This hook retrieves all L1 governor proposal data and L1 voting power for `address`, bounded by fetchSize and offset.
-export const useL1Proposals = ({ fetchSize, offset }: { fetchSize: number; offset: number }) => {
+export const useL1Proposals = () => {
   const { l1 } = useConfig();
   const { address } = useAccount();
 
@@ -42,10 +42,7 @@ export const useL1Proposals = ({ fetchSize, offset }: { fetchSize: number; offse
     data: queryData,
     isLoading,
     error,
-  } = useProposalsQuery(
-    { endpoint: GOVERNOR_SUBGRAPH_URL },
-    { pageSize: fetchSize, governor: l1.governor, offset }
-  );
+  } = useProposalsQuery({ endpoint: GOVERNOR_SUBGRAPH_URL }, { governor: l1.governor });
 
   // get `address` voting power for each L1 proposal
   const { data: votingPower } = useContractReads({
@@ -104,13 +101,13 @@ export const useL1Proposals = ({ fetchSize, offset }: { fetchSize: number; offse
 
   // iterate through each proposal, returning composite of prior queries
   const data = queryData?.proposals?.map((proposal, i) => {
-    const vote = proposalVoteData?.[i]?.result as [bigint, bigint, bigint] | undefined;
+    const vote = proposalVoteData?.[i]?.result as [string, string, string];
     return {
       status: proposalState?.[i].result as number,
       votes: {
-        againstVotes: (vote?.[0] as bigint) || BigInt(0),
-        forVotes: vote?.[1] || BigInt(0),
-        abstainVotes: vote?.[2] || BigInt(0),
+        againstVotes: BigInt(vote?.[0]) || BigInt(0),
+        forVotes: BigInt(vote?.[1]) || BigInt(0),
+        abstainVotes: BigInt(vote?.[2]) || BigInt(0),
       },
       tallyLink: `${l1.tallyGovernorDomain}/proposal/${proposal.proposalId}`,
       ...proposal,
@@ -131,6 +128,8 @@ export const useL2Proposals = (
   const { l2, l1 } = useConfig();
   const { address } = useAccount();
 
+  console.log(l1Proposals?.map((proposal) => proposal.proposalId));
+  console.log(l1Proposals?.map((proposal) => typeof proposal.proposalId));
   // get all L2 proposals from L2 aggregator
   const {
     data: queryData,
@@ -139,9 +138,7 @@ export const useL2Proposals = (
   } = useL2ProposalsQuery(
     { endpoint: AGGREGATOR_SUBGRAPH_URL },
     {
-      pageSize: l1Proposals?.length || 0,
       governor: l2.voteAggregator,
-      offset: 0,
       proposalIds: l1Proposals?.map((proposal) => proposal.proposalId) || [],
     }
   );
@@ -261,8 +258,8 @@ const statusLabel = (contractStatus?: number) => {
   }
 };
 
-export const useProposals = ({ fetchSize, offset }: { fetchSize: number; offset: number }) => {
-  const { data: l1Proposals, isLoading: isL1Loading } = useL1Proposals({ fetchSize, offset });
+export const useProposals = () => {
+  const { data: l1Proposals, isLoading: isL1Loading } = useL1Proposals();
   const { data: l2Proposals, isLoading: isL2Loading } = useL2Proposals(l1Proposals);
   const { data: l2ProposalsState, isLoading: isL2StateLoading } = useL2ProposalsState(l1Proposals);
 
@@ -275,7 +272,7 @@ export const useProposals = ({ fetchSize, offset }: { fetchSize: number; offset:
       );
       // and the current state of the proposal on l2
       const l2ProposalState = l2ProposalsState?.find(
-        (l2ProposalState) => proposal.proposalId === l2ProposalState.proposalId
+        (l2ProposalState) => BigInt(proposal.proposalId) === BigInt(l2ProposalState.proposalId)
       )?.state;
       // Tweak the l1 and l2 statuses
       const l1ProposalStatus = proposal.isCancelled ? 'cancelled' : statusLabel(proposal?.status);
@@ -288,8 +285,8 @@ export const useProposals = ({ fetchSize, offset }: { fetchSize: number; offset:
         id: proposal.proposalId,
         description: proposal.description,
         isBridged: Boolean(l2Proposal),
-        createdBlock: proposal.blockNumber as bigint,
-        createdTimestamp: proposal.blockTimestamp as bigint,
+        createdBlock: BigInt(proposal.blockNumber),
+        createdTimestamp: BigInt(proposal.blockTimestamp),
         status: {
           l1: l1ProposalStatus,
           l2: l2ProposalStatus,
@@ -311,21 +308,21 @@ export const useProposals = ({ fetchSize, offset }: { fetchSize: number; offset:
           l2: l2Proposal?.votes,
           l2Bridged: l2Proposal?.bridgedVote
             ? {
-                againstVotes: l2Proposal.bridgedVote.voteAgainst,
-                forVotes: l2Proposal.bridgedVote.voteFor,
-                abstainVotes: l2Proposal.bridgedVote.voteAbstain,
+                againstVotes: BigInt(l2Proposal.bridgedVote.voteAgainst),
+                forVotes: BigInt(l2Proposal.bridgedVote.voteFor),
+                abstainVotes: BigInt(l2Proposal.bridgedVote.voteAbstain),
               }
             : undefined,
           l2NotBridged: l2Proposal
             ? {
                 forVotes:
-                  l2Proposal.votes.forVotes - (l2Proposal.bridgedVote?.voteFor || BigInt(0)),
+                  BigInt(l2Proposal.votes.forVotes) - BigInt(l2Proposal.bridgedVote?.voteFor || 0),
                 againstVotes:
-                  l2Proposal.votes.againstVotes -
-                  (l2Proposal.bridgedVote?.voteAgainst || BigInt(0)),
+                  BigInt(l2Proposal.votes.againstVotes) -
+                  BigInt(l2Proposal.bridgedVote?.voteAgainst || 0),
                 abstainVotes:
-                  l2Proposal.votes.abstainVotes -
-                  (l2Proposal.bridgedVote?.voteAbstain || BigInt(0)),
+                  BigInt(l2Proposal.votes.abstainVotes) -
+                  BigInt(l2Proposal.bridgedVote?.voteAbstain || 0),
               }
             : undefined,
         },

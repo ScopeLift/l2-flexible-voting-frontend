@@ -37,13 +37,13 @@ function fetcher<TData, TVariables>(
 }
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
-  ID: { input: string; output: string };
+  ID: { input: string; output: string | number };
   String: { input: string; output: string };
   Boolean: { input: boolean; output: boolean };
   Int: { input: number; output: number };
   Float: { input: number; output: number };
   BigDecimal: { input: any; output: any };
-  BigInt: { input: any; output: any };
+  BigInt: { input: string; output: string };
   Bytes: { input: any; output: any };
   /**
    * 8 bytes signed integer
@@ -603,8 +603,6 @@ export enum _SubgraphErrorPolicy_ {
 
 export type L2ProposalsQueryVariables = Exact<{
   governor: Scalars['Bytes']['input'];
-  pageSize: Scalars['Int']['input'];
-  offset: Scalars['Int']['input'];
   proposalIds?: InputMaybe<Array<Scalars['BigInt']['input']> | Scalars['BigInt']['input']>;
 }>;
 
@@ -612,49 +610,47 @@ export type L2ProposalsQuery = {
   __typename?: 'Query';
   proposals: Array<{
     __typename?: 'Proposal';
-    id: string;
-    proposalId: any;
+    id: string | number;
+    proposalId: string;
     proposer: any;
-    startBlock: any;
-    endBlock: any;
+    startBlock: string;
+    endBlock: string;
     description: string;
     governorAddress: any;
     isCancelled: boolean;
     transactionHash: any;
-    blockNumber: any;
-    blockTimestamp: any;
+    blockNumber: string;
+    blockTimestamp: string;
     bridgedVote?: {
       __typename?: 'BridgedVote';
-      voteAgainst: any;
-      voteFor: any;
-      voteAbstain: any;
-      blockNumber: any;
-      blockTimestamp: any;
+      voteAgainst: string;
+      voteFor: string;
+      voteAbstain: string;
+      blockNumber: string;
+      blockTimestamp: string;
     } | null;
   }>;
 };
 
 export type ProposalsQueryVariables = Exact<{
   governor: Scalars['Bytes']['input'];
-  pageSize: Scalars['Int']['input'];
-  offset: Scalars['Int']['input'];
 }>;
 
 export type ProposalsQuery = {
   __typename?: 'Query';
   proposals: Array<{
     __typename?: 'Proposal';
-    id: string;
-    proposalId: any;
+    id: string | number;
+    proposalId: string;
     proposer: any;
-    startBlock: any;
-    endBlock: any;
+    startBlock: string;
+    endBlock: string;
     description: string;
     governorAddress: any;
     isCancelled: boolean;
     transactionHash: any;
-    blockNumber: any;
-    blockTimestamp: any;
+    blockNumber: string;
+    blockTimestamp: string;
   }>;
 };
 
@@ -664,17 +660,20 @@ export type ProposalTotalQueryVariables = Exact<{
 
 export type ProposalTotalQuery = {
   __typename?: 'Query';
-  aggregationEntity?: { __typename?: 'AggregationEntity'; id: string; count: number } | null;
+  aggregationEntity?: {
+    __typename?: 'AggregationEntity';
+    id: string | number;
+    count: number;
+  } | null;
 };
 
 export const L2ProposalsDocument = `
-    query L2Proposals($governor: Bytes!, $pageSize: Int!, $offset: Int!, $proposalIds: [BigInt!]) {
+    query L2Proposals($governor: Bytes!, $proposalIds: [BigInt!]) {
   proposals(
-    first: $pageSize
-    orderBy: blockTimestamp
+    first: 1000
+    orderBy: blockNumber
     orderDirection: desc
     where: {governorAddress: $governor, proposalId_in: $proposalIds}
-    skip: $offset
   ) {
     id
     proposalId
@@ -701,28 +700,29 @@ export const L2ProposalsDocument = `
 export const useL2ProposalsQuery = <TData = L2ProposalsQuery, TError = unknown>(
   dataSource: { endpoint: string; fetchParams?: RequestInit },
   variables: L2ProposalsQueryVariables,
-  options?: UseQueryOptions<L2ProposalsQuery, TError, TData>
+  options?: Omit<UseQueryOptions<L2ProposalsQuery, TError, TData>, 'queryKey'> & {
+    queryKey?: UseQueryOptions<L2ProposalsQuery, TError, TData>['queryKey'];
+  }
 ) => {
-  return useQuery<L2ProposalsQuery, TError, TData>(
-    ['L2Proposals', variables],
-    fetcher<L2ProposalsQuery, L2ProposalsQueryVariables>(
+  return useQuery<L2ProposalsQuery, TError, TData>({
+    queryKey: ['L2Proposals', variables],
+    queryFn: fetcher<L2ProposalsQuery, L2ProposalsQueryVariables>(
       dataSource.endpoint,
       dataSource.fetchParams || {},
       L2ProposalsDocument,
       variables
     ),
-    options
-  );
+    ...options,
+  });
 };
 
 export const ProposalsDocument = `
-    query Proposals($governor: Bytes!, $pageSize: Int!, $offset: Int!) {
+    query Proposals($governor: Bytes!) {
   proposals(
-    first: $pageSize
-    orderBy: blockTimestamp
+    first: 1000
+    orderBy: blockNumber
     orderDirection: desc
     where: {governorAddress: $governor}
-    skip: $offset
   ) {
     id
     proposalId
@@ -742,18 +742,20 @@ export const ProposalsDocument = `
 export const useProposalsQuery = <TData = ProposalsQuery, TError = unknown>(
   dataSource: { endpoint: string; fetchParams?: RequestInit },
   variables: ProposalsQueryVariables,
-  options?: UseQueryOptions<ProposalsQuery, TError, TData>
+  options?: Omit<UseQueryOptions<ProposalsQuery, TError, TData>, 'queryKey'> & {
+    queryKey?: UseQueryOptions<ProposalsQuery, TError, TData>['queryKey'];
+  }
 ) => {
-  return useQuery<ProposalsQuery, TError, TData>(
-    ['Proposals', variables],
-    fetcher<ProposalsQuery, ProposalsQueryVariables>(
+  return useQuery<ProposalsQuery, TError, TData>({
+    queryKey: ['Proposals', variables],
+    queryFn: fetcher<ProposalsQuery, ProposalsQueryVariables>(
       dataSource.endpoint,
       dataSource.fetchParams || {},
       ProposalsDocument,
       variables
     ),
-    options
-  );
+    ...options,
+  });
 };
 
 export const ProposalTotalDocument = `
@@ -768,16 +770,18 @@ export const ProposalTotalDocument = `
 export const useProposalTotalQuery = <TData = ProposalTotalQuery, TError = unknown>(
   dataSource: { endpoint: string; fetchParams?: RequestInit },
   variables: ProposalTotalQueryVariables,
-  options?: UseQueryOptions<ProposalTotalQuery, TError, TData>
+  options?: Omit<UseQueryOptions<ProposalTotalQuery, TError, TData>, 'queryKey'> & {
+    queryKey?: UseQueryOptions<ProposalTotalQuery, TError, TData>['queryKey'];
+  }
 ) => {
-  return useQuery<ProposalTotalQuery, TError, TData>(
-    ['ProposalTotal', variables],
-    fetcher<ProposalTotalQuery, ProposalTotalQueryVariables>(
+  return useQuery<ProposalTotalQuery, TError, TData>({
+    queryKey: ['ProposalTotal', variables],
+    queryFn: fetcher<ProposalTotalQuery, ProposalTotalQueryVariables>(
       dataSource.endpoint,
       dataSource.fetchParams || {},
       ProposalTotalDocument,
       variables
     ),
-    options
-  );
+    ...options,
+  });
 };

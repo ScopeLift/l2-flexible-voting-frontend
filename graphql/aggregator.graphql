@@ -1,10 +1,9 @@
-query L2Proposals($governor: Bytes!, $pageSize: Int!, $offset: Int!, $proposalIds: [BigInt!]) {
+query L2Proposals($governor: Bytes!, $proposalIds: [BigInt!]) {
   proposals(
-    first: $pageSize
-    orderBy: blockTimestamp
+    first: 1000
+    orderBy: blockNumber
     orderDirection: desc
     where: { governorAddress: $governor, proposalId_in: $proposalIds }
-    skip: $offset
   ) {
     id
     proposalId

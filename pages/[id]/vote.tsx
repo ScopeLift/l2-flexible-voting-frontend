@@ -31,7 +31,7 @@ const Vote: NextPage = () => {
   const proposalsPerPage = 5;
   // A current limitation is that we will only fetch the first 1000 proposals.
   // This seems like a reasonable limit.
-  const { data, isLoading: isProposalLoading } = useProposals({ fetchSize: 1000, offset: 0 });
+  const { data, isLoading: isProposalLoading } = useProposals();
 
   return (
     <>

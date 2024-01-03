@@ -1,10 +1,9 @@
-query Proposals($governor: Bytes!, $pageSize: Int!, $offset: Int!) {
+query Proposals($governor: Bytes!) {
   proposals(
-    first: $pageSize
-    orderBy: blockTimestamp
+    first: 1000
+    orderBy: blockNumber
     orderDirection: desc
     where: { governorAddress: $governor }
-    skip: $offset
   ) {
     id
     proposalId
