@@ -121,15 +121,13 @@ export const useL1Proposals = () => {
   };
 };
 
-// This hook retrieves all L2 aggregator proposal data and L2 voting power for `address`, bounded by fetchSize and offset.
+// This hook retrieves all L2 aggregator proposal data and L2 voting power for `address`.
 export const useL2Proposals = (
   l1Proposals: { proposalId: string; startBlock: string }[] | undefined
 ) => {
   const { l2, l1 } = useConfig();
   const { address } = useAccount();
 
-  console.log(l1Proposals?.map((proposal) => proposal.proposalId));
-  console.log(l1Proposals?.map((proposal) => typeof proposal.proposalId));
   // get all L2 proposals from L2 aggregator
   const {
     data: queryData,
