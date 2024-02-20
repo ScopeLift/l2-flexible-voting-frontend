@@ -105,9 +105,9 @@ export const useL1Proposals = () => {
     return {
       status: proposalState?.[i].result as number,
       votes: {
-        againstVotes: BigInt(vote?.[0]) || BigInt(0),
-        forVotes: BigInt(vote?.[1]) || BigInt(0),
-        abstainVotes: BigInt(vote?.[2]) || BigInt(0),
+        againstVotes: BigInt(vote?.[0] || 0),
+        forVotes: BigInt(vote?.[1] || 0),
+        abstainVotes: BigInt(vote?.[2] || 0),
       },
       tallyLink: `${l1.tallyGovernorDomain}/proposal/${proposal.proposalId}`,
       ...proposal,
