@@ -132,7 +132,7 @@ const Bridge = () => {
     address: l1Config.erc20Bridge,
     chainId: l1Config.chain.id,
     abi: parseAbi([
-      'function deposit(address to, uint224 amount) public payable returns (uint256)',
+      'function deposit(address account, uint224 amount) public payable returns (uint256 sequence)',
     ]),
     functionName: 'deposit',
     args: [address!, rawAmount],
