@@ -1,0 +1,27 @@
+query L2Proposals($governor: Bytes!, $proposalIds: [BigInt!]) {
+  proposals(
+    first: 1000
+    orderBy: blockNumber
+    orderDirection: desc
+    where: { governorAddress: $governor, proposalId_in: $proposalIds }
+  ) {
+    id
+    proposalId
+    proposer
+    startBlock
+    endBlock
+    description
+    governorAddress
+    isCancelled
+    transactionHash
+    blockNumber
+    blockTimestamp
+    bridgedVote {
+      voteAgainst
+      voteFor
+      voteAbstain
+      blockNumber
+      blockTimestamp
+    }
+  }
+}

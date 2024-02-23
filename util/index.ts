@@ -50,3 +50,8 @@ export const switchChain = async (walletClient: GetWalletClientResult, chain: Ch
     }
   }
 };
+
+// Add ability to deserialize BigInts with graphql react query
+(BigInt.prototype as any).toJSON = function () {
+  return this.toString();
+};
