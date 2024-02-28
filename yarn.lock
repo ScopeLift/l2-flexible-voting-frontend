@@ -2774,7 +2774,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@wagmi/core@npm:1.4.13":
+"@wagmi/core@npm:1.4.13, @wagmi/core@npm:^1.4.5":
   version: 1.4.13
   resolution: "@wagmi/core@npm:1.4.13"
   dependencies:
@@ -10610,6 +10610,7 @@ __metadata:
     "@tanstack/react-query": 5
     "@types/node": ^18.16.12
     "@types/react": ^18.2.21
+    "@wagmi/core": ^1.4.5
     "@walletconnect/jsonrpc-types": ^1.0.3
     "@walletconnect/jsonrpc-utils": ^1.0.8
     autoprefixer: ^10.4.15
