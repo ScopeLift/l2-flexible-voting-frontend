@@ -2,7 +2,7 @@ query L2Proposals($governor: Bytes!, $proposalIds: [BigInt!]) {
   proposals(
     first: 1000
     orderBy: blockNumber
-    orderDirection: desc
+    orderDirection: asc
     where: { governorAddress: $governor, proposalId_in: $proposalIds }
   ) {
     id

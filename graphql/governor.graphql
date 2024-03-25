@@ -2,7 +2,7 @@ query Proposals($governor: Bytes!) {
   proposals(
     first: 1000
     orderBy: blockNumber
-    orderDirection: desc
+    orderDirection: asc
     where: { governorAddress: $governor }
   ) {
     id
