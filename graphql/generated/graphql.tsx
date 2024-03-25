@@ -4,19 +4,10 @@ export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
-export type MakeEmpty<T extends { [key: string]: unknown }, K extends keyof T> = {
-  [_ in K]?: never;
-};
-export type Incremental<T> =
-  | T
-  | { [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never };
+export type MakeEmpty<T extends { [key: string]: unknown }, K extends keyof T> = { [_ in K]?: never };
+export type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never };
 
-function fetcher<TData, TVariables>(
-  endpoint: string,
-  requestInit: RequestInit,
-  query: string,
-  variables?: TVariables
-) {
+function fetcher<TData, TVariables>(endpoint: string, requestInit: RequestInit, query: string, variables?: TVariables) {
   return async (): Promise<TData> => {
     const res = await fetch(endpoint, {
       method: 'POST',
@@ -33,23 +24,23 @@ function fetcher<TData, TVariables>(
     }
 
     return json.data;
-  };
+  }
 }
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
-  ID: { input: string; output: string | number };
-  String: { input: string; output: string };
-  Boolean: { input: boolean; output: boolean };
-  Int: { input: number; output: number };
-  Float: { input: number; output: number };
-  BigDecimal: { input: any; output: any };
-  BigInt: { input: string; output: string };
-  Bytes: { input: any; output: any };
+  ID: { input: string; output: string | number; }
+  String: { input: string; output: string; }
+  Boolean: { input: boolean; output: boolean; }
+  Int: { input: number; output: number; }
+  Float: { input: number; output: number; }
+  BigDecimal: { input: any; output: any; }
+  BigInt: { input: bigint; output: string; }
+  Bytes: { input: any; output: any; }
   /**
    * 8 bytes signed integer
    *
    */
-  Int8: { input: any; output: any };
+  Int8: { input: any; output: any; }
 };
 
 export type AggregationEntity = {
@@ -83,7 +74,7 @@ export type AggregationEntity_Filter = {
 
 export enum AggregationEntity_OrderBy {
   Count = 'count',
-  Id = 'id',
+  Id = 'id'
 }
 
 export type BlockChangedFilter = {
@@ -237,13 +228,13 @@ export enum BridgedVote_OrderBy {
   TransactionHash = 'transactionHash',
   VoteAbstain = 'voteAbstain',
   VoteAgainst = 'voteAgainst',
-  VoteFor = 'voteFor',
+  VoteFor = 'voteFor'
 }
 
 /** Defines the order direction, either ascending or descending */
 export enum OrderDirection {
   Asc = 'asc',
-  Desc = 'desc',
+  Desc = 'desc'
 }
 
 export type Proposal = {
@@ -436,7 +427,7 @@ export enum Proposal_OrderBy {
   Signatures = 'signatures',
   StartBlock = 'startBlock',
   TransactionHash = 'transactionHash',
-  Values = 'values',
+  Values = 'values'
 }
 
 export type Query = {
@@ -451,9 +442,11 @@ export type Query = {
   proposals: Array<Proposal>;
 };
 
+
 export type Query_MetaArgs = {
   block?: InputMaybe<Block_Height>;
 };
+
 
 export type QueryAggregationEntitiesArgs = {
   block?: InputMaybe<Block_Height>;
@@ -465,17 +458,20 @@ export type QueryAggregationEntitiesArgs = {
   where?: InputMaybe<AggregationEntity_Filter>;
 };
 
+
 export type QueryAggregationEntityArgs = {
   block?: InputMaybe<Block_Height>;
   id: Scalars['ID']['input'];
   subgraphError?: _SubgraphErrorPolicy_;
 };
 
+
 export type QueryBridgedVoteArgs = {
   block?: InputMaybe<Block_Height>;
   id: Scalars['ID']['input'];
   subgraphError?: _SubgraphErrorPolicy_;
 };
+
 
 export type QueryBridgedVotesArgs = {
   block?: InputMaybe<Block_Height>;
@@ -487,11 +483,13 @@ export type QueryBridgedVotesArgs = {
   where?: InputMaybe<BridgedVote_Filter>;
 };
 
+
 export type QueryProposalArgs = {
   block?: InputMaybe<Block_Height>;
   id: Scalars['ID']['input'];
   subgraphError?: _SubgraphErrorPolicy_;
 };
+
 
 export type QueryProposalsArgs = {
   block?: InputMaybe<Block_Height>;
@@ -515,9 +513,11 @@ export type Subscription = {
   proposals: Array<Proposal>;
 };
 
+
 export type Subscription_MetaArgs = {
   block?: InputMaybe<Block_Height>;
 };
+
 
 export type SubscriptionAggregationEntitiesArgs = {
   block?: InputMaybe<Block_Height>;
@@ -529,17 +529,20 @@ export type SubscriptionAggregationEntitiesArgs = {
   where?: InputMaybe<AggregationEntity_Filter>;
 };
 
+
 export type SubscriptionAggregationEntityArgs = {
   block?: InputMaybe<Block_Height>;
   id: Scalars['ID']['input'];
   subgraphError?: _SubgraphErrorPolicy_;
 };
 
+
 export type SubscriptionBridgedVoteArgs = {
   block?: InputMaybe<Block_Height>;
   id: Scalars['ID']['input'];
   subgraphError?: _SubgraphErrorPolicy_;
 };
+
 
 export type SubscriptionBridgedVotesArgs = {
   block?: InputMaybe<Block_Height>;
@@ -551,11 +554,13 @@ export type SubscriptionBridgedVotesArgs = {
   where?: InputMaybe<BridgedVote_Filter>;
 };
 
+
 export type SubscriptionProposalArgs = {
   block?: InputMaybe<Block_Height>;
   id: Scalars['ID']['input'];
   subgraphError?: _SubgraphErrorPolicy_;
 };
+
 
 export type SubscriptionProposalsArgs = {
   block?: InputMaybe<Block_Height>;
@@ -598,7 +603,7 @@ export enum _SubgraphErrorPolicy_ {
   /** Data will be returned even if the subgraph has indexing errors */
   Allow = 'allow',
   /** If the subgraph has indexing errors, data will be omitted. The default. */
-  Deny = 'deny',
+  Deny = 'deny'
 }
 
 export type L2ProposalsQueryVariables = Exact<{
@@ -606,73 +611,31 @@ export type L2ProposalsQueryVariables = Exact<{
   proposalIds?: InputMaybe<Array<Scalars['BigInt']['input']> | Scalars['BigInt']['input']>;
 }>;
 
-export type L2ProposalsQuery = {
-  __typename?: 'Query';
-  proposals: Array<{
-    __typename?: 'Proposal';
-    id: string | number;
-    proposalId: string;
-    proposer: any;
-    startBlock: string;
-    endBlock: string;
-    description: string;
-    governorAddress: any;
-    isCancelled: boolean;
-    transactionHash: any;
-    blockNumber: string;
-    blockTimestamp: string;
-    bridgedVote?: {
-      __typename?: 'BridgedVote';
-      voteAgainst: string;
-      voteFor: string;
-      voteAbstain: string;
-      blockNumber: string;
-      blockTimestamp: string;
-    } | null;
-  }>;
-};
+
+export type L2ProposalsQuery = { __typename?: 'Query', proposals: Array<{ __typename?: 'Proposal', id: string | number, proposalId: string, proposer: any, startBlock: string, endBlock: string, description: string, governorAddress: any, isCancelled: boolean, transactionHash: any, blockNumber: string, blockTimestamp: string, bridgedVote?: { __typename?: 'BridgedVote', voteAgainst: string, voteFor: string, voteAbstain: string, blockNumber: string, blockTimestamp: string } | null }> };
 
 export type ProposalsQueryVariables = Exact<{
   governor: Scalars['Bytes']['input'];
 }>;
 
-export type ProposalsQuery = {
-  __typename?: 'Query';
-  proposals: Array<{
-    __typename?: 'Proposal';
-    id: string | number;
-    proposalId: string;
-    proposer: any;
-    startBlock: string;
-    endBlock: string;
-    description: string;
-    governorAddress: any;
-    isCancelled: boolean;
-    transactionHash: any;
-    blockNumber: string;
-    blockTimestamp: string;
-  }>;
-};
+
+export type ProposalsQuery = { __typename?: 'Query', proposals: Array<{ __typename?: 'Proposal', id: string | number, proposalId: string, proposer: any, startBlock: string, endBlock: string, description: string, governorAddress: any, isCancelled: boolean, transactionHash: any, blockNumber: string, blockTimestamp: string }> };
 
 export type ProposalTotalQueryVariables = Exact<{
   id: Scalars['ID']['input'];
 }>;
 
-export type ProposalTotalQuery = {
-  __typename?: 'Query';
-  aggregationEntity?: {
-    __typename?: 'AggregationEntity';
-    id: string | number;
-    count: number;
-  } | null;
-};
+
+export type ProposalTotalQuery = { __typename?: 'Query', aggregationEntity?: { __typename?: 'AggregationEntity', id: string | number, count: number } | null };
+
+
 
 export const L2ProposalsDocument = `
     query L2Proposals($governor: Bytes!, $proposalIds: [BigInt!]) {
   proposals(
     first: 1000
     orderBy: blockNumber
-    orderDirection: desc
+    orderDirection: asc
     where: {governorAddress: $governor, proposalId_in: $proposalIds}
   ) {
     id
@@ -697,31 +660,29 @@ export const L2ProposalsDocument = `
 }
     `;
 
-export const useL2ProposalsQuery = <TData = L2ProposalsQuery, TError = unknown>(
-  dataSource: { endpoint: string; fetchParams?: RequestInit },
-  variables: L2ProposalsQueryVariables,
-  options?: Omit<UseQueryOptions<L2ProposalsQuery, TError, TData>, 'queryKey'> & {
-    queryKey?: UseQueryOptions<L2ProposalsQuery, TError, TData>['queryKey'];
-  }
-) => {
-  return useQuery<L2ProposalsQuery, TError, TData>({
+export const useL2ProposalsQuery = <
+      TData = L2ProposalsQuery,
+      TError = unknown
+    >(
+      dataSource: { endpoint: string, fetchParams?: RequestInit },
+      variables: L2ProposalsQueryVariables,
+      options?: Omit<UseQueryOptions<L2ProposalsQuery, TError, TData>, 'queryKey'> & { queryKey?: UseQueryOptions<L2ProposalsQuery, TError, TData>['queryKey'] }
+    ) => {
+    
+    return useQuery<L2ProposalsQuery, TError, TData>(
+      {
     queryKey: ['L2Proposals', variables],
-    queryFn: fetcher<L2ProposalsQuery, L2ProposalsQueryVariables>(
-      dataSource.endpoint,
-      dataSource.fetchParams || {},
-      L2ProposalsDocument,
-      variables
-    ),
-    ...options,
-  });
-};
+    queryFn: fetcher<L2ProposalsQuery, L2ProposalsQueryVariables>(dataSource.endpoint, dataSource.fetchParams || {}, L2ProposalsDocument, variables),
+    ...options
+  }
+    )};
 
 export const ProposalsDocument = `
     query Proposals($governor: Bytes!) {
   proposals(
     first: 1000
     orderBy: blockNumber
-    orderDirection: desc
+    orderDirection: asc
     where: {governorAddress: $governor}
   ) {
     id
@@ -739,24 +700,22 @@ export const ProposalsDocument = `
 }
     `;
 
-export const useProposalsQuery = <TData = ProposalsQuery, TError = unknown>(
-  dataSource: { endpoint: string; fetchParams?: RequestInit },
-  variables: ProposalsQueryVariables,
-  options?: Omit<UseQueryOptions<ProposalsQuery, TError, TData>, 'queryKey'> & {
-    queryKey?: UseQueryOptions<ProposalsQuery, TError, TData>['queryKey'];
-  }
-) => {
-  return useQuery<ProposalsQuery, TError, TData>({
+export const useProposalsQuery = <
+      TData = ProposalsQuery,
+      TError = unknown
+    >(
+      dataSource: { endpoint: string, fetchParams?: RequestInit },
+      variables: ProposalsQueryVariables,
+      options?: Omit<UseQueryOptions<ProposalsQuery, TError, TData>, 'queryKey'> & { queryKey?: UseQueryOptions<ProposalsQuery, TError, TData>['queryKey'] }
+    ) => {
+    
+    return useQuery<ProposalsQuery, TError, TData>(
+      {
     queryKey: ['Proposals', variables],
-    queryFn: fetcher<ProposalsQuery, ProposalsQueryVariables>(
-      dataSource.endpoint,
-      dataSource.fetchParams || {},
-      ProposalsDocument,
-      variables
-    ),
-    ...options,
-  });
-};
+    queryFn: fetcher<ProposalsQuery, ProposalsQueryVariables>(dataSource.endpoint, dataSource.fetchParams || {}, ProposalsDocument, variables),
+    ...options
+  }
+    )};
 
 export const ProposalTotalDocument = `
     query ProposalTotal($id: ID!) {
@@ -767,21 +726,19 @@ export const ProposalTotalDocument = `
 }
     `;
 
-export const useProposalTotalQuery = <TData = ProposalTotalQuery, TError = unknown>(
-  dataSource: { endpoint: string; fetchParams?: RequestInit },
-  variables: ProposalTotalQueryVariables,
-  options?: Omit<UseQueryOptions<ProposalTotalQuery, TError, TData>, 'queryKey'> & {
-    queryKey?: UseQueryOptions<ProposalTotalQuery, TError, TData>['queryKey'];
-  }
-) => {
-  return useQuery<ProposalTotalQuery, TError, TData>({
+export const useProposalTotalQuery = <
+      TData = ProposalTotalQuery,
+      TError = unknown
+    >(
+      dataSource: { endpoint: string, fetchParams?: RequestInit },
+      variables: ProposalTotalQueryVariables,
+      options?: Omit<UseQueryOptions<ProposalTotalQuery, TError, TData>, 'queryKey'> & { queryKey?: UseQueryOptions<ProposalTotalQuery, TError, TData>['queryKey'] }
+    ) => {
+    
+    return useQuery<ProposalTotalQuery, TError, TData>(
+      {
     queryKey: ['ProposalTotal', variables],
-    queryFn: fetcher<ProposalTotalQuery, ProposalTotalQueryVariables>(
-      dataSource.endpoint,
-      dataSource.fetchParams || {},
-      ProposalTotalDocument,
-      variables
-    ),
-    ...options,
-  });
-};
+    queryFn: fetcher<ProposalTotalQuery, ProposalTotalQueryVariables>(dataSource.endpoint, dataSource.fetchParams || {}, ProposalTotalDocument, variables),
+    ...options
+  }
+    )};
