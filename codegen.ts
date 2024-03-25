@@ -21,7 +21,7 @@ const config: CodegenConfig = {
             output: 'string',
           },
           BigInt: {
-            input: 'bigint',
+            input: 'string',
             output: 'string',
           },
         },

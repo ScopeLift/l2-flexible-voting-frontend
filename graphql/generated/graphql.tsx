@@ -34,7 +34,7 @@ export type Scalars = {
   Int: { input: number; output: number; }
   Float: { input: number; output: number; }
   BigDecimal: { input: any; output: any; }
-  BigInt: { input: bigint; output: string; }
+  BigInt: { input: string; output: string; }
   Bytes: { input: any; output: any; }
   /**
    * 8 bytes signed integer
